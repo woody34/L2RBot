@@ -1,0 +1,40 @@
+﻿<Window x:Class="L2RBot.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:L2RBot"
+        mc:Ignorable="d"
+        Title="L2R Bot" Height="500" Width="500" Left="1300" Top="0">
+    <Grid>
+        <TabControl HorizontalAlignment="Left" Height="Auto" Width="Auto" VerticalAlignment="Top" >
+            <TabItem Header="General">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical" Height="Auto" Width="250">
+                        <TextBlock Name="txtLog" TextAlignment="Left" Height="350"  TextWrapping="Wrap" TextBlock.FontSize="10">
+                            Log Feature is WIP. It will save all logs to a .ini and display it in this box. right click actions for clear log display.
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="btnStopBot_Click" Content="Stop" IsEnabled="False"/>
+                            <Button x:Name="btnStartBot" Width="100" Height="50" HorizontalAlignment="Center" Click="btnStopBot_Click" Content="Start" IsEnabled="False"/>
+                        </StackPanel>
+                        
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Height="Auto" >
+                        <Button Name="btnMain" Click="btnMain_Click" IsEnabled="False">Main Quest</Button>
+                        <Button Name="btnWeekly" Click="btnWeekly_Click" IsEnabled="False">Weekly Quest</Button>
+                        <Button Name="btnScroll" IsEnabled="False">Scroll Quest</Button>
+                        <Button Name="btnDungeons" IsEnabled="False">Dungeons</Button>
+                        <Button Name="btnTower" IsEnabled="False">Tower of Insolence</Button>
+                        <Button Name="btnProcessGrab" Click="btnProcessGrab_Click">Find Nox</Button>
+                        <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Settings">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

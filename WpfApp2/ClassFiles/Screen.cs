@@ -30,7 +30,7 @@ namespace L2RBot
             Rectangle rectangle = new Rectangle(rect.left, rect.top, width, height);
             if (rectangle.Width != (1280 + rightBorder + leftBorder) | rectangle.Height != (720 + topBoarder + bottomBorder))
             {
-                System.Windows.MessageBox.Show(proc.MainWindowTitle + " needs reset to 1280x720 or Nox player left and top borders have changed. Did you update Nox Player?");
+                MainWindow.main.UpdateLog = proc.MainWindowTitle + " needs reset to 1280x720 or Nox player left and top borders have changed.";
             }
             return rectangle;
         }

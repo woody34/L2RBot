@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Diagnostics;
-using WindowsInput;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Controls;
 using System.Drawing;
 
@@ -15,17 +12,26 @@ namespace L2RBot
     /// </summary>
     public partial class MainWindow : Window
     {
-
+  
         public Process[] Emulators;
         public int EmulatorCount = 0;
         Thread t;
+        internal static MainWindow main;
+        internal string UpdateLog
+        {
+            get { return txtLog.Text.ToString(); }
+            set { Dispatcher.Invoke(new Action(() => { txtLog.Text += Environment.NewLine + value; })); }
+            //usage
+            //MainWindow.main.UpdateLog = "string data here";
+        }
+
 
         public IntPtr MainWindowHandle { get; private set; }
 
         public MainWindow()
         {
+            main = this;
             InitializeComponent();
-            UpdateLog("test");
         }
         public void btnStopBot_Click(object sender, RoutedEventArgs e)
         {
@@ -41,12 +47,8 @@ namespace L2RBot
             EmulatorCount = 0;
 
         }
-        public void UpdateLog(string s)
-        {
-            App.Current.Dispatcher.Invoke(delegate {
-                txtLog.Text = s;
-            });
-        }
+        public delegate void UpdateLogCallback(string text);
+        
         public void btnMain_Click(object sender, RoutedEventArgs e)
         {
             disableButtons();
@@ -69,8 +71,14 @@ namespace L2RBot
 
             while (true)//replace with start stop button states
             {
+                
                 for (int ind = EmulatorCount - 1; ind >= 0; ind--)
                 {
+                    if(Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
                     bots[ind].MainQuest(Emulators[ind]);
                 }
             }
@@ -98,6 +106,11 @@ namespace L2RBot
             {
                 for (int ind = EmulatorCount - 1; ind >= 0; ind--)
                 {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
                     bots[ind].WeeklyQuest(Emulators[ind]);
                 }
             }
@@ -126,12 +139,13 @@ namespace L2RBot
         {
             listProcessList.Items.Clear();
             Process[] NoxPlayers = Bot.BindNoxPlayer();
-            if (NoxPlayers[0] == null)//value check
+            if (NoxPlayers == null)//value check
             {
-                Debug.WriteLine("null process value ProcessGrabber_Click");
+
+                MainWindow.main.UpdateLog = "null process value ProcessGrabber_Click";
                 return;
             }
-            if (NoxPlayers[0] != null)//enbale buttons for quest if we bind to the Nox player process
+            if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
             {
                 enableButtons();
                 listProcessList.IsEnabled = true;
@@ -141,7 +155,7 @@ namespace L2RBot
             {
                 if (pro == null)
                 {
-                    Debug.WriteLine("null pro value in ProcessGrabber_Click");
+                    MainWindow.main.UpdateLog = "null process value ProcessGrabber_Click";
                     return;
                 }
 

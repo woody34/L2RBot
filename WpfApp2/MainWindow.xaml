@@ -11,8 +11,10 @@
             <TabItem Header="General">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical" Height="Auto" Width="250">
-                        <TextBlock Name="txtLog" TextAlignment="Left" Height="350"  TextWrapping="Wrap" TextBlock.FontSize="10">
-                            Log Feature is WIP. It will save all logs to a .ini and display it in this box. right click actions for clear log display.
+                        <TextBlock Name="txtLog" TextAlignment="Left" Height="350"  TextWrapping="Wrap" 
+                                   TextBlock.FontSize="10" ScrollViewer.VerticalScrollBarVisibility="Auto"  
+                                   ScrollViewer.CanContentScroll="True">
+                            Open Nox player then press "Find Nox" and chose choose your quest.
                         </TextBlock>
                         <StackPanel Orientation="Horizontal">
                             <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="btnStopBot_Click" Content="Stop" IsEnabled="False"/>

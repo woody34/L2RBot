@@ -3,15 +3,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Timers;
-
+using System.Windows.Forms;
 
 namespace L2RBot
 {
     class Bot
     {
         
-        public static Point clickPoint;
-
         /// <summary>
         /// controls the operation of the bot.
         /// </summary>
@@ -257,7 +255,7 @@ namespace L2RBot
                 if (pro.ProcessName == "Nox" | pro.ProcessName == "NoxPlayer1")
                 {
                     noxPlayers[i] = Process.GetProcessById(pro.Id);
-                    Debug.WriteLine(pro.Id.ToString());
+                    MainWindow.main.UpdateLog = pro.MainWindowTitle + " detected!";
                     i++;
                 }
             }
@@ -567,7 +565,6 @@ namespace L2RBot
             {
                 mainTimer.Stop();
                 mainTimer.Reset();
-                Debug.WriteLine(movePixel.ToString());
                 if (movePixel == Screen.GetColor(rect, 580, 450))
                 {
                     Mouse.LeftMouseClick(clickPoint.X, clickPoint.Y);
@@ -579,7 +576,6 @@ namespace L2RBot
                 mainTimer.Start();
             }
             //QuestHelper(app, "main");
-            Debug.WriteLine(mainTimer.ElapsedMilliseconds.ToString());
             //while(appIsClosed == false)
             //{
             //    appIsClosed = IsAppClosed(app);
@@ -633,9 +629,6 @@ namespace L2RBot
                    
                     Color pixel3 = Screen.GetColor(rect, 243, 333);
                     Color pixel4 = Screen.GetColor(rect, 245, 334);
-                    Debug.WriteLine(rect.ToString());
-                    Debug.WriteLine(pixel3.ToString());
-                    Debug.WriteLine("--------------------------");
 
                     if (pixel3 == questDone[0] & pixel4 != questDone[0])
                     {

@@ -81,6 +81,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ClassFiles\Bot.cs" />
+    <Compile Include="ClassFiles\Log.cs" />
     <Compile Include="ClassFiles\Mouse.cs" />
     <Compile Include="ClassFiles\Screen.cs" />
     <Compile Include="ClassFiles\User32.cs" />
@@ -115,12 +116,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\inputsimulator-master\inputsimulator-master\WindowsInput\WindowsInput.csproj">
-      <Project>{3549cd6f-80f8-450f-b99e-cf0a736b1f2a}</Project>
-      <Name>WindowsInput</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

@@ -11,14 +11,19 @@
             <TabItem Header="General">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical" Height="Auto" Width="250">
-                        <TextBlock Name="txtLog" TextAlignment="Left" Height="350"  TextWrapping="Wrap" 
-                                   TextBlock.FontSize="10" ScrollViewer.VerticalScrollBarVisibility="Auto"  
-                                   ScrollViewer.CanContentScroll="True">
+                        <ScrollViewer Name="scroll" VerticalScrollBarVisibility="Visible" CanContentScroll="True">
+                            <TextBlock Name="txtLog" TextAlignment="Left" Height="350"  TextWrapping="Wrap" TextBlock.FontSize="10" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Name="contextMenuClearLog" Header="Clear Log" MenuItem.Click="ClearLog"/>
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
                             Open Nox player then press "Find Nox" and chose choose your quest.
-                        </TextBlock>
+                            </TextBlock>
+                        </ScrollViewer>
                         <StackPanel Orientation="Horizontal">
                             <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="btnStopBot_Click" Content="Stop" IsEnabled="False"/>
-                            <Button x:Name="btnStartBot" Width="100" Height="50" HorizontalAlignment="Center" Click="btnStopBot_Click" Content="Start" IsEnabled="False"/>
+                            <Button x:Name="btnStartBot" Width="100" Height="50" HorizontalAlignment="Center" Click="btnStopBot_Click" Content="Exit" IsEnabled="False"/>
                         </StackPanel>
                         
                     </StackPanel>

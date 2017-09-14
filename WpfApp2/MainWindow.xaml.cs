@@ -20,10 +20,16 @@ namespace L2RBot
         internal string UpdateLog
         {
             get { return txtLog.Text.ToString(); }
-            set { Dispatcher.Invoke(new Action(() => { txtLog.Text += Environment.NewLine + value; })); }
+            set { Dispatcher.Invoke(new Action(() => { txtLog.Text += Environment.NewLine + value;  })); }
             //usage
             //MainWindow.main.UpdateLog = "string data here";
         }
+        private void ClearLog ( object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() => { txtLog.Text = ""; }));
+        }
+        
+
 
 
         public IntPtr MainWindowHandle { get; private set; }

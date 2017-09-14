@@ -16,12 +16,16 @@ namespace L2RBot
         public static int bottomBorder = 2;
         public static int leftBorder = 2;
         public static int rightBorder = 2;
-        public static int boarderWidth = leftBorder + rightBorder;
-        public static int boarderHeight = topBoarder + bottomBorder;
-
+        public static int borderWidth = leftBorder + rightBorder;
+        public static int borderHeight = topBoarder + bottomBorder;
+        /// <summary>
+        /// takes a process object and returns its the game screens x, y, width and height
+        /// </summary>
+        /// <param name="proc"></param>
+        /// <returns></returns>
         public static Rectangle GetRect(Process proc)
         {
-            var rect = new User32.Rect();
+            var rect = new User32.Rect();//Rekt type object for parameter of WINAPI
             User32.GetWindowRect(proc.MainWindowHandle, ref rect);
 
             int width = rect.right - rect.left;
@@ -30,17 +34,19 @@ namespace L2RBot
             Rectangle rectangle = new Rectangle(rect.left, rect.top, width, height);
             if (rectangle.Width != (1280 + rightBorder + leftBorder) | rectangle.Height != (720 + topBoarder + bottomBorder))
             {
-                MainWindow.main.UpdateLog = proc.MainWindowTitle + " needs reset to 1280x720 or Nox player left and top borders have changed.";
+                MainWindow.main.UpdateLog = proc.MainWindowTitle + " needs reset to 1280x720 or Nox player left and top borders have changed. " +
+                    "Window should be detected as " + (1280 + borderWidth) + "x" + (720 + borderHeight) + 
+                    "your screen is " + rectangle.Width +  "x" + rectangle.Height;
             }
             return rectangle;
         }
         public static Point PercentToPoint(Rectangle rect,double X, double Y)
         {
-            int mWidth = rect.Width - boarderWidth;
+            int mWidth = rect.Width - borderWidth;
             double mWidthD = (double)mWidth / 100;
             double dWidth = (double)mWidthD * X;
 
-            int mHeight = rect.Height - boarderHeight;
+            int mHeight = rect.Height - borderHeight;
             double mHeightD = (double)mHeight / 100;
             double dHeight = (double)mHeightD * Y;
 
@@ -154,26 +160,19 @@ namespace L2RBot
             User32.ReleaseDC(desk, dc);
             return Color.FromArgb(255, (a >> 0) & 0xff, (a >> 8) & 0xff, (a >> 16) & 0xff);
         }
-        public static Boolean ComparePixel(Color Pixel, Color Find, int Tolerance)
+        public static Boolean CompareColor(Color Pixel, Color Find, int Tolerance)
         {
-            //compare pixel exact values
-            if (Pixel.R == Find.R & Pixel.G == Find.G & Pixel.B == Find.B)
-            {
-                return true;
-            }
-            //for each value in tolerance, compare pixels
-            for(int i = 0; i <= Tolerance; i++)
-            {
-                if (Pixel.R + i == Find.R & Pixel.G + i == Find.G & Pixel.B + i == Find.B)
-                {
-                    return true;
-                }
-                if (Pixel.R - i == Find.R & Pixel.G - i == Find.G & Pixel.B - i == Find.B)
-                {
-                    return true;
-                }
-            }
-            return false;
+            int r = Pixel.R - Find.R; r = Math.Abs(r);
+            int g = Pixel.G - Find.G; g = Math.Abs(g);
+            int b = Pixel.B - Find.B; b = Math.Abs(b);
+
+            int rgb = r + g + b;
+            int tol = Tolerance * 3;
+
+            bool ret = (rgb <= tol) ? true : false;
+
+            return ret;
+            
 
         }
         public static Boolean ComparePixelYellow(Color Pixel, int Y_Value, int Tolerance)
@@ -223,7 +222,7 @@ namespace L2RBot
         {
             foreach (Color value in Image)
             {
-                if (ComparePixel(value, LookingFor, Tolerance))
+                if (CompareColor(value, LookingFor, Tolerance))
                 {
                     return true;
                 }

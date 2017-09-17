@@ -4,15 +4,18 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Controls;
 using System.Drawing;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace L2RBot
 {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-  
+
         public Process[] Emulators;
         public int EmulatorCount = 0;
         Thread t;
@@ -20,26 +23,31 @@ namespace L2RBot
         internal string UpdateLog
         {
             get { return txtLog.Text.ToString(); }
-            set { Dispatcher.Invoke(new Action(() => { txtLog.Text += Environment.NewLine + value;  })); }
+            set { Dispatcher.Invoke(new Action(() => { txtLog.Text += Environment.NewLine + value; })); }
             //usage
             //MainWindow.main.UpdateLog = "string data here";
         }
-        private void ClearLog ( object sender, RoutedEventArgs e)
+        public void ClearLog( Object sender, RoutedEventArgs e)
         {
+
             Dispatcher.Invoke(new Action(() => { txtLog.Text = ""; }));
         }
-        
-
-
-
         public IntPtr MainWindowHandle { get; private set; }
+        public void priWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (t.ThreadState == System.Threading.ThreadState.Running)
+            {
+                t.Abort();
+            }
+        }
 
         public MainWindow()
         {
             main = this;
             InitializeComponent();
+            
         }
-        public void btnStopBot_Click(object sender, RoutedEventArgs e)
+        public void BtnStop_Click(object sender, RoutedEventArgs e)
         {
             if(t.IsAlive == true)
             {
@@ -48,22 +56,24 @@ namespace L2RBot
                 
             }
             btnStopBot.IsEnabled = false;
+            btnProcessGrab.IsEnabled = true;
             //initialize variables
             t = null;
             EmulatorCount = 0;
 
+
         }
         public delegate void UpdateLogCallback(string text);
         
-        public void btnMain_Click(object sender, RoutedEventArgs e)
+        public void BtnMain_Click(object sender, RoutedEventArgs e)
         {
-            disableButtons();
+            DisableButtons();
             User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int)this.Height, (int)this.Width, 1);
-            t  = new Thread(mainBot);
+            t  = new Thread(MainBot);
             t.Start();
             
         }
-        public void mainBot()
+        public void MainBot()
         {
 
             Bot[] bots = new Bot[EmulatorCount];
@@ -90,14 +100,14 @@ namespace L2RBot
             }
         }
 
-        public void btnWeekly_Click(object sender, RoutedEventArgs e)
+        public void BtnWeekly_Click(object sender, RoutedEventArgs e)
         {
-            disableButtons();
+            DisableButtons();
             User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int)this.Height, (int)this.Width, 1);
-            t = new Thread(weeklyBot);
+            t = new Thread(WeeklyBot);
             t.Start();
         }
-        public void weeklyBot()
+        public void WeeklyBot()
         {
             Bot[] bots = new Bot[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
@@ -117,31 +127,72 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
+                    //need to present users with an option for item slot
+                    //if (bots[ind].ScollItemNumber == 0)
+                    //{
+                    //    bots[ind].ScollItemNumber = InputBox();
+                    //}
                     bots[ind].WeeklyQuest(Emulators[ind]);
                 }
             }
         }
 
-        public void disableButtons()
+        private void btnScroll_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int)this.Height, (int)this.Width, 1);
+            t = new Thread(ScrollBot);
+            t.Start();
+        }
+        public void ScrollBot()
+        {
+            Bot[] bots = new Bot[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new Bot();
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].ScrollQuest(Emulators[ind]);
+                }
+            }
+        }
+
+        public void DisableButtons()
         {
             //disable buttons after clicking to prevent multithread issues
             btnMain.IsEnabled = false;
             btnWeekly.IsEnabled = false;
+            btnScroll.IsEnabled = false;
+            btnProcessGrab.IsEnabled = false;
 
             //enables stop button
             btnStopBot.IsEnabled = true;
         }
-        public void enableButtons()
+        public void EnableButtons()
         {
             //disable buttons after clicking to prevent multithread issues
             btnMain.IsEnabled = true;
             btnWeekly.IsEnabled = true;
+            btnScroll.IsEnabled = true;
+            btnProcessGrab.IsEnabled = true;
 
             //enables stop button
             btnStopBot.IsEnabled = false;
         }
 
-        private void btnProcessGrab_Click(object sender, RoutedEventArgs e)
+        private void BtnProcessGrab_Click(object sender, RoutedEventArgs e)
         {
             listProcessList.Items.Clear();
             Process[] NoxPlayers = Bot.BindNoxPlayer();
@@ -153,7 +204,7 @@ namespace L2RBot
             }
             if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
             {
-                enableButtons();
+                EnableButtons();
                 listProcessList.IsEnabled = true;
                 listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
             }
@@ -165,13 +216,27 @@ namespace L2RBot
                     return;
                 }
 
-                ListBoxItem itm = new ListBoxItem();
-                itm.Content = pro.MainWindowTitle.ToString();
+                ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
                 listProcessList.Items.Add(itm);
                 EmulatorCount++;
             }
 
             Emulators =  NoxPlayers;
+        }
+
+    }
+    public static class ResizeArray
+    {
+        public static T[] RemoveAt<T>(this T[] source, int index)
+        {
+            T[] dest = new T[source.Length - 1];
+            if (index > 0)
+                Array.Copy(source, 0, dest, 0, index);
+
+            if (index < source.Length - 1)
+                Array.Copy(source, index + 1, dest, index, source.Length - index - 1);
+
+            return dest;
         }
     }
 }

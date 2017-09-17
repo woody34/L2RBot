@@ -9,6 +9,12 @@ namespace L2RBot
 {
     class Bot
     {
+        public bool MainQuestFinished = false;
+        public bool WeeklyQuestFinished = false;
+        public bool ScrollQuestFinished = false;
+
+        public int ScollItemNumber { get; set; } = 0;
+
         /// <summary>
         /// opens Nox Player
         /// </summary>
@@ -235,7 +241,7 @@ namespace L2RBot
         {
             #region OpenApp variables
             Mouse mouse = new Mouse();
-            Point clickPoint;
+            
             Rectangle rect = Screen.GetRect(app);
             //Lineage 2 Revolutions Icon
             Color[] isAppClosed = new Color[2];
@@ -261,7 +267,7 @@ namespace L2RBot
 
 
             //Look for Lineage 2 Revolutions Application Icon
-            Color pixel1 = Screen.GetColor(rect, 83.046875, 47.63888888888889, out clickPoint);
+            Color pixel1 = Screen.GetColor(rect, 83.046875, 47.63888888888889, out Point clickPoint);
             Color pixel2 = Screen.GetColor(rect, 84.453125, 44.44444444444444);
 
             if (Screen.CompareColor(pixel1, isAppClosed[0], 2) & Screen.CompareColor(pixel2, isAppClosed[1], 2))
@@ -376,7 +382,6 @@ namespace L2RBot
         public Boolean BulkSale(Process app)
         {
             Mouse mouse = new Mouse();
-            Point clickPoint;
             Rectangle rect = Screen.GetRect(app);
             Color pixel1;
             Color pixel2;
@@ -390,7 +395,7 @@ namespace L2RBot
                 isItemFull[1] = Color.FromArgb(255, 219, 220, 217);
 
                 User32.SetFocus(app.MainWindowHandle);
-                pixel1 = Screen.GetColor(rect, 75.78125, 7.083333333333333, out clickPoint);
+                pixel1 = Screen.GetColor(rect, 75.78125, 7.083333333333333, out Point clickPoint);
                 pixel2 = Screen.GetColor(rect, 76.640625, 2.5);
                 if (Screen.CompareColor(pixel1, isItemFull[0], 2) & Screen.CompareColor(pixel2, isItemFull[1], 2))
                 {
@@ -728,7 +733,6 @@ namespace L2RBot
             {
                 Thread.Sleep(300);
                 Mouse.LeftMouseClick(point.X, point.Y);
-                Thread.Sleep(1000);
             }
             //Weekly>Quest Compelte
             Color[] questComplete = new Color[2];
@@ -776,14 +780,25 @@ namespace L2RBot
                 Mouse.LeftMouseClick(point.X, point.Y);
                 Thread.Sleep(300);
             }
-
+            //Sub Quest>Start Quest
+            Color[] subQuestStart = new Color[2];
+            subQuestStart[0] = Color.FromArgb(255, 255, 255, 255);
+            subQuestStart[1] = Color.FromArgb(255, 49, 85, 127);
+            pixel1 = Screen.GetColor(rect, 712, 603);
+            pixel2 = Screen.GetColor(rect, 701, 607);
+            //MainWindow.main.UpdateLog = app.MainWindowTitle + ", " + pixel1.ToString() + ":" + pixel2.ToString();
+            if (Screen.CompareColor(pixel1, subQuestStart[0], 2) & Screen.CompareColor(pixel2, subQuestStart[1], 2))
+            {
+                point = Screen.PointToScreenPoint(rect, 701, 607);
+                Mouse.LeftMouseClick(point.X, point.Y);
+                Thread.Sleep(300);
+            }
 
         }
 
         public void PopUpKiller(Process app)//WIP
         {
             Mouse mouse = new Mouse();
-            Point clickPoint;
             Rectangle rect = Screen.GetRect(app);
             Color pixel1;
             Color pixel2;
@@ -792,7 +807,7 @@ namespace L2RBot
             Color[] btnTemp = new Color[2];
             btnTemp[0] = Color.FromArgb(255, 255, 255, 255);
             btnTemp[1] = Color.FromArgb(255, 0, 0, 0);
-            pixel1 = Screen.GetColor(rect, 90.78125, 69.86111111111111, out clickPoint);
+            pixel1 = Screen.GetColor(rect, 90.78125, 69.86111111111111, out Point clickPoint);
             pixel2 = Screen.GetColor(rect, 97.109375, 82.5);
             if (btnTemp[0] == pixel1 & btnTemp[1] == pixel2)
             {
@@ -857,7 +872,7 @@ namespace L2RBot
         //    bool appIsClosed = IsAppClosed(app);
         //    if (appIsClosed == false)
         //    {
-               
+
         //        appIsClosed = IsAppClosed(app);
         //        Mouse mouse = new Mouse();
         //        Rectangle rect = Screen.GetRect(app);
@@ -867,7 +882,7 @@ namespace L2RBot
         //        Color[] weekly = new Color[2];
         //        weekly[0] = Color.FromArgb(255, 75, 154, 255);
         //        weekly[1] = Color.FromArgb(255, 75, 154, 255);
-               
+
         //        Color pixel1 = Screen.GetColor(rect, 0.9375, 41.94444444444444);
         //        Color pixel2 = Screen.GetColor(rect, 6.171875, 43.33333333333333);
         //        if( pixel1 != weekly[0] & pixel2 != weekly[1] & IsCombatScreenUp(app) )//if weekly quest is NOT present then compplete these actions
@@ -877,7 +892,7 @@ namespace L2RBot
         //            Mouse.LeftMouseClick(clickPoint.X, clickPoint.Y);//click quest log
         //            Thread.Sleep(2000);
 
-                   
+
         //            clickPoint = Screen.PercentToPoint(rect, 8.671875, 40.41666666666667);//weekly
         //            Mouse.LeftMouseClick(clickPoint.X, clickPoint.Y);//click weekly
         //            Thread.Sleep(2000);
@@ -888,7 +903,7 @@ namespace L2RBot
         //        {
         //            Color[] questDone = new Color[2];
         //            questDone[0] = Color.FromArgb(255, 255, 255, 255);
-                   
+
         //            Color pixel3 = Screen.GetColor(rect, 243, 333);
         //            Color pixel4 = Screen.GetColor(rect, 245, 334);
 
@@ -908,7 +923,7 @@ namespace L2RBot
         //        }
         //        QuestHelper(app);
         //    }
-           
+
         //    if (appIsClosed == true)
         //    {
         //        OpenApp(app);
@@ -925,7 +940,7 @@ namespace L2RBot
             bool appIsClosed = IsAppClosed(app);
             if (appIsClosed == false)
             {
-               
+
                 appIsClosed = IsAppClosed(app);
                 Mouse mouse = new Mouse();
                 Rectangle rect = Screen.GetRect(app);
@@ -935,7 +950,7 @@ namespace L2RBot
                 Color[] weekly = new Color[2];
                 weekly[0] = Color.FromArgb(255, 75, 154, 255);
                 weekly[1] = Color.FromArgb(255, 75, 154, 255);
-               
+
                 Color pixel1 = Screen.GetColor(rect, 0.9375, 41.94444444444444);
                 Color pixel2 = Screen.GetColor(rect, 6.171875, 43.33333333333333);
                 if (!Screen.CompareColor(pixel1, weekly[0], 2) & !Screen.CompareColor(pixel2, weekly[1], 2) & IsCombatScreenUp(app))//if weekly quest is NOT present then compplete these actions
@@ -945,7 +960,7 @@ namespace L2RBot
                     Mouse.LeftMouseClick(clickPoint.X, clickPoint.Y);//click quest log
                     Thread.Sleep(2000);
 
-                   
+
                     clickPoint = Screen.PercentToPoint(rect, 8.671875, 40.41666666666667);//weekly
                     Mouse.LeftMouseClick(clickPoint.X, clickPoint.Y);//click weekly
                     Thread.Sleep(2000);
@@ -956,7 +971,7 @@ namespace L2RBot
                 {
                     Color[] questDone = new Color[2];
                     questDone[0] = Color.FromArgb(255, 255, 255, 255);
-                   
+
                     Color pixel3 = Screen.GetColor(rect, 243, 333);
                     Color pixel4 = Screen.GetColor(rect, 245, 334);
                     if (Screen.CompareColor(pixel3, questDone[0], 2) & !Screen.CompareColor(pixel4, questDone[0], 2))
@@ -974,6 +989,86 @@ namespace L2RBot
                     }
                 }
                 QuestHelper(app);
+            }
+
+            if (appIsClosed == true)
+            {
+                OpenApp(app);
+                appIsClosed = IsAppClosed(app);
+            }
+
+
+
+        }
+        public void ScrollQuest(Process app)
+        {
+            User32.SetForegroundWindow(app.MainWindowHandle);
+            //MainWindow.main.UpdateLog = app.MainWindowTitle + " to the front";
+
+            bool appIsClosed = IsAppClosed(app);
+            if (appIsClosed == false)
+            {
+                Mouse mouse = new Mouse();
+                Rectangle rect = Screen.GetRect(app);
+
+                //Look for sub-quest
+                Color[] btnSub = new Color[1];
+                btnSub[0] = Color.FromArgb(255, 255, 174, 0);
+                Color pixel10 = Screen.GetColor(rect, 19, 309);
+                Color pixel20 = Screen.GetColor(rect, 20, 316);
+                MainWindow.main.UpdateLog = app.MainWindowTitle + ", " + pixel10.ToString() + "/r" + pixel20.ToString();
+                if ( Screen.CompareColor(pixel10, btnSub[0], 2) & IsCombatScreenUp(app) )
+                {
+                    QuestHelper(app, "scroll");
+                }
+                if ( Screen.CompareColor(pixel20, btnSub[0], 2) & IsCombatScreenUp(app) )
+                {
+                    QuestHelper(app, "scroll");
+                }
+                if( pixel10.B == 0 | pixel20.B == 0)
+                {
+                    QuestHelper(app, "scroll");
+                }
+                else
+                {
+                    Thread.Sleep(1000);
+                    Point point = Screen.PointToScreenPoint(rect, 986, 26);//bag point
+                    Mouse.LeftMouseClick(point.X, point.Y);//click bag
+                    Thread.Sleep(5000);//wait for bag to load
+
+                    point = Screen.PointToScreenPoint(rect, 1112, 123);//potions tab
+                    Mouse.LeftMouseClick(point.X, point.Y);//click bag
+                    Thread.Sleep(1000);//wait for tab to load
+
+                    point = Screen.PointToScreenPoint(rect, 955, 225);//location of third item
+                    Mouse.LeftMouseClick(point.X, point.Y);//click item in third position
+                    Thread.Sleep(1000);//wait for scroll quest to open
+
+                    Color[] btnRedZero = new Color[1];
+                    btnRedZero[0] = Color.FromArgb(255, 255, 152, 176);
+                    Color pixel1 = Screen.GetColor(rect, 1011, 224);
+                    if(Screen.CompareColor(pixel1, btnRedZero[0], 2))
+                        {
+                        point = Screen.PointToScreenPoint(rect, 729, 408);//first reset button
+                        Mouse.LeftMouseClick(point.X, point.Y);//click first reset button
+                        Thread.Sleep(1000);//wait for second reset button to load
+
+                        point = Screen.PointToScreenPoint(rect, 755, 494);//second reset button
+                        Mouse.LeftMouseClick(point.X, point.Y);//click second reset button
+                        Thread.Sleep(1000);//wait for second reset button to close
+
+
+                    }
+
+                    point = Screen.PointToScreenPoint(rect, 1154, 668);//fulfill request location
+                    Mouse.LeftMouseClick(point.X, point.Y);//click fulfill request
+                    Thread.Sleep(1000);//wait for ok button to pop up
+
+                    point = Screen.PointToScreenPoint(rect, 758, 492);//Ok button location
+                    Mouse.LeftMouseClick(point.X, point.Y);//click Ok
+                    Thread.Sleep(1000);//wait for Start Quest to pop up
+                }
+                Thread.Sleep(2000); //need a pause or the it detects that the quest is over after it switches from kill these mobs to talk to this npc
             }
            
             if (appIsClosed == true)

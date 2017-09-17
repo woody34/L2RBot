@@ -85,7 +85,6 @@
     <Compile Include="ClassFiles\Mouse.cs" />
     <Compile Include="ClassFiles\Screen.cs" />
     <Compile Include="ClassFiles\User32.cs" />
-    <Compile Include="ClassFiles\Wnd.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

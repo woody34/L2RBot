@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:L2RBot"
         mc:Ignorable="d"
-        Title="L2R Bot" Height="500" Width="500" Left="1300" Top="0">
+        Title="L2R Bot" Height="500" Width="500" Left="1300" Top="0" Name="priWindow"
+        Closing="priWindow_Closing">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="401*"/>
+            <ColumnDefinition Width="91*"/>
+        </Grid.ColumnDefinitions>
         <TabControl HorizontalAlignment="Left" Height="Auto" Width="Auto" VerticalAlignment="Top" >
             <TabItem Header="General">
                 <StackPanel Orientation="Horizontal">
@@ -22,18 +27,18 @@
                             </TextBlock>
                         </ScrollViewer>
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="btnStopBot_Click" Content="Stop" IsEnabled="False"/>
-                            <Button x:Name="btnStartBot" Width="100" Height="50" HorizontalAlignment="Center" Click="btnStopBot_Click" Content="Exit" IsEnabled="False"/>
+                            <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="BtnStop_Click" Content="Stop" IsEnabled="False"/>
+                            <Button x:Name="btnExitBot" Width="100" Height="50" HorizontalAlignment="Center" Click="BtnStop_Click" Content="Exit" IsEnabled="False"/>
                         </StackPanel>
                         
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Height="Auto" >
-                        <Button Name="btnMain" Click="btnMain_Click" IsEnabled="False">Main Quest</Button>
-                        <Button Name="btnWeekly" Click="btnWeekly_Click" IsEnabled="False">Weekly Quest</Button>
-                        <Button Name="btnScroll" IsEnabled="False">Scroll Quest</Button>
+                        <Button Name="btnMain" Click="BtnMain_Click" IsEnabled="False">Main Quest</Button>
+                        <Button Name="btnWeekly" Click="BtnWeekly_Click" IsEnabled="False">Weekly Quest</Button>
+                        <Button Name="btnScroll" IsEnabled="False" Click="btnScroll_Click">Scroll Quest</Button>
                         <Button Name="btnDungeons" IsEnabled="False">Dungeons</Button>
                         <Button Name="btnTower" IsEnabled="False">Tower of Insolence</Button>
-                        <Button Name="btnProcessGrab" Click="btnProcessGrab_Click">Find Nox</Button>
+                        <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox</Button>
                         <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>
                     </StackPanel>
                 </StackPanel>

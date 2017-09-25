@@ -169,10 +169,8 @@ namespace L2RBot
             int rgb = r + g + b;
             int tol = Tolerance * 3;
 
-            bool ret = (rgb <= tol) ? true : false;
+            return (rgb <= tol) ? true : false;
 
-            return ret;
-            
 
         }
         public static Boolean ComparePixelYellow(Color Pixel, int Y_Value, int Tolerance)

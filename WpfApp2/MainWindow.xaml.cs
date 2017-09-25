@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace L2RBot
 {
-
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -35,7 +35,7 @@ namespace L2RBot
         public IntPtr MainWindowHandle { get; private set; }
         public void priWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (t.ThreadState == System.Threading.ThreadState.Running)
+            if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
             {
                 t.Abort();
             }
@@ -76,26 +76,26 @@ namespace L2RBot
         public void MainBot()
         {
 
-            Bot[] bots = new Bot[EmulatorCount];
+            MainQuest[] bots = new MainQuest[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                bots[ind] = new Bot();
+                bots[ind] = new MainQuest(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
             }
-            
+
 
             while (true)//replace with start stop button states
             {
-                
+
                 for (int ind = EmulatorCount - 1; ind >= 0; ind--)
                 {
-                    if(Emulators[ind].HasExited == true)
+                    if (Emulators[ind].HasExited == true)
                     {
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
-                    bots[ind].MainQuest(Emulators[ind]);
+                    bots[ind].Start();
                 }
             }
         }
@@ -109,10 +109,10 @@ namespace L2RBot
         }
         public void WeeklyBot()
         {
-            Bot[] bots = new Bot[EmulatorCount];
+            WeeklyQuest[] bots = new WeeklyQuest[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                bots[ind] = new Bot();
+                bots[ind] = new WeeklyQuest(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
                 User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
             }
@@ -132,7 +132,7 @@ namespace L2RBot
                     //{
                     //    bots[ind].ScollItemNumber = InputBox();
                     //}
-                    bots[ind].WeeklyQuest(Emulators[ind]);
+                    bots[ind].Start();
                 }
             }
         }
@@ -146,10 +146,10 @@ namespace L2RBot
         }
         public void ScrollBot()
         {
-            Bot[] bots = new Bot[EmulatorCount];
+            ScrollQuest[] bots = new ScrollQuest[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                bots[ind] = new Bot();
+                bots[ind] = new ScrollQuest(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
                 User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
             }
@@ -164,7 +164,7 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
-                    bots[ind].ScrollQuest(Emulators[ind]);
+                    bots[ind].Start();
                 }
             }
         }

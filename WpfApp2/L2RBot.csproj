@@ -82,7 +82,6 @@
     </Compile>
     <Compile Include="ClassFiles\Bot.cs" />
     <Compile Include="ClassFiles\Log.cs" />
-    <Compile Include="ClassFiles\MainQuest.cs" />
     <Compile Include="ClassFiles\Mouse.cs" />
     <Compile Include="ClassFiles\Pixel.cs" />
     <Compile Include="ClassFiles\QuestHelper.cs" />
@@ -91,9 +90,7 @@
     <Compile Include="ClassFiles\Quests\Scroll.cs" />
     <Compile Include="ClassFiles\Quests\Weekly.cs" />
     <Compile Include="ClassFiles\Screen.cs" />
-    <Compile Include="ClassFiles\ScrollQuest.cs" />
     <Compile Include="ClassFiles\User32.cs" />
-    <Compile Include="ClassFiles\WeeklyQuest.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -18,7 +18,7 @@ namespace L2RBot
 
         //public int TimeoutInMilliS; //used to drive the first click //1 min.
 
-        public Quest( Process APP)
+        public Quest(Process APP)
         {
             App = APP;
         }
@@ -49,7 +49,7 @@ namespace L2RBot
 
         public void UpdateScreen()
         {
-            if(App == null)
+            if (App == null)
             {
                 Debug.WriteLine("Process is null");
             }
@@ -57,7 +57,7 @@ namespace L2RBot
             {
                 Screen = L2RBot.Screen.GetRect(App); //game window screen object(nox players screen location and demensions)
             }
-            
+
         }
     }
 }

@@ -9,11 +9,16 @@ namespace L2RBot
     {
         //Globals
         QuestHelper Helper;
+
         //Pixel Objects
         Pixel[] scrollQuest = new Pixel[2];
+
         Pixel[] questScroll = new Pixel[2];
+
         Pixel[] fulfillRequest = new Pixel[2];
+
         Pixel[] ProceedOk = new Pixel[2];
+
 
         //Point Objects
         Point scrollOne = new Point(425, 240);

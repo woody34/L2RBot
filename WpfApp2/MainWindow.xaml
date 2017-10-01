@@ -36,7 +36,7 @@
                         <Button Name="btnMain" Click="BtnMain_Click" IsEnabled="False">Main Quest</Button>
                         <Button Name="btnWeekly" Click="BtnWeekly_Click" IsEnabled="False">Weekly Quest</Button>
                         <Button Name="btnScroll" IsEnabled="False" Click="btnScroll_Click">Scroll Quest</Button>
-                        <Button Name="btnDungeons" IsEnabled="False">Dungeons</Button>
+                        <Button Name="btnDaily" IsEnabled="False" Click="btnDaily_Click">Daily Dungeon</Button>
                         <Button Name="btnTower" IsEnabled="False">Tower of Insolence</Button>
                         <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox</Button>
                         <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>

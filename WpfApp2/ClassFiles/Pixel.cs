@@ -8,22 +8,17 @@ namespace L2RBot
 
         public Point Point { get; set; }
 
-        ////public Pixel(Color Col, Point Loc)
-        ////{
-        ////    Point = Loc;
-        ////    Color = Col;
-        ////}
-        public bool IsPresent(Rectangle _Screen, int Tolerance)
+        public bool IsPresent(Rectangle Screen, int Tolerance)
         {
-            return L2RBot.Screen.CompareColor(Color, L2RBot.Screen.GetColor(_Screen, Point.X, Point.Y), Tolerance);
+            return L2RBot.Screen.CompareColor(Color, L2RBot.Screen.GetColor(Screen, Point.X, Point.Y), Tolerance);
         }
         public Color CurrentValue(Rectangle _Screen)
         {
             return Screen.GetColor(_Screen, Point.X, Point.Y);
         }
-        public void UpdateColor(Rectangle _Screen)
+        public void UpdateColor(Rectangle Screen)
         {
-            Color = CurrentValue(_Screen);
+            Color = CurrentValue(Screen);
         }
         override public string ToString()
         {

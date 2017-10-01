@@ -169,6 +169,38 @@ namespace L2RBot
             }
         }
 
+        private void btnDaily_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(DailyBot);
+            t.Start();
+        }
+        public void DailyBot()
+        {
+            DailyDungeon[] bots = new DailyDungeon[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new DailyDungeon(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].Start();
+                }
+            }
+        }
+
         public void DisableButtons()
         {
             //disable buttons after clicking to prevent multithread issues
@@ -176,6 +208,7 @@ namespace L2RBot
             btnWeekly.IsEnabled = false;
             btnScroll.IsEnabled = false;
             btnProcessGrab.IsEnabled = false;
+            btnDaily.IsEnabled = false;
 
             //enables stop button
             btnStopBot.IsEnabled = true;
@@ -187,6 +220,7 @@ namespace L2RBot
             btnWeekly.IsEnabled = true;
             btnScroll.IsEnabled = true;
             btnProcessGrab.IsEnabled = true;
+            btnDaily.IsEnabled = true;
 
             //enables stop button
             btnStopBot.IsEnabled = false;

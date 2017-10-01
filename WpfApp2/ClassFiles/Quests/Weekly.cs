@@ -8,9 +8,12 @@ namespace L2RBot
     {
         //Globals
         QuestHelper Helper;
+
         //Pixel Objects
         Pixel[] weeklyQuest = new Pixel[2];
+
         Pixel[] weeklyDone = new Pixel[2];
+
         Pixel[] completeQuest = new Pixel[2];
 
         public Weekly(Process APP) : base(APP)
@@ -55,9 +58,6 @@ namespace L2RBot
                 Color = Color.FromArgb(255, 21, 26, 37),
                 Point = new Point(852, 494)
             };
-
-
-
         }
 
         public void Start()
@@ -74,7 +74,7 @@ namespace L2RBot
                 Debug.WriteLine("IsWeeklyInProgress == true");
                 Click(weeklyQuest[0].Point);
             }
-            if(_IsQuestDone())
+            if (_IsQuestDone())
             {
                 Click(weeklyQuest[0].Point);
             }

@@ -372,6 +372,7 @@ namespace L2RBot
     {
         Main,
         Weekly,
-        Scroll
+        Scroll,
+        Dungeon
     }
 }

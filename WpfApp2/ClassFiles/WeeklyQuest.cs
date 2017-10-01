@@ -39,12 +39,29 @@ namespace L2RBot
             weeklyRow = new Point(111, 291);
             //Pixel objects
             weeklyQuest = new Pixel[2];
-            weeklyQuest[0] = new Pixel(Color.FromArgb(255, 75, 154, 255), new Point(12, 302));
-            weeklyQuest[1] = new Pixel(Color.FromArgb(255, 75, 154, 255), new Point(79, 312));
+            weeklyQuest[0] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 154, 255),
+                Point = new Point(12, 302)
+            };
+            weeklyQuest[1] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 154, 255),
+                Point = new Point(79, 312)
+            };
 
             weeklyDone = new Pixel[2];
-            weeklyDone[0] = new Pixel(Color.FromArgb(255, 255, 255, 255), new Point(243, 333));
-            weeklyDone[1] = new Pixel(Color.FromArgb(255, 255, 255, 255), new Point(245, 334));
+            weeklyDone[0] = new Pixel
+            {
+                Color = Color.FromArgb(255, 255, 255, 255),
+                Point = new Point(243, 333)
+            };
+
+            weeklyDone[1] = new Pixel
+            {
+                Color = Color.FromArgb(255, 255, 255, 255),
+                Point = new Point(243, 334)
+            };
         }
 
         /// <summary>
@@ -67,13 +84,9 @@ namespace L2RBot
         {
             User32.SetForegroundWindow(app.MainWindowHandle);
             System.Threading.Thread.Sleep(100);
-            Debug.WriteLine("InitialClick()");
             InitialClick();
-            Debug.WriteLine("CheckForWeekly()");
             CheckForWeekly();
-            Debug.WriteLine("CheckDone()");
             CheckDone();
-            Debug.WriteLine("QuestHelper.Start()");
             questHelper.Start();
 
         }
@@ -83,7 +96,7 @@ namespace L2RBot
         /// </summary>
         private void InitialClick()
         {
-            if (initialClick.Equals(false))
+            if (initialClick == false)
             {
                 Click(weeklyQuest[0].Point);
                 initialClick = true;
@@ -97,9 +110,10 @@ namespace L2RBot
         {
             //Weekly Quest present
             System.Threading.Thread.Sleep(100);
-            if (!weeklyQuest[0].IsPresent(screen, 2) & !weeklyQuest[1].IsPresent(screen, 2) & Bot.IsCombatScreenUp(app))//if weekly quest is NOT present then compplete these actions
+            if (!weeklyQuest[0].IsPresent(screen, 2) &&
+                !weeklyQuest[1].IsPresent(screen, 2) &&
+                Bot.IsCombatScreenUp(app))//if weekly quest is NOT present then compplete these actions
             {
-                
                 OpenWeekly();
             }
 
@@ -126,8 +140,10 @@ namespace L2RBot
         {
             if (Bot.IsCombatScreenUp(app))//if combat screen is up check done status
             {
-                if(weeklyDone[0].IsPresent(screen, 2) & !weeklyDone[1].IsPresent(screen, 2))
-                OpenWeekly();
+                if (weeklyDone[0].IsPresent(screen, 2) & !weeklyDone[1].IsPresent(screen, 2))
+                {
+                    OpenWeekly();
+                }
             }
         }
     }

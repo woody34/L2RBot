@@ -37,7 +37,7 @@ namespace L2RBot
         {
             if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
             {
-                t.Abort();
+                t.Join();
             }
         }
 
@@ -76,10 +76,10 @@ namespace L2RBot
         public void MainBot()
         {
 
-            MainQuest[] bots = new MainQuest[EmulatorCount];
+            //MainQuest[] bots = new MainQuest[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                bots[ind] = new MainQuest(Emulators[ind]);
+                //bots[ind] = new MainQuest(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
                 User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
             }
@@ -95,7 +95,7 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
-                    bots[ind].Start();
+                    //bots[ind].Start();
                 }
             }
         }
@@ -109,10 +109,10 @@ namespace L2RBot
         }
         public void WeeklyBot()
         {
-            WeeklyQuest[] bots = new WeeklyQuest[EmulatorCount];
+            Weekly[] bots = new Weekly[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                bots[ind] = new WeeklyQuest(Emulators[ind]);
+                bots[ind] = new Weekly(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
                 User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
             }
@@ -146,10 +146,10 @@ namespace L2RBot
         }
         public void ScrollBot()
         {
-            ScrollQuest[] bots = new ScrollQuest[EmulatorCount];
+            Scroll[] bots = new Scroll[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                bots[ind] = new ScrollQuest(Emulators[ind]);
+                bots[ind] = new Scroll(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
                 User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
             }

@@ -35,10 +35,10 @@ namespace L2RBot
         public IntPtr MainWindowHandle { get; private set; }
         public void priWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
-            {
-                t.Join();
-            }
+            //if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
+            //{
+            //    t.Join();
+            //}
         }
 
         public MainWindow()
@@ -76,10 +76,10 @@ namespace L2RBot
         public void MainBot()
         {
 
-            //MainQuest[] bots = new MainQuest[EmulatorCount];
+            Main[] bots = new Main[EmulatorCount];
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
-                //bots[ind] = new MainQuest(Emulators[ind]);
+                bots[ind] = new Main(Emulators[ind]);
                 Rectangle screen = Screen.GetRect(Emulators[ind]);
                 User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
             }
@@ -95,7 +95,7 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
-                    //bots[ind].Start();
+                    bots[ind].Start();
                 }
             }
         }

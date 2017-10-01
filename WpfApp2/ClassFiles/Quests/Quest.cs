@@ -8,15 +8,15 @@ namespace L2RBot
     {
         public Process App; //nox player
 
-        private Stopwatch _timer = new Stopwatch(); //timer for tracking objects
+        public Stopwatch Timer = new Stopwatch(); //timer for tracking objects
 
         public Rectangle Screen; //game screen rectangle
 
         public bool InitialClick = false; //for tracking the very first click to start the quest
 
-        public bool Complete = false;
+        public bool Complete = false; // for tracking quest completion
 
-        //public int TimeoutInMilliS; //used to drive the first click //1 min.
+        public int IdleTimeInMs; //the duration of time in ms that has to pass between clicks before idle
 
         public Quest(Process APP)
         {
@@ -29,7 +29,7 @@ namespace L2RBot
 
             Mouse.LeftMouseClick(screenPoint.X, screenPoint.Y);//click screen point
 
-            if (_timer.IsRunning)
+            if (Timer.IsRunning)
             {
                 ResetTimer();
             }
@@ -38,13 +38,13 @@ namespace L2RBot
 
         public void StartTimer()
         {
-            _timer.Start();
+            Timer.Start();
         }
 
         public void ResetTimer()
         {
-            _timer.Stop();
-            _timer.Reset();
+            Timer.Stop();
+            Timer.Reset();
         }
 
         public void UpdateScreen()

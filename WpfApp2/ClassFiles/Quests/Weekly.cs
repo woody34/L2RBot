@@ -10,9 +10,9 @@ namespace L2RBot
         QuestHelper Helper;
 
         //Pixel Objects
-        Pixel[] weeklyQuest = new Pixel[2];
+        Pixel[] weeklyQuest = new Pixel[4];
 
-        Pixel[] weeklyDone = new Pixel[2];
+        Pixel[] weeklyDone = new Pixel[4];
 
         Pixel[] completeQuest = new Pixel[2];
 
@@ -34,17 +34,37 @@ namespace L2RBot
                 Color = Color.FromArgb(255, 75, 154, 255),
                 Point = new Point(104, 309)
             };
+            weeklyQuest[2] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 154, 255),
+                Point = new Point(12, 282)
+            };
+            weeklyQuest[3] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 154, 255),
+                Point = new Point(103, 285)
+            };
 
-            //Done graphic for Weekly Quest on the quest pane      
+            //Done graphic for Weekly Quest on the quest pane. Due to main quest size variations upon completion I had to add a second set of pixels to detect    
             weeklyDone[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 186, 200, 229),
-                Point = new Point(235, 328)
+                Color = Color.FromArgb(255, 255, 255, 255),
+                Point = new Point(242, 329)
             };
             weeklyDone[1] = new Pixel//needs to NOT be present, used to prevent triggering the event if the whole screen goes this color
             {
-                Color = Color.FromArgb(255, 186, 200, 229),
+                Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(245, 329)
+            };
+            weeklyDone[2] = new Pixel
+            {
+                Color = Color.FromArgb(255, 255, 255, 255),
+                Point = new Point(242, 295)
+            };
+            weeklyDone[3] = new Pixel//needs to NOT be present, used to prevent triggering the event if the whole screen goes this color
+            {
+                Color = Color.FromArgb(255, 255, 255, 255),
+                Point = new Point(245, 295)
             };
 
             //All Weekly Quests complete
@@ -71,12 +91,25 @@ namespace L2RBot
             }
             if (!_IsWeeklyInProgress())
             {
-                Debug.WriteLine("IsWeeklyInProgress == true");
-                Click(weeklyQuest[0].Point);
+                for (int i = weeklyQuest.Length; i > 0; i--)
+                {
+                    if (weeklyQuest[i - 1].IsPresent(Screen, 2))
+                    {
+                        Click(weeklyQuest[i - 1].Point);
+                        i = 0;//stop once it is found
+                    }
+                }
             }
             if (_IsQuestDone())
             {
-                Click(weeklyQuest[0].Point);
+                for (int i = weeklyDone.Length; i > 0; i--)
+                {
+                    if (weeklyDone[i - 1].IsPresent(Screen, 2))
+                    {
+                        Click(weeklyDone[i - 1].Point);
+                        i = 0;//stop once it is found
+                    }
+                }
             }
             if (_IsComplete())
             {
@@ -97,6 +130,10 @@ namespace L2RBot
         {
             //if weeklyQuest pixels are detected this means the quest has NOT been started.
             return (weeklyQuest[0].IsPresent(Screen, 2) &&
+                    weeklyQuest[1].IsPresent(Screen, 2) &&
+                    Bot.IsCombatScreenUp(App) ||
+                    weeklyQuest[2].IsPresent(Screen, 2) &&
+                    weeklyQuest[3].IsPresent(Screen, 2) &&
                     Bot.IsCombatScreenUp(App)) ? false : true;
         }
 
@@ -104,6 +141,10 @@ namespace L2RBot
         {
             //if weeklyDone[0] is detected and weeklyDone[1] is not detected this means the quest HAS been completed
             return (weeklyDone[0].IsPresent(Screen, 10) &&
+                    !weeklyDone[1].IsPresent(Screen, 10) &&
+                    Bot.IsCombatScreenUp(App) ||
+                    weeklyDone[2].IsPresent(Screen, 10) &&
+                    !weeklyDone[3].IsPresent(Screen, 10) &&
                     Bot.IsCombatScreenUp(App)) ? true : false;
         }
 

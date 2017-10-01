@@ -174,6 +174,7 @@ namespace L2RBot
         {
             UpdateScreen();
             User32.SetForegroundWindow(App.MainWindowHandle);
+            Thread.Sleep(_SleepTime);
             if (_IsComplete())
             {
                 Complete = true;

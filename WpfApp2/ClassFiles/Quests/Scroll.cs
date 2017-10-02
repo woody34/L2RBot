@@ -11,7 +11,7 @@ namespace L2RBot
         QuestHelper Helper;
 
         //Pixel Objects
-        Pixel[] scrollQuest = new Pixel[2];
+        Pixel[] scrollQuest = new Pixel[4];
 
         Pixel[] questScroll = new Pixel[2];
 
@@ -40,6 +40,16 @@ namespace L2RBot
             {
                 Color = Color.FromArgb(255, 75, 208, 247),
                 Point = new Point(94, 363)
+            };
+            scrollQuest[2] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 208, 247),
+                Point = new Point(13, 335)
+            };
+            scrollQuest[3] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 208, 247),
+                Point = new Point(94, 335)
             };
 
             //Select Quest Scroll popup menu
@@ -91,7 +101,14 @@ namespace L2RBot
             }
             if (!_IsWeeklyInProgress())
             {
-                Click(scrollQuest[0].Point);
+                if (scrollQuest[0].IsPresent(Screen, 2))
+                {
+                    Click(scrollQuest[0].Point);
+                }
+                if (scrollQuest[2].IsPresent(Screen, 2))
+                {
+                    Click(scrollQuest[2].Point);
+                }
                 Thread.Sleep(100);
             }
             if (_IsQuestScrollPresent())
@@ -120,7 +137,11 @@ namespace L2RBot
             //if scrollQuest pixels are detected this means the quest has NOT been started.
             return (scrollQuest[0].IsPresent(Screen, 2) &&
                     scrollQuest[1].IsPresent(Screen, 2) &&
-                    Bot.IsCombatScreenUp(App)) ? false : true;
+                    Bot.IsCombatScreenUp(App) ||
+                    scrollQuest[2].IsPresent(Screen, 2) &&
+                    scrollQuest[3].IsPresent(Screen, 2) &&
+                    Bot.IsCombatScreenUp(App)
+                    ) ? false : true;
         }
 
         private bool _IsQuestScrollPresent()

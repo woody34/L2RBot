@@ -86,9 +86,11 @@
     <Compile Include="ClassFiles\Pixel.cs" />
     <Compile Include="ClassFiles\QuestHelper.cs" />
     <Compile Include="ClassFiles\Quests\DailyDungeon.cs" />
+    <Compile Include="ClassFiles\Quests\ExpDungeon.cs" />
     <Compile Include="ClassFiles\Quests\Main.cs" />
     <Compile Include="ClassFiles\Quests\Quest.cs" />
     <Compile Include="ClassFiles\Quests\Scroll.cs" />
+    <Compile Include="ClassFiles\Quests\TowerOfInsoloence.cs" />
     <Compile Include="ClassFiles\Quests\Weekly.cs" />
     <Compile Include="ClassFiles\Screen.cs" />
     <Compile Include="ClassFiles\User32.cs" />

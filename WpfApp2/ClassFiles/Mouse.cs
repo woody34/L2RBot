@@ -36,12 +36,29 @@ namespace L2RBot
         public const int MOUSEEVENTF_LEFTDOWN = 0x02;
         public const int MOUSEEVENTF_LEFTUP = 0x04;
 
-        //This simulates a left mouse click
+        /// <summary>
+        /// Simulates left mouse click
+        /// </summary>
+        /// <param name="xpos"></param>
+        /// <param name="ypos"></param>
         public static void LeftMouseClick(int xpos, int ypos)
         {
             SetCursorPos(xpos, ypos);
             mouse_event(MOUSEEVENTF_LEFTDOWN, xpos, ypos, 0, 0);
             mouse_event(MOUSEEVENTF_LEFTUP, xpos, ypos, 0, 0);
+
+        }
+        /// <summary>
+        /// Clicks at point Down and drags to Point Up
+        /// </summary>
+        /// <param name="Down">x,y locations of left mouse press</param>
+        /// <param name="Up">x,y locations of left mouse release</param>
+        public static void LeftMouseClickDrag(Point Down, Point Up)
+        {
+            SetCursorPos(Down.X, Down.Y);
+            mouse_event(MOUSEEVENTF_LEFTDOWN, Down.X, Down.X, 0, 0);
+            SetCursorPos(Up.X, Up.Y);
+            mouse_event(MOUSEEVENTF_LEFTUP, Up.X, Up.Y, 0, 0);
 
         }
 

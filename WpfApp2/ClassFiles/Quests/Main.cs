@@ -9,7 +9,7 @@ namespace L2RBot
     /// </summary>
     class Main : Quest
     {
-        
+
         private int _SleepTime = 1000; //global to store thread sleep time in ms
 
         private QuestHelper _Helper; //
@@ -84,7 +84,7 @@ namespace L2RBot
                 Point = new Point(691, 262)
             };
         }
-        
+
 
         /// <summary>
         /// Starts quest.
@@ -121,7 +121,7 @@ namespace L2RBot
         {
             if (Timer.ElapsedMilliseconds > IdleTimeInMs)
             {
-                
+
                 if (movePixel.IsPresent(Screen, 2))
                 {
                     movePixel.UpdateColor(Screen);

@@ -91,13 +91,13 @@ namespace L2RBot
             }
             if (!_IsWeeklyInProgress())
             {
-                for (int i = weeklyQuest.Length; i > 0; i--)
+                if (weeklyQuest[0].IsPresent(Screen, 2))
                 {
-                    if (weeklyQuest[i - 1].IsPresent(Screen, 2))
-                    {
-                        Click(weeklyQuest[i - 1].Point);
-                        i = 0;//stop once it is found
-                    }
+                    Click(weeklyQuest[0].Point);
+                }
+                if (weeklyQuest[2].IsPresent(Screen, 2))
+                {
+                    Click(weeklyQuest[2].Point);
                 }
             }
             if (_IsQuestDone())
@@ -130,10 +130,8 @@ namespace L2RBot
         {
             //if weeklyQuest pixels are detected this means the quest has NOT been started.
             return (weeklyQuest[0].IsPresent(Screen, 2) &&
-                    weeklyQuest[1].IsPresent(Screen, 2) &&
                     Bot.IsCombatScreenUp(App) ||
                     weeklyQuest[2].IsPresent(Screen, 2) &&
-                    weeklyQuest[3].IsPresent(Screen, 2) &&
                     Bot.IsCombatScreenUp(App)) ? false : true;
         }
 

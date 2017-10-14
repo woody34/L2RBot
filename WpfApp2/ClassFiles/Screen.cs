@@ -11,11 +11,13 @@ namespace L2RBot
 {
     class Screen
     {
+        //Adjust for different android emulators//
+        public static int topBoarder = 30;      //
+        public static int bottomBorder = 2;     //
+        public static int leftBorder = 2;       //
+        public static int rightBorder = 2;      //
+        //////////////////////////////////////////
 
-        public static int topBoarder = 30;
-        public static int bottomBorder = 2;
-        public static int leftBorder = 2;
-        public static int rightBorder = 2;
         public static int borderWidth = leftBorder + rightBorder;
         public static int borderHeight = topBoarder + bottomBorder;
         /// <summary>

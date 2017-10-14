@@ -91,7 +91,7 @@
     <Compile Include="ClassFiles\Quests\Quest.cs" />
     <Compile Include="ClassFiles\Quests\Scroll.cs" />
     <Compile Include="ClassFiles\Quests\TowerOfInsoloence.cs" />
-    <Compile Include="ClassFiles\Quests\Weekly.cs" />
+    <Compile Include="ClassFiles\Quests\sdwasdw.cs" />
     <Compile Include="ClassFiles\Screen.cs" />
     <Compile Include="ClassFiles\User32.cs" />
     <Compile Include="MainWindow.xaml.cs">

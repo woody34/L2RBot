@@ -94,6 +94,7 @@ namespace L2RBot
                 if (weeklyQuest[0].IsPresent(Screen, 2))
                 {
                     Click(weeklyQuest[0].Point);
+                    Debug.WriteLine("0 click");
                 }
                 if (weeklyQuest[2].IsPresent(Screen, 2))
                 {
@@ -130,8 +131,10 @@ namespace L2RBot
         {
             //if weeklyQuest pixels are detected this means the quest has NOT been started.
             return (weeklyQuest[0].IsPresent(Screen, 2) &&
+                    weeklyQuest[1].IsPresent(Screen, 2) &&
                     Bot.IsCombatScreenUp(App) ||
                     weeklyQuest[2].IsPresent(Screen, 2) &&
+                    weeklyQuest[3].IsPresent(Screen, 2) &&
                     Bot.IsCombatScreenUp(App)) ? false : true;
         }
 

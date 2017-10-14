@@ -365,13 +365,15 @@ namespace L2RBot
 
         public static Process[] BindNoxPlayer()
         {
+            String emulator = "Nox";
+
             Process[] noxPlayers;
             Process[] WindowsProcesses = Process.GetProcesses();
             int i = 0;
 
             foreach (Process pro in WindowsProcesses)
             { 
-                if ( "Nox".Equals(pro.ProcessName) || "NoxPlayer1".Equals(pro.ProcessName))
+                if ( emulator.Equals(pro.ProcessName))
                 {
                     i++;
                 }
@@ -380,7 +382,7 @@ namespace L2RBot
             i = 0;
             foreach (Process pro in WindowsProcesses)
             {
-                if ("Nox".Equals(pro.ProcessName) || "NoxPlayer1".Equals(pro.ProcessName))
+                if (emulator.Equals(pro.ProcessName))
                 {
                     noxPlayers[i] = Process.GetProcessById(pro.Id);
                     MainWindow.main.UpdateLog = pro.MainWindowTitle + " detected!";

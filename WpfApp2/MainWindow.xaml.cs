@@ -23,7 +23,7 @@ namespace L2RBot
         internal string UpdateLog
         {
             get { return txtLog.Text.ToString(); }
-            set { Dispatcher.Invoke(new Action(() => { txtLog.Text += Environment.NewLine + value; })); }
+            set { Dispatcher.Invoke(new Action(() => { txtLog.Text = value +Environment.NewLine + txtLog.Text; })); }
             //usage
             //MainWindow.main.UpdateLog = "string data here";
         }

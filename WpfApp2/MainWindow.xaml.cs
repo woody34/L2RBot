@@ -129,12 +129,11 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
-                    //need to present users with an option for item slot
-                    //if (bots[ind].ScollItemNumber == 0)
-                    //{
-                    //    bots[ind].ScollItemNumber = InputBox();
-                    //}
-                    bots[ind].Start();
+                    
+                    if(bots[ind].Complete == false)
+                    {
+                        bots[ind].Start();
+                    }
                 }
             }
         }
@@ -142,7 +141,7 @@ namespace L2RBot
         private void btnScroll_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1400, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(ScrollBot);
             t.Start();
         }
@@ -304,7 +303,7 @@ namespace L2RBot
         {
             btnProcessGrab.IsEnabled = false;
             listProcessList.Items.Clear();
-            Process[] NoxPlayers = Bot.BindNoxPlayer();
+            Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
             if (NoxPlayers == null)//value check
             {
 

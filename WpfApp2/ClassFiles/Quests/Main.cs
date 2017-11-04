@@ -10,9 +10,9 @@ namespace L2RBot
     class Main : Quest
     {
 
-        private int _SleepTime = 1000; //global to store thread sleep time in ms
+        private int _sleepTime = 1000; //global to store thread sleep time in ms
 
-        private QuestHelper _Helper; //
+        private QuestHelper _helper; //
 
         //Pixel objects
         private Pixel mainQuest; //used for mainQuest clicking
@@ -36,7 +36,7 @@ namespace L2RBot
 
             IdleTimeInMs = 30000;
 
-            _Helper = new QuestHelper(App) { Quest = QuestType.Main };
+            _helper = new QuestHelper(App) { Quest = QuestType.Main };
 
             //Pixel objects
             //used to click main quest
@@ -93,13 +93,13 @@ namespace L2RBot
         {
             UpdateScreen();
             User32.SetForegroundWindow(App.MainWindowHandle);
-            System.Threading.Thread.Sleep(_SleepTime);
+            System.Threading.Thread.Sleep(_sleepTime);
 
             InitClick();
             QuestDone();
             QuestBubble();
             IdleCheck();
-            _Helper.Start();
+            _helper.Start();
 
         }
 

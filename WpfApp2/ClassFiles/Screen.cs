@@ -119,7 +119,7 @@ namespace L2RBot
             Point point = PointToScreenPoint(rect, X, Y);
             int x = point.X;
             int y = point.Y;
-            //Debug.WriteLine("GetColor");
+
             IntPtr desk = User32.GetDesktopWindow();
             IntPtr dc = User32.GetWindowDC(desk);
             int a = (int)User32.GetPixel(dc, x, y);
@@ -198,7 +198,6 @@ namespace L2RBot
             return ret;
 
         }
-        //eleminated the Percentage for now until i get it working
         public static Color[,] GetColorArray(Rectangle rect, int X, int Y, int Width, int Height)
         {
             Color[,] colorArray = new Color[Width,Height];

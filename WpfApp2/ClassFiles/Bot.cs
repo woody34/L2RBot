@@ -9,11 +9,6 @@ namespace L2RBot
 {
     class Bot
     {
-        public bool MainQuestFinished = false;
-        public bool WeeklyQuestFinished = false;
-        public bool ScrollQuestFinished = false;
-
-        public int ScollItemNumber { get; set; } = 0;
 
         /// <summary>
         /// opens Nox Player
@@ -363,9 +358,9 @@ namespace L2RBot
             return true;
         }
 
-        public static Process[] BindNoxPlayer()
+        public static Process[] GetOpenProcess(string ProcName)
         {
-            String emulator = "Nox";
+            String emulator = ProcName;
 
             Process[] noxPlayers;
             Process[] WindowsProcesses = Process.GetProcesses();

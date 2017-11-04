@@ -27,10 +27,10 @@ namespace L2RBot
             PostMessage(hWnd, (uint)WindowMessages.WM_LBUTTONUP, 0, lParam);
             return true;
         }
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         static extern bool SetCursorPos(int x, int y);
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
 
         public const int MOUSEEVENTF_LEFTDOWN = 0x02;

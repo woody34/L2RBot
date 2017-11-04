@@ -6,7 +6,7 @@ namespace L2RBot
     /// <summary>
     /// Used to perform and assist in completion of Lineage 2 Revolution quests. QuestHelper performs repetative tasks that are similar over all QuestTypes
     /// </summary>
-    class QuestHelper
+    public class QuestHelper
     {
         private Process app; //game process object(nox player)
         private Rectangle screen; //game window screen object(nox players screen location and demensions)
@@ -14,6 +14,7 @@ namespace L2RBot
 
         //Pixel objects
         private Pixel[] btnSkipDialog;
+        private Pixel[] btnSkipCutScene;
         private Pixel[] btnAcceptQuest;
         private Pixel[] btnClaimReward;
         private Pixel[] btnContinue;
@@ -53,6 +54,19 @@ namespace L2RBot
             {
                 Color = Color.FromArgb(255, 0, 0, 0),
                 Point = new Point(1243, 594)
+            };
+
+            //SkipQuestDialog button
+            btnSkipCutScene = new Pixel[2];
+            btnSkipCutScene[0] = new Pixel
+            {
+                Color = Color.FromArgb(255, 232, 232, 232),
+                Point = new Point(1137, 46)
+            };
+            btnSkipDialog[1] = new Pixel
+            {
+                Color = Color.FromArgb(255, 255, 255, 255),
+                Point = new Point(1149, 10)
             };
 
             //AcceptQuest button
@@ -207,6 +221,7 @@ namespace L2RBot
         public void Start()
         {
             SkipQuestDialog();
+            SkipCutScene();
             AcceptQuest();
             ClaimReward();
             Continue();
@@ -220,7 +235,6 @@ namespace L2RBot
         }
 
         //common quest actions
-
         /// <summary>
         /// Detects and Click() the Skip dialog box that appears while questing.
         /// </summary>
@@ -229,6 +243,17 @@ namespace L2RBot
             if (btnSkipDialog[0].IsPresent(screen, 2) && btnSkipDialog[1].IsPresent(screen, 2))
             {
                 Click(btnSkipDialog[0].Point);
+            }
+        }
+
+        /// <summary>
+        /// Detects and Click() the Skip cutscene box that appears while questing.
+        /// </summary>
+        private void SkipCutScene()
+        {
+            if (btnSkipCutScene[0].IsPresent(screen, 2) && !btnSkipCutScene[1].IsPresent(screen, 2))
+            {
+                Click(btnSkipCutScene[0].Point);
             }
         }
 
@@ -302,7 +327,6 @@ namespace L2RBot
         }
 
         //weekly quest actions that apply to other quest types as well
-
         /// <summary>
         /// Detects and calls Click() at the Quest Complete button.
         /// </summary>
@@ -340,7 +364,7 @@ namespace L2RBot
         }
 
         /// <summary>
-        /// Detects and calls Click() at the Walk button that presents itself after you press Go Now on the Weekly Quest, when the Quest is located far away(ammong other times)
+        /// Detects and calls Click() at the Walk button that presents itself after you press Go Now on the Weekly Quest, when the Quest is located far away(ammong other times).
         /// </summary>
         private void Walk()
         {
@@ -350,10 +374,10 @@ namespace L2RBot
                 System.Threading.Thread.Sleep(100);
             }
         }
-        //scroll quest actions that apply to other quest types
-
+        
+        //scroll quest actions that apply to other quest types.
         /// <summary>
-        /// Detects and calls Click at the Start Quest button during a Scroll Quest. The graphics have small variations
+        /// Detects and calls Click at the Start Quest button during a Scroll Quest. The graphics have small variations.
         /// </summary>
         private void SubQuestStart()
         {
@@ -366,13 +390,14 @@ namespace L2RBot
     }
 
     /// <summary>
-    /// an Enumeration for QuestHelper objects to enable extra functionality depending on which type of quest's it is being called by. 
+    /// An enumeration for QuestHelper objects to enable extra functionality depending on which type of quest's it is being called by. 
     /// </summary>
     public enum QuestType
     {
         Main,
         Weekly,
         Scroll,
-        Dungeon
+        Dungeon,
+        AltarOfMadness
     }
 }

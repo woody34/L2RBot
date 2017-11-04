@@ -11,7 +11,7 @@ namespace L2RBot
         QuestHelper Helper;
 
         //Pixel Objects
-        Pixel[] scrollQuest = new Pixel[4];
+        Pixel[] scrollQuest = new Pixel[6];
 
         Pixel[] questScroll = new Pixel[2];
 
@@ -51,6 +51,17 @@ namespace L2RBot
                 Color = Color.FromArgb(255, 75, 208, 247),
                 Point = new Point(94, 335)
             };
+            scrollQuest[4] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 208, 247),
+                Point = new Point(16, 413)
+            };
+            scrollQuest[5] = new Pixel
+            {
+                Color = Color.FromArgb(255, 75, 208, 247),
+                Point = new Point(95, 411)
+            };
+
 
             //Select Quest Scroll popup menu
             questScroll[0] = new Pixel
@@ -95,17 +106,21 @@ namespace L2RBot
             UpdateScreen();
             User32.SetForegroundWindow(App.MainWindowHandle);
             //looks to see if the quest has been started
-            if (_IsWeeklyInProgress())
+            if (_IsScrollInProgress())
             {
                 Helper.Start();
             }
-            if (!_IsWeeklyInProgress())
+            if (!_IsScrollInProgress())
             {
                 if (scrollQuest[0].IsPresent(Screen, 2))
                 {
                     Click(scrollQuest[0].Point);
                 }
                 if (scrollQuest[2].IsPresent(Screen, 2))
+                {
+                    Click(scrollQuest[2].Point);
+                }
+                if (scrollQuest[4].IsPresent(Screen, 2))
                 {
                     Click(scrollQuest[2].Point);
                 }
@@ -132,7 +147,7 @@ namespace L2RBot
             }
         }
 
-        private bool _IsWeeklyInProgress()
+        private bool _IsScrollInProgress()
         {
             //if scrollQuest pixels are detected this means the quest has NOT been started.
             return (scrollQuest[0].IsPresent(Screen, 2) &&

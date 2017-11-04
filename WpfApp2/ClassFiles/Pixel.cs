@@ -2,7 +2,7 @@
 
 namespace L2RBot
 {
-    class Pixel
+    public class Pixel
     {
         public Color Color { get; set; }
 

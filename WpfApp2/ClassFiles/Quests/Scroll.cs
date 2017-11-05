@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
+using L2RBot.Common.Enum;
 
 namespace L2RBot
 {

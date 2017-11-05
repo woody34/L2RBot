@@ -266,6 +266,38 @@ namespace L2RBot
             }
         }
 
+        private void btnAoM_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(AoMBot);
+            t.Start();
+        }
+        public void AoMBot()
+        {
+            AltarOfMadness[] bots = new AltarOfMadness[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new AltarOfMadness(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].Start();
+                }
+            }
+        }
+
         public void DisableButtons()
         {
             //disable buttons after clicking to prevent multithread issues
@@ -275,6 +307,7 @@ namespace L2RBot
             btnDaily.IsEnabled = false;
             btnTower.IsEnabled = false;
             btnExp.IsEnabled = false;
+            btnAoM.IsEnabled = false;
 
             btnProcessGrab.IsEnabled = false;
 
@@ -291,6 +324,7 @@ namespace L2RBot
             btnDaily.IsEnabled = true;
             btnTower.IsEnabled = true;
             btnExp.IsEnabled = true;
+            btnAoM.IsEnabled = true;
 
             btnProcessGrab.IsEnabled = false;
 

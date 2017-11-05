@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using L2RBot.Common.Enum;
 
 namespace L2RBot
 {

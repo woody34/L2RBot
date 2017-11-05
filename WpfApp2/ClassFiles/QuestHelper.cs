@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
+using L2RBot.Common.Enum;
 
 namespace L2RBot
 {
@@ -57,16 +58,21 @@ namespace L2RBot
             };
 
             //SkipQuestDialog button
-            btnSkipCutScene = new Pixel[2];
+            btnSkipCutScene = new Pixel[3];
             btnSkipCutScene[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 232, 232, 232),
                 Point = new Point(1137, 46)
             };
-            btnSkipDialog[1] = new Pixel
+            btnSkipCutScene[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
+                Color = Color.White,
                 Point = new Point(1149, 10)
+            };
+            btnSkipCutScene[2] = new Pixel
+            {
+                Color = Color.FromArgb(255, 232, 232, 232),
+                Point = new Point(39, 16)
             };
 
             //AcceptQuest button
@@ -251,7 +257,7 @@ namespace L2RBot
         /// </summary>
         private void SkipCutScene()
         {
-            if (btnSkipCutScene[0].IsPresent(screen, 2) && !btnSkipCutScene[1].IsPresent(screen, 2))
+            if (btnSkipCutScene[0].IsPresent(screen, 2) && !btnSkipCutScene[1].IsPresent(screen, 2) && !btnSkipCutScene[2].IsPresent(screen, 2))
             {
                 Click(btnSkipCutScene[0].Point);
             }
@@ -306,7 +312,7 @@ namespace L2RBot
         /// </summary>
         private void SkipTutorial()
         {
-            if (!Quest.Equals(QuestType.Weekly))//This is to quickly resolve an issue caused during the weekly quest
+            if (!Quest.Equals(QuestType.Weekly) && !Quest.Equals(QuestType.AltarOfMadness))//This is to quickly resolve an issue caused during the weekly quest
             {
                 if (btnSkipTutorial[0].IsPresent(screen, 2) & !btnSkipTutorial[1].IsPresent(screen, 2) & btnSkipTutorial[2].IsPresent(screen, 2))
                 {
@@ -320,7 +326,7 @@ namespace L2RBot
         /// </summary>
         private void SkipTutorialOK()
         {
-            if (btnSkipOk[0].IsPresent(screen, 2) & btnSkipOk[1].IsPresent(screen, 2))
+            if (btnSkipOk[0].IsPresent(screen, 2) & btnSkipOk[1].IsPresent(screen, 2) && !Quest.Equals(QuestType.AltarOfMadness))
             {
                 Click(btnSkipOk[0].Point);
             }
@@ -387,17 +393,5 @@ namespace L2RBot
             }
         }
 
-    }
-
-    /// <summary>
-    /// An enumeration for QuestHelper objects to enable extra functionality depending on which type of quest's it is being called by. 
-    /// </summary>
-    public enum QuestType
-    {
-        Main,
-        Weekly,
-        Scroll,
-        Dungeon,
-        AltarOfMadness
     }
 }

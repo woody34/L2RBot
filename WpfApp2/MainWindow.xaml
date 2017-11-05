@@ -39,6 +39,7 @@
                         <Button Name="btnDaily" IsEnabled="False" Click="btnDaily_Click">Daily Dungeon</Button>
                         <Button Name="btnTower" IsEnabled="False" Click="btnTOI_Click">Tower of Insolence</Button>
                         <Button Name="btnExp" IsEnabled="False" Click="btnExp_Click">Exp Dungeon</Button>
+                        <Button Name="btnAoM" IsEnabled="False" Click="btnAoM_Click">Alter of Madness</Button>
                         <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox</Button>
                         <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>
                     </StackPanel>

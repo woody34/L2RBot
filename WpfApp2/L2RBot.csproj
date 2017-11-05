@@ -81,7 +81,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ClassFiles\Bot.cs" />
-    <Compile Include="ClassFiles\Log.cs" />
+    <Compile Include="Common\Enum\Difficulty.cs" />
+    <Compile Include="Common\Enum\QuestType.cs" />
+    <Compile Include="Common\Menus.cs" />
     <Compile Include="ClassFiles\Mouse.cs" />
     <Compile Include="ClassFiles\Pixel.cs" />
     <Compile Include="ClassFiles\QuestHelper.cs" />
@@ -140,7 +142,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Common\Enum\" />
     <Folder Include="_bin\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

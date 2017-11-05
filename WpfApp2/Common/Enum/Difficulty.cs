@@ -4,9 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WpfApp2.ClassFiles
+namespace L2RBot.Common.Enum
 {
-    class Log
+    public enum Difficulty
     {
+        VeryEasy,
+        Easy,
+        Normal,
+        Hard,
+        VeryHard
     }
 }

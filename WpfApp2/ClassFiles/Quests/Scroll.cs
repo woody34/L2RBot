@@ -42,7 +42,7 @@ namespace L2RBot
         public Scroll(Process APP) : base(APP)
         {
             App = APP;
-            User32.SetForegroundWindow(App.MainWindowHandle);
+            
             Helper = new QuestHelper(base.App) { Quest = QuestType.Weekly };
 
             BuildPixels();
@@ -120,6 +120,7 @@ namespace L2RBot
                 Point = new Point(753, 496)
             };
 
+            User32.SetForegroundWindow(App.MainWindowHandle);
             _scrollQuest = L2RBot.Screen.SearchPixelVerticalStride(Screen, new Point(16, 210), 211, Colors.ScrollQuest, 2);
         }
 
@@ -127,7 +128,7 @@ namespace L2RBot
         public void Start()
         {
             UpdateScreen();
-            MainWindow.main.UpdateLog = App.MainWindowHandle.ToString();
+            User32.SetForegroundWindow(App.MainWindowHandle);
             Thread.Sleep(200);
             //looks to see if the quest has been started
             if (_IsQuestAvailable())

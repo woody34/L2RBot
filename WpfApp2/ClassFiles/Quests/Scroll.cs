@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using L2RBot.Common.Enum;
+using L2RBot.Common;
 
 namespace L2RBot
 {
@@ -11,7 +12,9 @@ namespace L2RBot
         //Globals
         QuestHelper Helper;
 
-        //Pixel Objects
+        Pixel _scrollQuest;
+
+        //Properties
         Pixel[] scrollQuest = new Pixel[6];
 
         Pixel[] questScroll = new Pixel[2];
@@ -20,16 +23,33 @@ namespace L2RBot
 
         Pixel[] ProceedOk = new Pixel[2];
 
-
-        //Point Objects
         Point scrollOne = new Point(425, 240);
 
+        Pixel ScrollQuest
+        {
+            get
+            {
+                if (_scrollQuest == null)
+                {
+                    _scrollQuest = new Pixel();
+                }
+                return _scrollQuest;
+            }
+        }
+
+
+        //Constructors
         public Scroll(Process APP) : base(APP)
         {
             App = APP;
-            //Globals
-            Helper = new QuestHelper(App) { Quest = QuestType.Weekly };
+            User32.SetForegroundWindow(App.MainWindowHandle);
+            Helper = new QuestHelper(base.App) { Quest = QuestType.Weekly };
 
+            BuildPixels();
+        }
+
+        private void BuildPixels()
+        {
             //Pixel Objects
             //Scroll Quest on the quest pane
             scrollQuest[0] = new Pixel
@@ -80,12 +100,12 @@ namespace L2RBot
             fulfillRequest[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(715, 608)
+                Point = new Point(721, 598)
             };
             fulfillRequest[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 39, 79, 118),
-                Point = new Point(711, 609)
+                Color = Colors.CompleteOk,//reusing color
+                Point = new Point(777, 583)
             };
 
             //Proceed Ok button after Fulfill Request is pressed
@@ -100,32 +120,25 @@ namespace L2RBot
                 Point = new Point(753, 496)
             };
 
+            _scrollQuest = L2RBot.Screen.SearchPixelVerticalStride(Screen, new Point(16, 210), 211, Colors.ScrollQuest, 2);
         }
 
+        //Logic    
         public void Start()
         {
             UpdateScreen();
-            User32.SetForegroundWindow(App.MainWindowHandle);
+            MainWindow.main.UpdateLog = App.MainWindowHandle.ToString();
+            Thread.Sleep(200);
             //looks to see if the quest has been started
-            if (_IsScrollInProgress())
+            if (_IsQuestAvailable())
+            {
+                Click(_scrollQuest.Point);
+
+                Thread.Sleep(100);
+            }
+            if (!_IsQuestAvailable())
             {
                 Helper.Start();
-            }
-            if (!_IsScrollInProgress())
-            {
-                if (scrollQuest[0].IsPresent(Screen, 2))
-                {
-                    Click(scrollQuest[0].Point);
-                }
-                if (scrollQuest[2].IsPresent(Screen, 2))
-                {
-                    Click(scrollQuest[2].Point);
-                }
-                if (scrollQuest[4].IsPresent(Screen, 2))
-                {
-                    Click(scrollQuest[2].Point);
-                }
-                Thread.Sleep(100);
             }
             if (_IsQuestScrollPresent())
             {
@@ -144,20 +157,23 @@ namespace L2RBot
             }
             else
             {
-                Bot.PopUpKiller(App);
+                //Bot.PopUpKiller(App);
             }
         }
 
-        private bool _IsScrollInProgress()
+        private bool _IsQuestAvailable()
         {
+            _scrollQuest.UpdateColor(Screen);
             //if scrollQuest pixels are detected this means the quest has NOT been started.
-            return (scrollQuest[0].IsPresent(Screen, 2) &&
-                    scrollQuest[1].IsPresent(Screen, 2) &&
-                    Bot.IsCombatScreenUp(App) ||
-                    scrollQuest[2].IsPresent(Screen, 2) &&
-                    scrollQuest[3].IsPresent(Screen, 2) &&
-                    Bot.IsCombatScreenUp(App)
-                    ) ? false : true;
+            return (L2RBot.Screen.CompareColor(_scrollQuest.Color, Colors.ScrollQuest, 2)) ? true : false;
+
+            //return (scrollQuest[0].IsPresent(Screen, 2) &&
+            //        scrollQuest[1].IsPresent(Screen, 2) &&
+            //        Bot.IsCombatScreenUp(App) ||
+            //        scrollQuest[2].IsPresent(Screen, 2) &&
+            //        scrollQuest[3].IsPresent(Screen, 2) &&
+            //        Bot.IsCombatScreenUp(App)
+            //        ) ? false : true;
         }
 
         private bool _IsQuestScrollPresent()

@@ -16,17 +16,17 @@ namespace L2RBot
         {
             return ((ptr.Y << 16) | (ptr.X & 0xffff));
         }
-
-
         public static bool LeftClick(Point clickPoint, Process proc)
         {
             IntPtr hWnd = proc.MainWindowHandle;
             SetFocus(hWnd);
             int lParam = MakeLParam(clickPoint);
-            PostMessage(hWnd, (uint)WindowMessages.WM_LBUTTONDOWN, (int)MouseKeyboard.MK_LBUTTON, lParam);
-            PostMessage(hWnd, (uint)WindowMessages.WM_LBUTTONUP, 0, lParam);
+            PostMessage(hWnd, (uint) WindowMessages.WM_LBUTTONDOWN, (int) MouseKeyboard.MK_LBUTTON, lParam);
+            PostMessage(hWnd, (uint) WindowMessages.WM_LBUTTONUP, 0, lParam);
             return true;
         }
+
+
         [DllImport("user32.dll")]
         static extern bool SetCursorPos(int x, int y);
 
@@ -140,7 +140,7 @@ namespace L2RBot
             GW_ENABLEDPOPUP = 6
         }
 
-        [Flags]
+        //[Flags]
         enum MouseKeyboard : uint
         {
             MK_LBUTTON = 0x0001,

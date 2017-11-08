@@ -144,7 +144,7 @@ namespace L2RBot
             {
                 Click(mainQuest.Point);
             }
-            Bot.PopUpKiller(App);
+            //Bot.PopUpKiller(App);
         }
 
         /// <summary>

@@ -269,112 +269,6 @@ namespace L2RBot
 
         //logic
         /// <summary>
-        /// Starts the Alter of Madness Quest logic
-        /// </summary>
-        public void Start()
-        {
-            UpdateScreen(); //updates Screen object for parent class with latest window size and x,y location.
-
-            User32.SetForegroundWindow(App.MainWindowHandle);//brings window to front.
-            Thread.Sleep(TimeSpan.FromSeconds(.5));
-
-            if (_finished == true && _riftMenuOpen == false)
-            {
-                if (Bot.IsCombatScreenUp(App))
-                {
-                    OpenRiftMenu();
-                }
-
-            }
-
-            if(_finished == true && _riftMenuOpen == true)
-            {
-                EnterDungeon();
-            }
-
-            if (Bot.IsCombatScreenUp(App) && _startQuest == false && _finished == false) //look for combat screen start Quest once it is detected
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-                if (IsRechargeUp())
-                {
-                    Click(CloseRechargeWindow[0].Point);//closes recharge window if its present
-                    Thread.Sleep(TimeSpan.FromSeconds(.1));
-                }
-                _startQuest = true;
-                Click(new Point(128, 370)); // clicks the quest go button
-                MapPoint.UpdateColor(Screen);
-            }
-            if (Bot.IsCombatScreenUp(App) && _startQuest == true && _finished == false)
-            {
-                if (TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds) > TimeSpan.FromSeconds(15))
-                {
-                    
-                    //checks if there has been any map movement in the last 15 seconds
-                    if (MapPoint.IsPresent(Screen, 0))
-                    {
-                        //resets quest status by clicking on the auto combat button 3 times 
-                        //then changes _startQuest to false so i will start the quest again. 
-                        Click(new Point(876, 684));
-                        Thread.Sleep(TimeSpan.FromSeconds(.1));
-                        Click(new Point(876, 684));
-                        Thread.Sleep(TimeSpan.FromSeconds(.1));
-                        Click(new Point(876, 684));
-                        Thread.Sleep(TimeSpan.FromSeconds(.1));
-                        _startQuest = false;
-                    }
-                    MapPoint.UpdateColor(Screen);
-                }
-
-            }
-                if (NeedRevived())
-            {
-                Click(SpotRevive[0].Point);
-                _startQuest = false;
-            }
-            if (IsGadgetUp())
-            {
-                Click(CloseGadgetWindow[0].Point);
-                Thread.Sleep(TimeSpan.FromSeconds(.1));
-            }
-            if (IsRechargeUp())
-            {
-                Click(CloseRechargeWindow[0].Point);//closes recharge window if its present
-                Thread.Sleep(TimeSpan.FromSeconds(.1));
-            }
-            if (PartyAccept[0].IsPresent(Screen, 2) && PartyAccept[1].IsPresent(Screen, 2))
-            {
-                Click(PartyAccept[0].Point);
-                Thread.Sleep(TimeSpan.FromSeconds(.1));
-            }
-            if (IsFinished())
-            {
-                DoAgain();
-            }
-            Helper.Start();
-
-        }
-
-        private bool NeedRevived()
-        {
-            if (SpotRevive[0].IsPresent(Screen, 2) && SpotRevive[1].IsPresent(Screen, 2))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Wraps up the quest and prepares to start it again.
-        /// </summary>
-        private void DoAgain()
-        {
-            _finished = true;
-            _startQuest = false;
-            _riftMenuOpen = false;
-            Click(CompleteOk[0].Point);
-        }
-
-        /// <summary>
         /// initializes the valies of the pixel objects
         /// </summary>
         private void BuildPixels()
@@ -384,16 +278,19 @@ namespace L2RBot
                 Color = Color.White,
                 Point = new Point(1064, 417)
             };
+
             SpotRevive[1] = new Pixel
             {
                 Color = Colors.SpotReviveBtn,
                 Point = new Point(1088, 407)
             };
+
             CompleteOk[0] = new Pixel
             {
                 Color = Colors.OffWhite,
                 Point = new Point(955, 631)
             };
+
             CompleteOk[1] = new Pixel
             {
                 Color = Colors.CompleteOk,
@@ -429,11 +326,13 @@ namespace L2RBot
                 Color = Colors.CompleteOk,
                 Point = new Point(632, 462)
             };
+
             PartyAccept[0] = new Pixel
             {
                 Color = Colors.White,
                 Point = new Point(897, 45)
             };
+
             PartyAccept[1] = new Pixel
             {
                 Color = Colors.CompleteOk,
@@ -448,7 +347,7 @@ namespace L2RBot
 
             PartyLeader[1] = new Pixel
             {
-                Color = Color.FromArgb(91,189,252),
+                Color = Color.FromArgb(91, 189, 252),
                 Point = new Point(12, 10)
             };
 
@@ -471,6 +370,113 @@ namespace L2RBot
             };
 
         }
+
+        /// <summary>
+        /// Starts the Alter of Madness Quest logic
+        /// </summary>
+        public void Start()
+        {
+            UpdateScreen(); //updates Screen object for parent class with latest window size and x,y location.
+
+            User32.SetForegroundWindow(App.MainWindowHandle);//brings window to front.
+            Thread.Sleep(TimeSpan.FromSeconds(.5));
+
+            if (_finished == true && _riftMenuOpen == false)
+            {
+                if (Bot.IsCombatScreenUp(App))
+                {
+                    OpenRiftMenu();
+                }
+
+            }
+
+            if (_finished == true && _riftMenuOpen == true)
+            {
+                EnterDungeon();
+            }
+
+            if (Bot.IsCombatScreenUp(App) && _startQuest == false && _finished == false) //look for combat screen, starts Quest once it is detected.
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+                if (IsRechargeUp())//added it here because of timing issues
+                {
+                    Click(_closeRechargeWindow[0].Point);//closes recharge window if its present.
+                    Thread.Sleep(TimeSpan.FromSeconds(.1));
+                }
+                _startQuest = true;
+                Click(new Point(128, 370)); // clicks the quest go button
+                _mapPoint.UpdateColor(Screen);
+            }
+
+            if (Bot.IsCombatScreenUp(App) && _startQuest == true && _finished == false)
+            {
+                if (TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds) > TimeSpan.FromSeconds(15))
+                {
+                    //checks if there has been any map movement in the last 15 seconds
+                    if (_mapPoint.IsPresent(Screen, 0))
+                    {
+                        //resets quest status by clicking on the auto combat button 3 times 
+                        //then changes _startQuest to false so i will start the quest again. 
+                        Click(new Point(876, 684));
+                        Thread.Sleep(TimeSpan.FromSeconds(.1));
+                        Click(new Point(876, 684));
+                        Thread.Sleep(TimeSpan.FromSeconds(.1));
+                        Click(new Point(876, 684));
+                        Thread.Sleep(TimeSpan.FromSeconds(.1));
+                        _startQuest = false;
+                    }
+                    _mapPoint.UpdateColor(Screen);
+                }
+            }
+            if (NeedRevived())
+            {
+                Click(SpotRevive[0].Point);
+                _startQuest = false;
+            }
+            if (IsGadgetUp())
+            {
+                Click(_closeGadgetWindow[0].Point);
+                Thread.Sleep(TimeSpan.FromSeconds(.1));
+            }
+            if (IsRechargeUp())
+            {
+                Click(_closeRechargeWindow[0].Point);//closes recharge window if its present
+                Thread.Sleep(TimeSpan.FromSeconds(.1));
+            }
+            if (_partyAccept[0].IsPresent(Screen, 2) && _partyAccept[1].IsPresent(Screen, 2))
+            {
+                Click(PartyAccept[0].Point);
+                Thread.Sleep(TimeSpan.FromSeconds(.1));
+            }
+            if (IsFinished())
+            {
+                DoAgain();
+            }
+            Helper.Start();
+
+        }
+
+        private bool NeedRevived()
+        {
+            if (_btnSpotRevive[0].IsPresent(Screen, 2) && _btnSpotRevive[1].IsPresent(Screen, 2))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Wraps up the quest and prepares to start it again.
+        /// </summary>
+        private void DoAgain()
+        {
+            _finished = true;
+            _startQuest = false;
+            _riftMenuOpen = false;
+            Click(_completeOk[0].Point);
+        }
+
+
 
         /// <summary>
         /// clicks all buttons to navigate to the Alter of madness temporal rift.

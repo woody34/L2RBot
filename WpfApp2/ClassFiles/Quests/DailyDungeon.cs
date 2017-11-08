@@ -210,7 +210,7 @@ namespace L2RBot
             }
             else
             {
-                Bot.PopUpKiller(App);
+                //Bot.PopUpKiller(App);
             }
         }
 

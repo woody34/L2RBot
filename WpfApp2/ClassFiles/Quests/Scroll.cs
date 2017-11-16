@@ -10,14 +10,15 @@ namespace L2RBot
     class Scroll : Quest
     {
         //Globals
-        QuestHelper Helper;
+        private QuestHelper Helper;
 
-        Pixel _scrollQuest;
+        private Pixel _scrollQuest;
+
+        private bool _isQuestFound;
+
+        private Pixel[] _questScroll = new Pixel[2];
 
         //Properties
-        Pixel[] scrollQuest = new Pixel[6];
-
-        Pixel[] questScroll = new Pixel[2];
 
         Pixel[] fulfillRequest = new Pixel[2];
 
@@ -37,12 +38,11 @@ namespace L2RBot
             }
         }
 
-
         //Constructors
         public Scroll(Process APP) : base(APP)
         {
             App = APP;
-            
+
             Helper = new QuestHelper(base.App) { Quest = QuestType.Weekly };
 
             BuildPixels();
@@ -51,50 +51,21 @@ namespace L2RBot
         private void BuildPixels()
         {
             //Pixel Objects
-            //Scroll Quest on the quest pane
-            scrollQuest[0] = new Pixel
-            {
-                Color = Color.FromArgb(255, 75, 208, 247),
-                Point = new Point(13, 368)
-            };
-            scrollQuest[1] = new Pixel
-            {
-                Color = Color.FromArgb(255, 75, 208, 247),
-                Point = new Point(94, 363)
-            };
-            scrollQuest[2] = new Pixel
-            {
-                Color = Color.FromArgb(255, 75, 208, 247),
-                Point = new Point(13, 335)
-            };
-            scrollQuest[3] = new Pixel
-            {
-                Color = Color.FromArgb(255, 75, 208, 247),
-                Point = new Point(94, 335)
-            };
-            scrollQuest[4] = new Pixel
-            {
-                Color = Color.FromArgb(255, 75, 208, 247),
-                Point = new Point(16, 413)
-            };
-            scrollQuest[5] = new Pixel
-            {
-                Color = Color.FromArgb(255, 75, 208, 247),
-                Point = new Point(95, 411)
-            };
-
-
             //Select Quest Scroll popup menu
-            questScroll[0] = new Pixel
+            _questScroll[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(521, 107)
             };
-            questScroll[1] = new Pixel
+            _questScroll[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 162, 166, 172),
                 Point = new Point(903, 110)
             };
+            //Scroll Quest on the quest pane
+            LocateQuestButton();
+
+            //Select Quest Scroll
 
             //Fulfill Request button on Quest Scroll popup menu
             fulfillRequest[0] = new Pixel
@@ -120,7 +91,12 @@ namespace L2RBot
                 Point = new Point(753, 496)
             };
 
-            User32.SetForegroundWindow(App.MainWindowHandle);
+
+        }
+
+        private void LocateQuestButton()
+        {
+            User32.SetForegroundWindow(App.MainWindowHandle);//focus drawn to the screen so that we can look for a pixel
             _scrollQuest = L2RBot.Screen.SearchPixelVerticalStride(Screen, new Point(16, 210), 211, Colors.ScrollQuest, 2);
         }
 
@@ -137,10 +113,6 @@ namespace L2RBot
 
                 Thread.Sleep(100);
             }
-            if (!_IsQuestAvailable())
-            {
-                Helper.Start();
-            }
             if (_IsQuestScrollPresent())
             {
                 Click(scrollOne);
@@ -156,31 +128,54 @@ namespace L2RBot
                 Click(ProceedOk[0].Point);
                 Thread.Sleep(100);
             }
-            else
+            if (Helper.IsStuckLoading())
             {
-                //Bot.PopUpKiller(App);
+                ClickMapThenQuest();
+            }
+
+            Helper.Start();
+
+
+            IsIdle();
+        }
+
+        private void ClickMapThenQuest()
+        {
+            Click(Nav.Map);
+
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+
+            Click(Nav.BtnSubClanHall);//reusing points, this clicks a random spot on map
+
+            Click(Nav.MapClose);
+
+            Click(_scrollQuest.Point);//clicks on scroll quest again        
+        }
+
+        private void IsIdle()
+        {
+            if (TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds) > TimeSpan.FromMinutes(5))
+            {
+                //open bag and click scroll quest
             }
         }
 
         private bool _IsQuestAvailable()
         {
             _scrollQuest.UpdateColor(Screen);
-            //if scrollQuest pixels are detected this means the quest has NOT been started.
-            return (L2RBot.Screen.CompareColor(_scrollQuest.Color, Colors.ScrollQuest, 2)) ? true : false;
 
-            //return (scrollQuest[0].IsPresent(Screen, 2) &&
-            //        scrollQuest[1].IsPresent(Screen, 2) &&
-            //        Bot.IsCombatScreenUp(App) ||
-            //        scrollQuest[2].IsPresent(Screen, 2) &&
-            //        scrollQuest[3].IsPresent(Screen, 2) &&
-            //        Bot.IsCombatScreenUp(App)
-            //        ) ? false : true;
+            //if scrollQuest pixels are detected this means the quest has NOT been started.
+            _isQuestFound = (L2RBot.Screen.CompareColor(_scrollQuest.Color, Colors.ScrollQuest, 2)) ? true : false;
+            return _isQuestFound;
         }
 
         private bool _IsQuestScrollPresent()
         {
-            return (questScroll[0].IsPresent(Screen, 2) &&
-                questScroll[1].IsPresent(Screen, 2)) ? true : false;
+            _scrollQuest.UpdateColor(Screen);
+
+            return (_questScroll[0].IsPresent(Screen, 2) &&
+                    _questScroll[1].IsPresent(Screen, 2)) ?
+                    true : false;
         }
 
         private bool _IsFulfillRequestPresent()

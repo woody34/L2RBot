@@ -376,10 +376,9 @@ namespace L2RBot
         /// </summary>
         public void Start()
         {
-            UpdateScreen(); //updates Screen object for parent class with latest window size and x,y location.
+            UpdateScreen(); //updates Screen object in parent class with latest window size and x,y location.
 
-            User32.SetForegroundWindow(App.MainWindowHandle);//brings window to front.
-            Thread.Sleep(TimeSpan.FromSeconds(.5));
+            User32.SetForegroundWindow(App.MainWindowHandle);//brings window to front
 
             if (_finished == true && _riftMenuOpen == false)
             {
@@ -487,32 +486,32 @@ namespace L2RBot
 
             UpdateLeaderStatus();
 
-            Click(Menus.BtnHamburger);
+            Click(Nav.BtnHamburger);
 
             Thread.Sleep(TimeSpan.FromSeconds(2));
 
-            Click(Menus.BtnDungeons);
+            Click(Nav.BtnDungeons);
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            Click(Menus.BtnSubTemporalRift); // selects temporal rift dungeon type, reuing point
+            Click(Nav.BtnSubTemporalRift); // selects temporal rift dungeon type, reuing point
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
-            Click(Menus.BtnSubTemporalRift); //selects the alter of madness rift type, reusuing point
+            Click(Nav.BtnSubTemporalRift); //selects the alter of madness rift type, reusuing point
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
             if (DifficultyLevel == Difficulty.Easy)
             {
-                Click(Menus.BtnSubNormalDungeon);//easy mode, reusing point
+                Click(Nav.BtnSubNormalDungeon);//easy mode, reusing point
 
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
 
             if (DifficultyLevel == Difficulty.Normal)
             {
-                Click(Menus.BtnSubTemporalRift);//normal mode, reusing point
+                Click(Nav.BtnSubTemporalRift);//normal mode, reusing point
 
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
@@ -585,7 +584,7 @@ namespace L2RBot
                 //this delay gives all party member bots time to get where they need to be, waits 30+ seconds from last click
                 if (TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds) > TimeSpan.FromSeconds(32))
                 {
-                    Click(Menus.BtnRanking);//enter dungeon, reusing point
+                    Click(Nav.BtnRanking);//enter dungeon, reusing point
                     _finished = false;
                 }
             }
@@ -595,7 +594,7 @@ namespace L2RBot
                 //this delay gives all party member bots time to get where they need to be, waits 30+ seconds from last click
                 if (TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds) > TimeSpan.FromSeconds(32))
                 {
-                    Click(Menus.BtnTradingPost);//party matching, reusing point
+                    Click(Nav.BtnTradingPost);//party matching, reusing point
                     _finished = false;
                 }
             }

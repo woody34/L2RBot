@@ -10,12 +10,12 @@ namespace L2RBot.Common
     /// <summary>
     /// Contains the points of common menu buttons
     /// </summary>
-    public class Menus
+    public class Nav
     {
-        //globals
+        public static Point BtnHamburger = new Point(921, 34);
         #region Hamburger_button
         //hamburger button.
-        public static Point BtnHamburger = new Point(921, 34);
+        
 
         //hamburger button's child buttons
         //top row.
@@ -132,6 +132,10 @@ namespace L2RBot.Common
 
         public static Point BtnSubClanHall = _btnSubBottom3;
         #endregion Hamburger_button
+        public static Point Map = new Point(1180, 100);
+
+        public static Point MapClose = new Point(1243, 68);
+
 
     }
 }

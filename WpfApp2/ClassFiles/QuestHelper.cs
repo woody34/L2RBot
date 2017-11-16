@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using L2RBot.Common.Enum;
+using L2RBot.Common;
 
 namespace L2RBot
 {
@@ -10,23 +11,24 @@ namespace L2RBot
     public class QuestHelper
     {
         private Process app; //game process object(nox player)
-        private Rectangle screen; //game window screen object(nox players screen location and demensions)
+        private Rectangle Screen; //game window screen object(nox players screen location and demensions)
         public QuestType Quest { get; set; }//quest type is to be set during instantiation using object initializer {Quest = QuestType.Main}
 
         //Pixel objects
-        private Pixel[] btnSkipDialog;
-        private Pixel[] btnSkipCutScene;
-        private Pixel[] btnAcceptQuest;
-        private Pixel[] btnClaimReward;
-        private Pixel[] btnContinue;
-        private Pixel[] btnSkipTutorial;
-        private Pixel[] btnSkipOk;
-        private Pixel[] btnQuestComplete;
-        private Pixel[] btnQuestStart;
-        private Pixel[] btnQuestGoNow;
-        private Pixel[] btnQuestWalk;
-        private Pixel[] btnSubQuestStart;
-        private Pixel mainQuest;
+        private Pixel[] _skipDialog;
+        private Pixel[] _skipCutScene;
+        private Pixel[] _acceptQuest;
+        private Pixel[] _claimReward;
+        private Pixel[] _continue;
+        private Pixel[] _skipTutorial;
+        private Pixel[] _skipTutorialOk;
+        private Pixel[] _questComplete;
+        private Pixel[] _questStart;
+        private Pixel[] _questGoNow;
+        private Pixel[] _questWalk;
+        private Pixel[] _subQuestStart;
+        private Pixel _mainQuest;
+        private Pixel[] _stuckLoading;
 
         /// <summary>
         /// Constructs QuestHelper data objects.
@@ -35,180 +37,198 @@ namespace L2RBot
         public QuestHelper(Process App)
         {
             app = Process.GetProcessById(App.Id);
-            screen = Screen.GetRect(App);
+            Screen = L2RBot.Screen.GetRect(App);
 
             //QuestHelper Pixel objects initialized
-            mainQuest = new Pixel //the pixel on btn to start/stop the main quest, method isPresent will not function as desired on this pixel as it changes frequently
+            _mainQuest = new Pixel //the pixel on btn to start/stop the main quest, method isPresent will not function as desired on this pixel as it changes frequently
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(125, 250)
             };
 
             //SkipQuestDialog button
-            btnSkipDialog = new Pixel[2];
-            btnSkipDialog[0] = new Pixel
+            _skipDialog = new Pixel[2];
+            _skipDialog[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(1162, 504)
+                Color = Colors.White,
+                Point = new Point(1165, 507)//White S on 'Skip' button.
             };
-            btnSkipDialog[1] = new Pixel
+            _skipDialog[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 0, 0, 0),
-                Point = new Point(1243, 594)
+                Color = Colors.Black,
+                Point = new Point(1249, 600)//Black BG of the '>' (skip arrow).
             };
 
             //SkipQuestDialog button
-            btnSkipCutScene = new Pixel[3];
-            btnSkipCutScene[0] = new Pixel
+            _skipCutScene = new Pixel[3];
+            _skipCutScene[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 232, 232, 232),
                 Point = new Point(1137, 46)
             };
-            btnSkipCutScene[1] = new Pixel
+            _skipCutScene[1] = new Pixel
             {
                 Color = Color.White,
                 Point = new Point(1149, 10)
             };
-            btnSkipCutScene[2] = new Pixel
+            _skipCutScene[2] = new Pixel
             {
                 Color = Color.FromArgb(255, 232, 232, 232),
                 Point = new Point(39, 16)
             };
 
             //AcceptQuest button
-            btnAcceptQuest = new Pixel[2];
-            btnAcceptQuest[0] = new Pixel
+            _acceptQuest = new Pixel[2];
+            _acceptQuest[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(772, 608)
+                Color = Colors.White,
+                Point = new Point(702, 617)//White A on 'Accept Quest' button.
             };
-            btnAcceptQuest[1] = new Pixel
+            _acceptQuest[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 55, 91, 133),
-                Point = new Point(688, 595)
+                Color = Colors.CompleteOk,
+                Point = new Point(732, 592)//Blue 'Accept Quest' button's background.
             };
 
             //ClaimReward button
-            btnClaimReward = new Pixel[2];
-            btnClaimReward[0] = new Pixel
+            _claimReward = new Pixel[2];
+            _claimReward[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(577, 609)
+                Color = Colors.White,
+                Point = new Point(563, 611)//White C on 'Claim Reward' button.
             };
-            btnClaimReward[1] = new Pixel
+            _claimReward[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 59, 95, 136),
-                Point = new Point(609, 590)
+                Color = Colors.CompleteOk,
+                Point = new Point(626, 592)//Blue BG of 'Claim Reward' button.
             };
 
             //Continue button
-            btnContinue = new Pixel[2];
-            btnContinue[0] = new Pixel
+            _continue = new Pixel[2];
+            _continue[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 251, 251, 251),
                 Point = new Point(1055, 633)
             };
-            btnContinue[1] = new Pixel
+            _continue[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 51, 88, 130),
                 Point = new Point(1012, 623)
             };
 
             //SkipTutorial button
-            btnSkipTutorial = new Pixel[3];
-            btnSkipTutorial[0] = new Pixel
+            _skipTutorial = new Pixel[3];
+            _skipTutorial[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(1161, 43)
+                Color = Colors.White,
+                Point = new Point(1169, 50)//White S on the 'Skip' button.
             };
-            btnSkipTutorial[1] = new Pixel
+            _skipTutorial[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(1236, 58)
-            };
-            btnSkipTutorial[2] = new Pixel
-            {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(1161, 39)
+                Color = Colors.White,
+                Point = new Point(1154, 54)//Point that is not white.
             };
 
             //Ok button, Skip Quest
-            btnSkipOk = new Pixel[2];
-            btnSkipOk[0] = new Pixel
+            _skipTutorialOk = new Pixel[2];
+            _skipTutorialOk[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(749, 480)
+                Color = Colors.White,
+                Point = new Point(749, 472)//White O on 'Ok' button.
             };
-            btnSkipOk[1] = new Pixel
+            _skipTutorialOk[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 55, 91, 133),
-                Point = new Point(737, 468)
+                Color = Colors.CompleteOk,
+                Point = new Point(735, 457)//Blue bg of 'Ok' button.
             };
 
             //Complete button, Weekly Quest
-            btnQuestComplete = new Pixel[2];
-            btnQuestComplete[0] = new Pixel
+            _questComplete = new Pixel[2];
+            _questComplete[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 49, 85, 127),
                 Point = new Point(841, 494)
             };
-            btnQuestComplete[1] = new Pixel
+            _questComplete[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(854, 500)
             };
 
             //Start Quest button, Weekly Quest
-            btnQuestStart = new Pixel[2];
-            btnQuestStart[0] = new Pixel
+            _questStart = new Pixel[2];
+            _questStart[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(871, 491)
             };
-            btnQuestStart[1] = new Pixel
+            _questStart[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 41, 56, 76),
                 Point = new Point(926, 496)
             };
 
             //Go Now button, Weekly Quest
-            btnQuestGoNow = new Pixel[2];
-            btnQuestGoNow[0] = new Pixel
+            _questGoNow = new Pixel[2];
+            _questGoNow[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 41, 55, 76),
                 Point = new Point(911, 496)
             };
-            btnQuestGoNow[1] = new Pixel
+            _questGoNow[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(925, 493)
             };
 
             //Walk button, Weekly Quest
-            btnQuestWalk = new Pixel[2];
-            btnQuestWalk[0] = new Pixel
+            _questWalk = new Pixel[2];
+            _questWalk[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 120, 130, 140),
                 Point = new Point(477, 514)
             };
-            btnQuestWalk[1] = new Pixel
+            _questWalk[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 25, 38, 56),
                 Point = new Point(492, 537)
             };
 
             //Walk button, Weekly Quest
-            btnSubQuestStart = new Pixel[2];
-            btnSubQuestStart[0] = new Pixel
+            _subQuestStart = new Pixel[2];
+            _subQuestStart[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
                 Point = new Point(712, 603)
             };
-            btnSubQuestStart[1] = new Pixel
+            _subQuestStart[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 49, 85, 127),
                 Point = new Point(701, 607)
             };
+
+            _stuckLoading = new Pixel[4];
+            _stuckLoading[0] = new Pixel
+            {
+                Color = Colors.StuckLoading,
+                Point = new Point(611, 339)//Top left quadrant.
+            };
+            _stuckLoading[1] = new Pixel
+            {
+                Color = Colors.StuckLoading,
+                Point = new Point(664, 333)//Top right quadrant.
+            };
+            _stuckLoading[2] = new Pixel
+            {
+                Color = Colors.StuckLoading,
+                Point = new Point(617, 387)//Bottom left quadrant.
+            };
+            _stuckLoading[3] = new Pixel
+            {
+                Color = Colors.StuckLoading,
+                Point = new Point(670, 377)//Bottom Right quadrant
+            };
+
         }
 
         /// <summary>
@@ -217,7 +237,7 @@ namespace L2RBot
         /// <param name="ClickHere"></param>
         private void Click(Point ClickHere)
         {
-            ClickHere = Screen.PointToScreenPoint(screen, ClickHere.X, ClickHere.Y);
+            ClickHere = L2RBot.Screen.PointToScreenPoint(Screen, ClickHere.X, ClickHere.Y);
             Mouse.LeftMouseClick(ClickHere.X, ClickHere.Y);
         }
 
@@ -246,9 +266,9 @@ namespace L2RBot
         /// </summary>
         private void SkipQuestDialog()
         {
-            if (btnSkipDialog[0].IsPresent(screen, 2) && btnSkipDialog[1].IsPresent(screen, 2))
+            if (_skipDialog[0].IsPresent(Screen, 2) && _skipDialog[1].IsPresent(Screen, 2))
             {
-                Click(btnSkipDialog[0].Point);
+                Click(_skipDialog[0].Point);
             }
         }
 
@@ -257,9 +277,9 @@ namespace L2RBot
         /// </summary>
         private void SkipCutScene()
         {
-            if (btnSkipCutScene[0].IsPresent(screen, 2) && !btnSkipCutScene[1].IsPresent(screen, 2) && !btnSkipCutScene[2].IsPresent(screen, 2))
+            if (_skipCutScene[0].IsPresent(Screen, 2) && !_skipCutScene[1].IsPresent(Screen, 2) && !_skipCutScene[2].IsPresent(Screen, 2))
             {
-                Click(btnSkipCutScene[0].Point);
+                Click(_skipCutScene[0].Point);
             }
         }
 
@@ -268,9 +288,9 @@ namespace L2RBot
         /// </summary>
         private void AcceptQuest()
         {
-            if (btnAcceptQuest[0].IsPresent(screen, 2) && btnAcceptQuest[1].IsPresent(screen, 2))
+            if (_acceptQuest[0].IsPresent(Screen, 2) && _acceptQuest[1].IsPresent(Screen, 2))
             {
-                Click(btnAcceptQuest[0].Point);
+                Click(_acceptQuest[0].Point);
             }
         }
 
@@ -279,13 +299,13 @@ namespace L2RBot
         /// </summary>
         private void ClaimReward()
         {
-            if (btnClaimReward[0].IsPresent(screen, 2) && btnClaimReward[1].IsPresent(screen, 2))
+            if (_claimReward[0].IsPresent(Screen, 2) && _claimReward[1].IsPresent(Screen, 2))
             {
-                Click(btnClaimReward[0].Point);
+                Click(_claimReward[0].Point);
                 if (Quest.Equals(QuestType.Main))
                 {
                     System.Threading.Thread.Sleep(4000);//Sleep 4 seconds and then click click MainQuest
-                    Click(mainQuest.Point);
+                    Click(_mainQuest.Point);
 
                 }
             }
@@ -296,13 +316,13 @@ namespace L2RBot
         /// </summary>
         private void Continue()
         {
-            if (btnContinue[0].IsPresent(screen, 2) & btnContinue[1].IsPresent(screen, 2))
+            if (_continue[0].IsPresent(Screen, 2) & _continue[1].IsPresent(Screen, 2))
             {
-                Click(btnContinue[0].Point);
+                Click(_continue[0].Point);
                 if (Quest.Equals(QuestType.Main))
                 {
                     System.Threading.Thread.Sleep(7000);//sleep 7 seconds and click main quest
-                    Click(mainQuest.Point);
+                    Click(_mainQuest.Point);
                 }
             }
         }
@@ -314,9 +334,9 @@ namespace L2RBot
         {
             if (!Quest.Equals(QuestType.Weekly) && !Quest.Equals(QuestType.AltarOfMadness))//This is to quickly resolve an issue caused during the weekly quest
             {
-                if (btnSkipTutorial[0].IsPresent(screen, 2) & !btnSkipTutorial[1].IsPresent(screen, 2) & btnSkipTutorial[2].IsPresent(screen, 2))
+                if (_skipTutorial[0].IsPresent(Screen, 2) & !_skipTutorial[1].IsPresent(Screen, 2))
                 {
-                    Click(btnSkipTutorial[0].Point);
+                    Click(_skipTutorial[0].Point);
                 }
             }
         }
@@ -326,9 +346,9 @@ namespace L2RBot
         /// </summary>
         private void SkipTutorialOK()
         {
-            if (btnSkipOk[0].IsPresent(screen, 2) & btnSkipOk[1].IsPresent(screen, 2) && !Quest.Equals(QuestType.AltarOfMadness))
+            if (_skipTutorialOk[0].IsPresent(Screen, 2) & _skipTutorialOk[1].IsPresent(Screen, 2) && !Quest.Equals(QuestType.AltarOfMadness))
             {
-                Click(btnSkipOk[0].Point);
+                Click(_skipTutorialOk[0].Point);
             }
         }
 
@@ -339,9 +359,9 @@ namespace L2RBot
         private void QuestComplete()
         {
 
-            if (btnQuestComplete[0].IsPresent(screen, 2) & btnQuestComplete[1].IsPresent(screen, 2))
+            if (_questComplete[0].IsPresent(Screen, 2) & _questComplete[1].IsPresent(Screen, 2))
             {
-                Click(btnQuestComplete[1].Point);
+                Click(_questComplete[1].Point);
             }
         }
 
@@ -350,9 +370,9 @@ namespace L2RBot
         /// </summary>
         private void QuestStart()
         {
-            if (btnQuestStart[0].IsPresent(screen, 2) & btnQuestStart[1].IsPresent(screen, 2))
+            if (_questStart[0].IsPresent(Screen, 2) & _questStart[1].IsPresent(Screen, 2))
             {
-                Click(btnQuestStart[0].Point);
+                Click(_questStart[0].Point);
             }
             System.Threading.Thread.Sleep(100);
         }
@@ -362,9 +382,9 @@ namespace L2RBot
         /// </summary>
         private void QuestGoNow()
         {
-            if (btnQuestGoNow[0].IsPresent(screen, 2) & btnQuestGoNow[0].IsPresent(screen, 2))
+            if (_questGoNow[0].IsPresent(Screen, 2) & _questGoNow[0].IsPresent(Screen, 2))
             {
-                Click(btnQuestGoNow[1].Point);
+                Click(_questGoNow[1].Point);
                 System.Threading.Thread.Sleep(100);
             }
         }
@@ -374,23 +394,35 @@ namespace L2RBot
         /// </summary>
         private void Walk()
         {
-            if (btnQuestWalk[0].IsPresent(screen, 2) & btnQuestWalk[1].IsPresent(screen, 2))
+            if (_questWalk[0].IsPresent(Screen, 2) & _questWalk[1].IsPresent(Screen, 2))
             {
-                Click(btnQuestWalk[0].Point);
+                Click(_questWalk[0].Point);
                 System.Threading.Thread.Sleep(100);
             }
         }
-        
+
         //scroll quest actions that apply to other quest types.
         /// <summary>
         /// Detects and calls Click at the Start Quest button during a Scroll Quest. The graphics have small variations.
         /// </summary>
         private void SubQuestStart()
         {
-            if (btnSubQuestStart[0].IsPresent(screen, 2) & btnSubQuestStart[1].IsPresent(screen, 2))
+            if (_subQuestStart[0].IsPresent(Screen, 2) & _subQuestStart[1].IsPresent(Screen, 2))
             {
-                Click(btnSubQuestStart[0].Point);
+                Click(_subQuestStart[0].Point);
             }
+        }
+
+        public bool IsStuckLoading()
+        {
+            foreach (Pixel p in _stuckLoading)
+            {
+                if (p.IsPresent(Screen, 5))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

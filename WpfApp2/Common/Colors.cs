@@ -23,6 +23,9 @@ namespace L2RBot.Common
         public static Color CloseRechargeWindowX = Color.FromArgb(255, 162, 166, 173);
         public static Color CloseRechargeWindowCrystal = Color.FromArgb(255, 253, 154, 206);
 
+        //Quest Helper
+        public static Color StuckLoading = Color.FromArgb(255, 235, 235, 234);
+
 
 
 

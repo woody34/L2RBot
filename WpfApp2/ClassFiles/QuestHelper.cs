@@ -64,17 +64,17 @@ namespace L2RBot
             _skipCutScene[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 232, 232, 232),
-                Point = new Point(1137, 46)
+                Point = new Point(1168, 48)//S on the 'Skip' button.
             };
             _skipCutScene[1] = new Pixel
             {
                 Color = Color.White,
-                Point = new Point(1149, 10)
+                Point = new Point(1149, 10)//Spot to check if whole screen is white.
             };
             _skipCutScene[2] = new Pixel
             {
                 Color = Color.FromArgb(255, 232, 232, 232),
-                Point = new Point(39, 16)
+                Point = new Point(39, 16)//The navigation back logo, to make sure menu is up.
             };
 
             //AcceptQuest button
@@ -142,43 +142,45 @@ namespace L2RBot
                 Point = new Point(735, 457)//Blue bg of 'Ok' button.
             };
 
-            //Complete button, Weekly Quest
-            _questComplete = new Pixel[2];
-            _questComplete[0] = new Pixel
-            {
-                Color = Color.FromArgb(255, 49, 85, 127),
-                Point = new Point(841, 494)
-            };
-            _questComplete[1] = new Pixel
-            {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(854, 500)
-            };
-
             //Start Quest button, Weekly Quest
             _questStart = new Pixel[2];
             _questStart[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(871, 491)
+                Color = Colors.White,
+                Point = new Point(864, 491)//The White S on the 'Start Quest' button.
             };
             _questStart[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 41, 56, 76),
-                Point = new Point(926, 496)
+                Color = Color.FromArgb(255, 49, 63, 83),
+                Point = new Point(887, 479)//The blue BG on the 'Start Quest' button.
             };
 
             //Go Now button, Weekly Quest
             _questGoNow = new Pixel[2];
             _questGoNow[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 41, 55, 76),
-                Point = new Point(911, 496)
+                Color = Colors.White,
+
+                Point = new Point(888, 494)//The G on the "Go Now' button.
             };
             _questGoNow[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 255, 255, 255),
-                Point = new Point(925, 493)
+                Color = Color.FromArgb(255, 45, 59, 78),
+                Point = new Point(897, 490)//the blue between the head and tale of the g on the 'Go Now' button
+
+            };
+
+            //Complete button, Weekly Quest
+            _questComplete = new Pixel[2];
+            _questComplete[0] = new Pixel
+            {
+                Color = Colors.White,
+                Point = new Point(838, 493)//Front of the Q on the ' Quest Complete' button.
+            };
+            _questComplete[1] = new Pixel
+            {
+                Color = Colors.White,
+                Point = new Point(843, 492)//Center of Q on 'Quest Complete' button
             };
 
             //Walk button, Weekly Quest
@@ -186,12 +188,12 @@ namespace L2RBot
             _questWalk[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 120, 130, 140),
-                Point = new Point(477, 514)
+                Point = new Point(468, 518)//W on the 'Walk" button
             };
             _questWalk[1] = new Pixel
             {
-                Color = Color.FromArgb(255, 25, 38, 56),
-                Point = new Point(492, 537)
+                Color = Color.FromArgb(255, 54, 90, 131),
+                Point = new Point(666, 508)//the blue BG of the 'Teleport' button(none opaque)
             };
 
             //Walk button, Weekly Quest
@@ -359,7 +361,7 @@ namespace L2RBot
         private void QuestComplete()
         {
 
-            if (_questComplete[0].IsPresent(Screen, 2) & _questComplete[1].IsPresent(Screen, 2))
+            if (_questComplete[0].IsPresent(Screen, 2) & !_questComplete[1].IsPresent(Screen, 2))
             {
                 Click(_questComplete[1].Point);
             }

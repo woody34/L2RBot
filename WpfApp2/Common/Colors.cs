@@ -14,8 +14,7 @@ namespace L2RBot.Common
         public static Color WeeklyQuest = Color.FromArgb(255, 75, 154, 255);
         public static Color DailyQuest = Color.FromArgb(255, 80, 170, 30);
 
-        public static Color WeeklyDoneHigh = Color.FromArgb(255, 65, 66, 67);
-        public static Color WeeklyDoneLow = Color.FromArgb(255, 21, 26, 37);
+        public static Color WeeklyComplete = Color.FromArgb(255, 48, 85, 127);
 
         //Alter of Madness Quest Colors
         public static Color SpotReviveBtn = Color.FromArgb(255, 55, 91, 133);

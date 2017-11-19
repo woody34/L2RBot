@@ -9,7 +9,7 @@ namespace L2RBot
     public class Weekly : Quest
     {
         //globals
-        private Pixel[] _weeklyQuest;
+        private Pixel[] _weeklyAvailable;
 
         private Pixel[] _weeklyComplete;
 
@@ -18,16 +18,16 @@ namespace L2RBot
         private QuestHelper _helper;
 
         //properties
-        public Pixel[] WeeklyQuest
+        public Pixel[] WeeklyAvailable
         {
             get
             {
-                if (_weeklyQuest == null)
+                if (_weeklyAvailable == null)
                 {
-                    _weeklyQuest = new Pixel[4];
+                    _weeklyAvailable = new Pixel[4];
                 }
 
-                return _weeklyQuest;
+                return _weeklyAvailable;
             }
         }
 
@@ -86,26 +86,29 @@ namespace L2RBot
         private void _BuildQuest()
         {
             //Pixel Objects
-            //Weekly Quest on the quest pane
-            WeeklyQuest[0] = new Pixel
+            //Available [Weekly] on the quest pane
+            WeeklyAvailable[0] = new Pixel// [0] and [1] are detecting Weekly post Main completion.
             {
                 Color = Colors.WeeklyQuest,
-                Point = new Point(16, 309)
+                Point = new Point(16, 389)//The top of the A in 'Available [Weekly].'
             };
-            WeeklyQuest[1] = new Pixel
+
+            WeeklyAvailable[1] = new Pixel
             {
                 Color = Colors.WeeklyQuest,
-                Point = new Point(104, 309)
+                Point = new Point(95, 389)//The [ in 'Available [Weekly].'
             };
-            WeeklyQuest[2] = new Pixel
+
+            WeeklyAvailable[2] = new Pixel//[2] and [3] are detecting Weekly prior to Main completion.
             {
                 Color = Colors.WeeklyQuest,
-                Point = new Point(12, 282)
+                Point = new Point(16, 331)//The top of the A in 'Available [Weekly].'
             };
-            WeeklyQuest[3] = new Pixel
+
+            WeeklyAvailable[3] = new Pixel
             {
                 Color = Colors.WeeklyQuest,
-                Point = new Point(103, 285)
+                Point = new Point(95, 335)//The [ in 'Available [Weekly].'
             };
         }
 
@@ -115,25 +118,25 @@ namespace L2RBot
         private void _BuildDone()
         {
             //Done graphic for Weekly Quest on the quest pane. Due to main quest size variations upon completion I had to add a second set of pixels to detect    
-            WeeklyDone[0] = new Pixel
+            WeeklyDone[0] = new Pixel//[0] and [1] are detecting done prior Main completion.
             {
                 Color = Colors.White,
-                Point = new Point(242, 329)
+                Point = new Point(222, 345)//White vert line in the D on 'Done.'
             };
-            WeeklyDone[1] = new Pixel//needs to NOT be present, used to prevent triggering the event if the whole screen goes this color
+            WeeklyDone[1] = new Pixel
             {
                 Color = Colors.White,
-                Point = new Point(245, 329)
+                Point = new Point(225, 345)//Blue space in Center of D on 'Done.'
             };
-            WeeklyDone[2] = new Pixel
+            WeeklyDone[2] = new Pixel//[2] and [3] are detecting done post Main completion.
             {
                 Color = Colors.White,
-                Point = new Point(242, 295)
+                Point = new Point(223, 421)//White vert line in the D on 'Done.'
             };
-            WeeklyDone[3] = new Pixel//needs to NOT be present, used to prevent triggering the event if the whole screen goes this color
+            WeeklyDone[3] = new Pixel
             {
                 Color = Colors.White,
-                Point = new Point(245, 295)
+                Point = new Point(225, 421)//Blue space in Center of D on 'Done.'
             };
         }
 
@@ -145,13 +148,13 @@ namespace L2RBot
             //All Weekly Quests complete
             WeeklyComplete[0] = new Pixel
             {
-                Color = Colors.WeeklyDoneHigh,
-                Point = new Point(848, 494)
+                Color = Color.FromArgb(255, 71, 71, 71),
+                Point = new Point(838, 493)//Left side of the Q on 'Quest Complete' button.
             };
             WeeklyComplete[1] = new Pixel
             {
-                Color = Colors.WeeklyDoneLow,
-                Point = new Point(852, 494)
+                Color = Color.FromArgb(255, 21, 26, 37),
+                Point = new Point(843, 493)//Center blue of the Q on 'Quest Complete' button.
             };
         }
 
@@ -161,22 +164,18 @@ namespace L2RBot
             UpdateScreen();
             User32.SetForegroundWindow(App.MainWindowHandle);
             //looks to see if the quest has been started
-            if (_IsWeeklyInProgress())
+            if (_IsWeeklyAvailable())
             {
-                Helper.Start();
-            }
-            if (!_IsWeeklyInProgress())
-            {
-                if (WeeklyQuest[0].IsPresent(Screen, 2))
+                for (int i = WeeklyAvailable.Length; i > 0; i--)
                 {
-                    Click(WeeklyQuest[0].Point);
-                }
-                if (WeeklyQuest[2].IsPresent(Screen, 2))
-                {
-                    Click(WeeklyQuest[2].Point);
+                    if (WeeklyAvailable[i - 1].IsPresent(Screen, 2))
+                    {
+                        Click(WeeklyAvailable[i - 1].Point);
+                        i = 0;//stop once it is found
+                    }
                 }
             }
-            if (_IsQuestDone())
+            if (_IsDone())
             {
                 for (int i = WeeklyDone.Length; i > 0; i--)
                 {
@@ -196,24 +195,22 @@ namespace L2RBot
                     MainWindow.main.UpdateLog = App.MainWindowTitle + " has completed the weekly quests";
                 }
             }
-            else
-            {
-                //Bot.PopUpKiller(App);
-            }
+            Helper.Start();
         }
 
-        private bool _IsWeeklyInProgress()
+        private bool _IsWeeklyAvailable()
         {
-            //if weeklyQuest pixels are detected this means the quest has NOT been started.
-            return (WeeklyQuest[0].IsPresent(Screen, 2) &&
-                    WeeklyQuest[1].IsPresent(Screen, 2) &&
+            //If weeklyQuest pixels are detected this means the quest has NOT been started.
+            //This is effective because once the quest begins the text changes from 'Available [Weekly]' to '[Weekly].'
+            return (WeeklyAvailable[0].IsPresent(Screen, 2) &&
+                    WeeklyAvailable[1].IsPresent(Screen, 2) &&
                     Bot.IsCombatScreenUp(App) ||
-                    WeeklyQuest[2].IsPresent(Screen, 2) &&
-                    WeeklyQuest[3].IsPresent(Screen, 2) &&
-                    Bot.IsCombatScreenUp(App)) ? false : true;
+                    WeeklyAvailable[2].IsPresent(Screen, 2) &&
+                    WeeklyAvailable[3].IsPresent(Screen, 2) &&
+                    Bot.IsCombatScreenUp(App)) ? true : false;
         }
 
-        private bool _IsQuestDone()
+        private bool _IsDone()
         {
             //if WeeklyDone[0] is detected and WeeklyDone[1] is not detected this means the quest HAS been completed
             return (WeeklyDone[0].IsPresent(Screen, 10) &&

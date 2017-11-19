@@ -187,6 +187,66 @@ namespace L2RBot
             return new Pixel();
         }
 
+        /// <summary>
+        /// looks through a single column of pixels for a specific pixel.
+        /// </summary>
+        /// <param name="Screen">The game screen location.</param>
+        /// <param name="Start">The point at which we begin searching.</param>
+        /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
+        /// <param name="Color">The color we are searching for.</param>
+        /// <param name="Tolerance">A threashold for pixel variation.</param>
+        /// <returns></returns>
+        public static Pixel SearchPixelHorizontalStride(Rectangle Screen, Point Start, uint StrideLength, Color Color, int Tolerance = 0)
+        {
+            for (int i = 0; i <= StrideLength; i++)
+            {
+                Pixel p = new Pixel
+                {
+                    Color = Color,
+                    Point = new Point(Start.X + i, Start.Y)
+                };
+
+                if (p.IsPresent(Screen, Tolerance))
+                {
+                    //MainWindow.main.UpdateLog = p.ToString();
+                    return p;
+                }
+            }
+            return new Pixel();
+        }
+
+
+        /// <summary>
+        /// looks through a single row of pixels for a specific pixel.
+        /// </summary>
+        /// <param name="Screen">The game screen location.</param>
+        /// <param name="Start">The point at which we begin searching.</param>
+        /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
+        /// <param name="Color">The color we are searching for.</param>
+        /// <param name="IsFound">Returns true if the pixel is found in the stride.</param>
+        /// <param name="Tolerance">A threashold for pixel variation.</param>
+        /// <returns></returns>
+        public static Pixel SearchPixelHorizontalStride(Rectangle Screen, Point Start, uint StrideLength, Color Color, out bool IsFound, int Tolerance = 0)
+        {
+            for (int i = 0; i <= StrideLength; i++)
+            {
+                Pixel p = new Pixel
+                {
+                    Color = Color,
+                    Point = new Point(Start.X + i, Start.Y)
+                };
+
+                if (p.IsPresent(Screen, Tolerance))
+                {
+                    //MainWindow.main.UpdateLog = p.ToString();
+                    IsFound = true;
+                    return p;
+                }
+            }
+            IsFound = false;
+            return new Pixel();
+        }
+
         //Legacy
 
         /// <summary>

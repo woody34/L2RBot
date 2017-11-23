@@ -51,7 +51,7 @@ namespace L2RBot
             {
                 if (_weeklyDone == null)
                 {
-                    _weeklyDone = new Pixel[4];
+                    _weeklyDone = new Pixel[6];
 
                 }
 
@@ -63,7 +63,7 @@ namespace L2RBot
         {
             get
             {
-                if(_helper == null)
+                if (_helper == null)
                 {
                     _helper = new QuestHelper(App) { Quest = QuestType.Weekly };
                 }
@@ -137,6 +137,16 @@ namespace L2RBot
             {
                 Color = Colors.White,
                 Point = new Point(225, 421)//Blue space in Center of D on 'Done.'
+            };
+            WeeklyDone[4] = new Pixel//[2] and [3] are detecting done post Main completion.
+            {
+                Color = Colors.White,
+                Point = new Point(223, 364)//White vert line in the D on 'Done.'
+            };
+            WeeklyDone[5] = new Pixel
+            {
+                Color = Colors.White,
+                Point = new Point(226, 366)//Blue space in Center of D on 'Done.'
             };
         }
 
@@ -218,7 +228,11 @@ namespace L2RBot
                     Bot.IsCombatScreenUp(App) ||
                     WeeklyDone[2].IsPresent(Screen, 10) &&
                     !WeeklyDone[3].IsPresent(Screen, 10) &&
-                    Bot.IsCombatScreenUp(App)) ? true : false;
+                    Bot.IsCombatScreenUp(App) ||
+                    WeeklyDone[4].IsPresent(Screen, 10) &&
+                    !WeeklyDone[5].IsPresent(Screen, 10) &&
+                    Bot.IsCombatScreenUp(App)) ? 
+                    true : false;
         }
 
         private bool _IsComplete()

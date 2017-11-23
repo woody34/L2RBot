@@ -99,7 +99,7 @@ namespace L2RBot
             InitClick();
             QuestDone();
             QuestBubble();
-            IdleCheck();
+            //IdleCheck();
             _helper.Start();
 
         }

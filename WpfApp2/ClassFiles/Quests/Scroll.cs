@@ -136,15 +136,15 @@ namespace L2RBot
                 Click(ProceedOk[0].Point);
                 Thread.Sleep(100);
             }
-            if (Helper.IsStuckLoading())
-            {
-                ClickMapThenQuest();
-            }
+            //if (Helper.IsStuckLoading())
+            //{
+            //    ClickMapThenQuest();
+            //}
 
             Helper.Start();
 
 
-            IsIdle();
+            //IsIdle();
         }
 
         private void LocateQuestButton()

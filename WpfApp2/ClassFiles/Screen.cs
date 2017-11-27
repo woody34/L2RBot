@@ -30,10 +30,10 @@ namespace L2RBot
             var rect = new User32.Rect();//Rekt type object for parameter of WINAPI
             User32.GetWindowRect(proc.MainWindowHandle, ref rect);
 
-            int width = rect.right - rect.left;
-            int height = rect.bottom - rect.top;
+            int width = rect.Right - rect.Left;
+            int height = rect.Bottom - rect.Top;
 
-            Rectangle rectangle = new Rectangle(rect.left, rect.top, width, height);
+            Rectangle rectangle = new Rectangle(rect.Left, rect.Top, width, height);
             if (rectangle.Width != (1280 + rightBorder + leftBorder) | rectangle.Height != (720 + topBoarder + bottomBorder))
             {
                 MainWindow.main.UpdateLog = proc.MainWindowTitle + " needs reset to 1280x720 or Nox player left and top borders have changed. " +

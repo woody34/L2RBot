@@ -36,6 +36,10 @@ namespace L2RBot
         {
             get
             {
+                if(_timer == null)
+                {
+                    _timer = new Stopwatch();
+                }
                 return _timer;
             }
             set

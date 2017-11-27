@@ -13,7 +13,8 @@ namespace L2RBot.Common
     public class Nav
     {
         public static Point BtnHamburger = new Point(921, 34);
-        #region Hamburger_button
+
+        #region Hamburger_SubNav
         //hamburger button.
         
 
@@ -132,6 +133,7 @@ namespace L2RBot.Common
 
         public static Point BtnSubClanHall = _btnSubBottom3;
         #endregion Hamburger_button
+
         public static Point Map = new Point(1180, 100);
 
         public static Point MapClose = new Point(1243, 68);

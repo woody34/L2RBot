@@ -22,7 +22,7 @@ namespace L2RBot
 
         private Pixel[] blueArrow = new Pixel[2]; //the pixels the blue arrow graphic detection
 
-        private Pixel questDone; //the pixel value for the quest done graphic detection
+        private Pixel[] questDone = new Pixel[2]; //the pixel value for the quest done graphic detection
 
         private Pixel[] questBubble = new Pixel[2]; //the pixel value for the quest chat bubble
 
@@ -66,23 +66,29 @@ namespace L2RBot
                 Point = new Point(282, 249)
             };
 
-            //the done graphic that is present upon main quest completion
-            questDone = new Pixel
+            //Done graphic that is present upon main quest completion.
+            questDone[0] = new Pixel
             {
-                Color = Color.FromArgb(255, 232, 227, 224),
-                Point = new Point(259, 272)
+                Color = Color.White,
+                Point = new Point(218, 260)//White D in 'Done' graphic.
             };
 
-            //the pubble that appears over an NPC when they need a talkin to
+            questDone[1] = new Pixel
+            {
+                Color = Color.White,
+                Point = new Point(220, 260)//Center of white D in 'Done' graphic.
+            };
+
+            //Bubble that appears over an NPC when they need a talkin to.
             questBubble[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 226, 226, 226),
-                Point = new Point(691, 248)
+                Point = new Point(692, 249)
             };
             questBubble[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 63, 63, 63),
-                Point = new Point(691, 262)
+                Point = new Point(679, 262)
             };
         }
 
@@ -96,7 +102,7 @@ namespace L2RBot
             User32.SetForegroundWindow(App.MainWindowHandle);
             System.Threading.Thread.Sleep(_sleepTime);
 
-            InitClick();
+            //InitClick();
             QuestDone();
             QuestBubble();
             //IdleCheck();
@@ -120,10 +126,9 @@ namespace L2RBot
         /// </summary>
         private void IdleCheck()
         {
-            if (Timer.ElapsedMilliseconds > IdleTimeInMs)
+            if (Timer.ElapsedMilliseconds > IdleTimeInMs)//Checks both click timers.
             {
-
-                if (movePixel.IsPresent(Screen, 2))
+                if (movePixel.IsPresent(Screen, 2))//Looks to see if your map has moved.
                 {
                     movePixel.UpdateColor(Screen);
                     Click(mainQuest.Point);
@@ -140,7 +145,7 @@ namespace L2RBot
         /// </summary>
         private void QuestBubble()
         {
-            if (questBubble[0].IsPresent(Screen, 2) & questBubble[1].IsPresent(Screen, 2))
+            if (questBubble[0].IsPresent(Screen, 2) & questBubble[1].IsPresent(Screen, 2) && Timer.ElapsedMilliseconds > IdleTimeInMs)
             {
                 Click(mainQuest.Point);
             }
@@ -164,7 +169,7 @@ namespace L2RBot
         /// </summary>
         private void QuestDone()
         {
-            if (questDone.IsPresent(Screen, 2))
+            if (questDone[0].IsPresent(Screen, 2) && !questDone[1].IsPresent(Screen, 2))
             {
                 Click(mainQuest.Point);
             }

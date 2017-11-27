@@ -160,14 +160,13 @@ namespace L2RBot
 
         private bool LocateAGradeScroll()
         {
-            bool found;
-            Pixel temp = L2RBot.Screen.SearchPixelHorizontalStride(Screen, new Point(360, 176), 500, Color.FromArgb(255, 113, 160, 14), out found, 10);
-            if (found)
+            //bool Found = false;//Compiler did NOT like this. Inlined variable.
+            Pixel Temp = L2RBot.Screen.SearchPixelHorizontalStride(Screen, new Point(360, 176), 500, Color.FromArgb(255, 113, 160, 14), out bool Found, 10);
+            if (Found)
             {
-                QuestScroll = temp;
-                return true;
+                QuestScroll = Temp;
             }
-            return false;
+            return Found;
         }
 
         private void ClickMapThenQuest()

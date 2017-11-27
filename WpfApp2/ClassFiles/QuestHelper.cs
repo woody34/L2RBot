@@ -37,7 +37,10 @@ namespace L2RBot
         public QuestHelper(Process App)
         {
             app = Process.GetProcessById(App.Id);
-            Screen = L2RBot.Screen.GetRect(App);
+
+        Screen = L2RBot.Screen.GetRect(App);
+
+
 
             //QuestHelper Pixel objects initialized
             _mainQuest = new Pixel //the pixel on btn to start/stop the main quest, method isPresent will not function as desired on this pixel as it changes frequently
@@ -240,7 +243,9 @@ namespace L2RBot
         private void Click(Point ClickHere)
         {
             ClickHere = L2RBot.Screen.PointToScreenPoint(Screen, ClickHere.X, ClickHere.Y);
+
             Mouse.LeftMouseClick(ClickHere.X, ClickHere.Y);
+
         }
 
         /// <summary>

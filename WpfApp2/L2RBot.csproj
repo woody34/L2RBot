@@ -28,6 +28,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -82,6 +84,7 @@
     </Compile>
     <Compile Include="ClassFiles\Bot.cs" />
     <Compile Include="Common\Enum\Difficulty.cs" />
+    <Compile Include="Common\Enum\Input.cs" />
     <Compile Include="Common\Enum\QuestType.cs" />
     <Compile Include="Common\Nav.cs" />
     <Compile Include="ClassFiles\Mouse.cs" />
@@ -143,6 +146,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="_bin\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

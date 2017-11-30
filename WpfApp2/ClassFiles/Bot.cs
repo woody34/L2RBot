@@ -16,7 +16,7 @@ namespace L2RBot
         {
             Color = Colors.WifiLogo,
 
-            Point = new Point(10, 708)
+            Point = new Point(8, 708)
         };
         /// <summary>
         /// Checks to see if the green wifi logo is visible indicating that the combat Screen is displayed.
@@ -27,7 +27,7 @@ namespace L2RBot
         {
             Rectangle _screen = Screen.GetRect(proc);
 
-            return (WifiLogo.IsPresent(_screen, 2)) ? true : false;
+            return (WifiLogo.IsPresent(_screen, 4)) ? true : false;
         }
 
         //Refactored

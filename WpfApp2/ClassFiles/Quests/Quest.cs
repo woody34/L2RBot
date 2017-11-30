@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 
 namespace L2RBot
 {
@@ -19,7 +20,25 @@ namespace L2RBot
 
         private int _idleTimeInMs;
 
+        private int? _sleepTime;
+
         //properties
+        public int SleepTime//global to store thread sleep time in ms
+        {
+            get
+            {
+                if (_sleepTime == null)
+                {
+                    _sleepTime = 100;
+                }
+                return (int) _sleepTime;
+            }
+            set
+            {
+                _sleepTime = value;
+            }
+        }
+
         public Process App//nox player
         {
             get
@@ -32,11 +51,13 @@ namespace L2RBot
             }
         }
 
+        public QuestHelper Helper { get; set; }
+
         public Stopwatch Timer
         {
             get
             {
-                if(_timer == null)
+                if (_timer == null)
                 {
                     _timer = new Stopwatch();
                 }
@@ -60,10 +81,14 @@ namespace L2RBot
             }
         }//game screen rectangle
 
+        public bool DebugLogging { get; set; }
+
         public bool InitialClick
         {
             get
             {
+                _initialClick = false;
+
                 return _initialClick;
             }
             set
@@ -95,6 +120,10 @@ namespace L2RBot
                 _idleTimeInMs = value;
             }
         }//the duration of time in ms that has to pass between clicks before idle
+
+        public bool Respawn { get; set; }
+
+        public uint Deathcount { get; set; }
 
         //constructor
         public Quest(Process APP)
@@ -148,6 +177,28 @@ namespace L2RBot
         public void UpdateScreen()
         {
             Screen = L2RBot.Screen.GetRect(App); //game window screen object(nox players screen location and demensions)
+        }
+
+        /// <summary>
+        /// Checks to see if QuestHelper object needs to complete the Quest
+        /// </summary>
+        public void IsHelperComplete()
+        {
+            if (Helper.Complete == true)
+            {
+                MainWindow.main.UpdateLog = App.MainWindowTitle + " has stopped because it needs help from a Human.";
+                Complete = true;
+            }
+        }
+
+        public void Sleep()
+        {
+            Thread.Sleep(SleepTime);
+        }
+
+        public void Sleep(int SleepMS)
+        {
+            Thread.Sleep(SleepMS);
         }
     }
 }

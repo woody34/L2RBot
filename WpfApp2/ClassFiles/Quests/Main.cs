@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using L2RBot.Common.Enum;
+using System.Threading;
 
 namespace L2RBot
 {
@@ -11,9 +12,7 @@ namespace L2RBot
     class Main : Quest
     {
 
-        private int _sleepTime = 1000; //global to store thread sleep time in ms
-
-        private QuestHelper _helper; //
+        
 
         //Pixel objects
         private Pixel mainQuest; //used for mainQuest clicking
@@ -26,18 +25,20 @@ namespace L2RBot
 
         private Pixel[] questBubble = new Pixel[2]; //the pixel value for the quest chat bubble
 
-
         /// <summary>
         /// Constructs MainQuest data objects.
         /// </summary>
         /// <param name="APP">Android Emulator Process object</param>
         public Main(Process APP) : base(APP)
         {
-            App = Process.GetProcessById(APP.Id);
-
             IdleTimeInMs = 30000;
 
-            _helper = new QuestHelper(App) { Quest = QuestType.Main };
+            Helper = new QuestHelper(App)
+            {
+                Quest = QuestType.Main,
+                Deathcount = this.Deathcount,
+                Respawn = this.Respawn
+            };
 
             //Pixel objects
             //used to click main quest
@@ -99,15 +100,24 @@ namespace L2RBot
         public void Start()
         {
             UpdateScreen();
+
             User32.SetForegroundWindow(App.MainWindowHandle);
-            System.Threading.Thread.Sleep(_sleepTime);
+
+            Sleep();//Sleep before to prevent actions from occuring to early.
 
             //InitClick();
-            QuestDone();
-            QuestBubble();
-            //IdleCheck();
-            _helper.Start();
 
+            QuestDone();
+
+            QuestBubble();
+
+            //IdleCheck();
+
+            Helper.Start();
+
+            IsHelperComplete();
+
+            Sleep();//Sleep after to prevent actions from occuring on the next active window.
         }
 
         /// <summary>

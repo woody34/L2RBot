@@ -21,7 +21,7 @@ namespace L2RBot
         }
 
         /// <summary>
-        /// looks to see what the current pixels color value is.
+        /// Grabs game screen's current Color value at Point.
         /// </summary>
         /// <param name="_Screen"></param>
         /// <returns></returns>

@@ -84,12 +84,13 @@
     </Compile>
     <Compile Include="ClassFiles\Bot.cs" />
     <Compile Include="Common\Enum\Difficulty.cs" />
+    <Compile Include="Common\Enum\Grade.cs" />
     <Compile Include="Common\Enum\Input.cs" />
     <Compile Include="Common\Enum\QuestType.cs" />
     <Compile Include="Common\Nav.cs" />
     <Compile Include="ClassFiles\Mouse.cs" />
     <Compile Include="ClassFiles\Pixel.cs" />
-    <Compile Include="ClassFiles\QuestHelper.cs" />
+    <Compile Include="ClassFiles\Quests\QuestHelper.cs" />
     <Compile Include="ClassFiles\Quests\AltarOfMadness.cs" />
     <Compile Include="ClassFiles\Quests\DailyDungeon.cs" />
     <Compile Include="ClassFiles\Quests\ExpDungeon.cs" />

@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Controls;
 using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
+using L2RBot.Common.Enum;
+using System.Windows.Threading;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
 
 namespace L2RBot
 {
@@ -15,328 +17,58 @@ namespace L2RBot
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Globals
+        private Process[] Emulators;
 
-        public Process[] Emulators;
-        public int EmulatorCount = 0;
-        Thread t;
+        private int EmulatorCount = 0;
+
+        private Thread t;
+
+
+
         internal static MainWindow main;
+
         internal string UpdateLog
         {
             get { return txtLog.Text.ToString(); }
-            set { Dispatcher.Invoke(new Action(() => { txtLog.Text = value +Environment.NewLine + txtLog.Text; })); }
+            set { Dispatcher.Invoke(new Action(() => { txtLog.Text = value + Environment.NewLine + txtLog.Text; })); }
             //usage
             //MainWindow.main.UpdateLog = "string data here";
         }
-        public void ClearLog(Object sender, RoutedEventArgs e)
-        {
 
+        public IntPtr MainWindowHandle { get; private set; }
+
+        public delegate void UpdateLogCallback(string text);
+
+        //Methods
+        public MainWindow()
+        {
+            main = this;
+
+            InitializeComponent();
+        }
+
+        #region MainWindow
+        private void ClearLog_Clicked(Object sender, RoutedEventArgs e)
+        {
             Dispatcher.Invoke(new Action(() => { txtLog.Text = ""; }));
         }
-        public IntPtr MainWindowHandle { get; private set; }
-        public void priWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+
+        private void PriWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
             //{
             //    t.Join();
             //}
         }
+        #endregion
 
-        public MainWindow()
-        {
-            main = this;
-            InitializeComponent();
-
-        }
-        public void BtnStop_Click(object sender, RoutedEventArgs e)
-        {
-            if (t.IsAlive == true)
-            {
-                //t.Interrupt();
-                t.Abort();
-
-            }
-            btnStopBot.IsEnabled = false;
-            btnProcessGrab.IsEnabled = true;
-            //initialize variables
-            t = null;
-            EmulatorCount = 0;
-            listProcessList.Items.Clear();
-            listProcessList.Background = System.Windows.Media.Brushes.Red;
-
-
-        }
-        public delegate void UpdateLogCallback(string text);
-
-        public void BtnMain_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(MainBot);
-            t.Start();
-
-        }
-        public void MainBot()
-        {
-
-            Main[] bots = new Main[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new Main(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    bots[ind].Start();
-                }
-            }
-        }
-
-        public void BtnWeekly_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(WeeklyBot);
-            t.Start();
-        }
-        public void WeeklyBot()
-        {
-            Weekly[] bots = new Weekly[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new Weekly(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    
-                    if(bots[ind].Complete == false)
-                    {
-                        bots[ind].Start();
-                    }
-                }
-            }
-        }
-
-        private void btnScroll_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1400, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(ScrollBot);
-            t.Start();
-        }
-        public void ScrollBot()
-        {
-            Scroll[] bots = new Scroll[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new Scroll(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    bots[ind].Start();
-                }
-            }
-        }
-
-        private void btnDaily_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(DailyBot);
-            t.Start();
-        }
-        public void DailyBot()
-        {
-            DailyDungeon[] bots = new DailyDungeon[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new DailyDungeon(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    bots[ind].Start();
-                }
-            }
-        }
-
-        private void btnTOI_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(TOIBot);
-            t.Start();
-        }
-        public void TOIBot()
-        {
-            TowerOfInsolence[] bots = new TowerOfInsolence[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new TowerOfInsolence(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    bots[ind].Start();
-                }
-            }
-        }
-
-        private void btnExp_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(ExpBot);
-            t.Start();
-        }
-        public void ExpBot()
-        {
-            ExpDungeon[] bots = new ExpDungeon[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new ExpDungeon(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    bots[ind].Start();
-                }
-            }
-        }
-
-        private void btnAoM_Click(object sender, RoutedEventArgs e)
-        {
-            DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
-            t = new Thread(AoMBot);
-            t.Start();
-        }
-        public void AoMBot()
-        {
-            AltarOfMadness[] bots = new AltarOfMadness[EmulatorCount];
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-            {
-                bots[ind] = new AltarOfMadness(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
-            }
-
-
-            while (true)//replace with start stop button states
-            {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
-                {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-                    bots[ind].Start();
-                }
-            }
-        }
-
-        public void DisableButtons()
-        {
-            //disable buttons after clicking to prevent multithread issues
-            btnMain.IsEnabled = false;
-            btnWeekly.IsEnabled = false;
-            btnScroll.IsEnabled = false;
-            btnDaily.IsEnabled = false;
-            btnTower.IsEnabled = false;
-            btnExp.IsEnabled = false;
-            btnAoM.IsEnabled = false;
-
-            btnProcessGrab.IsEnabled = false;
-
-
-            //enables stop button
-            btnStopBot.IsEnabled = true;
-        }
-        public void EnableButtons()
-        {
-            //disable buttons after clicking to prevent multithread issues
-            btnMain.IsEnabled = true;
-            btnWeekly.IsEnabled = true;
-            btnScroll.IsEnabled = true;
-            btnDaily.IsEnabled = true;
-            btnTower.IsEnabled = true;
-            btnExp.IsEnabled = true;
-            btnAoM.IsEnabled = true;
-
-            btnProcessGrab.IsEnabled = false;
-
-
-            //enables stop button
-            btnStopBot.IsEnabled = false;
-        }
-
+        #region Bot_Actions_Tab
         private void BtnProcessGrab_Click(object sender, RoutedEventArgs e)
         {
             btnProcessGrab.IsEnabled = false;
             listProcessList.Items.Clear();
+            listProcessList.SelectionMode = SelectionMode.Multiple;
             Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
             if (NoxPlayers == null)//value check
             {
@@ -364,21 +96,648 @@ namespace L2RBot
             }
 
             Emulators = NoxPlayers;
+            MainWindow.main.UpdateLog = "Select any process that you would like the bot to ignore.";
         }
 
-    }
-    public static class ResizeArray
-    {
-        public static T[] RemoveAt<T>(this T[] source, int index)
+        private void BtnStop_Click(object sender, RoutedEventArgs e)
         {
-            T[] dest = new T[source.Length - 1];
-            if (index > 0)
-                Array.Copy(source, 0, dest, 0, index);
+            if (t.IsAlive == true)
+            {
+                //t.Interrupt();
 
-            if (index < source.Length - 1)
-                Array.Copy(source, index + 1, dest, index, source.Length - index - 1);
+                t.Abort();
+            }
+            btnStopBot.IsEnabled = false;
 
-            return dest;
+            btnProcessGrab.IsEnabled = true;
+
+            //initialize variables
+            t = null;
+
+            EmulatorCount = 0;
+
+            listProcessList.Items.Clear();
+
+            listProcessList.Background = System.Windows.Media.Brushes.Red;
+
+
+
         }
+
+        private void DisableButtons()
+        {
+            //disable buttons after clicking to prevent multithread issues
+            btnMain.IsEnabled = false;
+            btnWeekly.IsEnabled = false;
+            btnScroll.IsEnabled = false;
+            btnDaily.IsEnabled = false;
+            btnTower.IsEnabled = false;
+            btnExp.IsEnabled = false;
+            btnAoM.IsEnabled = false;
+
+            btnProcessGrab.IsEnabled = false;
+
+
+            //enables stop button
+            btnStopBot.IsEnabled = true;
+        }
+
+        private void EnableButtons()
+        {
+            //disable buttons after clicking to prevent multithread issues
+            btnMain.IsEnabled = true;
+            btnWeekly.IsEnabled = true;
+            btnScroll.IsEnabled = true;
+            btnDaily.IsEnabled = true;
+            btnTower.IsEnabled = true;
+            btnExp.IsEnabled = true;
+            btnAoM.IsEnabled = true;
+
+            btnProcessGrab.IsEnabled = false;
+
+
+            //enables stop button
+            btnStopBot.IsEnabled = false;
+
+            //Clears Log
+            txtLog.Text = "";
+        }
+
+        //Bot Script Buttons
+        private void BtnMain_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(MainBot);
+            t.Start();
+
+        }
+
+        private void BtnWeekly_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1350, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(WeeklyBot);
+            t.Start();
+        }
+
+        private void BtnScroll_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1400, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(ScrollBot);
+            t.Start();
+        }
+
+        private void BtnDaily_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(DailyBot);
+            t.Start();
+        }
+
+        private void BtnTOI_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(TOIBot);
+            t.Start();
+        }
+
+        private void BtnExp_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(ExpBot);
+            t.Start();
+        }
+
+        private void BtnAoM_Click(object sender, RoutedEventArgs e)
+        {
+            DisableButtons();
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            t = new Thread(AoMBot);
+            t.Start();
+        }
+        #endregion
+
+        #region Settings_Tab
+        private void DeathCountShow(object sender, RoutedEventArgs e)
+        {
+            DeathCount.IsEnabled = true;
+        }
+
+        private void DeathCountHide(object sender, RoutedEventArgs e)
+        {
+            DeathCount.IsEnabled = false;
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private const int RespawnCountTextDefault = 3;
+
+        private void DeathCount_GotFocus(object sender, RoutedEventArgs e)
+        {
+            DeathCount.Text = DeathCount.Text == RespawnCountTextDefault.ToString() ? string.Empty : DeathCount.Text;
+        }
+
+        private void DeathCount_LostFocus(object sender, RoutedEventArgs e)
+        {
+            DeathCount.Text = DeathCount.Text == string.Empty ? RespawnCountTextDefault.ToString() : DeathCount.Text;
+        }
+        #endregion
+
+        #region Bot_Scripts
+        public void WeeklyBot()
+        {
+            Weekly[] bots = new Weekly[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new Weekly(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+            foreach (Weekly bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+            }
+
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+
+                    if (bots[ind].Complete == false)
+                    {
+                        bots[ind].Start();
+                    }
+                }
+            }
+        }
+
+        public void MainBot()
+        {
+
+            Main[] bots = new Main[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new Main(Emulators[ind]);
+
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
+            }
+
+            foreach (Main bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+            }
+
+
+
+            while (true)//replace with start stop button states
+            {
+
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+
+                        return;
+                    }
+
+                    if (bots[ind].Complete == false)
+                    {
+                        bots[ind].Start();
+                    }
+                }
+            }
+        }
+
+        public void ScrollBot()
+        {
+            Scroll[] bots = new Scroll[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new Scroll(Emulators[ind]);
+
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+            foreach (Scroll bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+
+            }
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+
+                    #region Scroll_CheckBox_Logic
+                    //Reset CheckBox
+                    bool? isResetChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isResetChecked = ScrollReset.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isResetChecked)
+                    {
+                        bots[ind].Reset = true;
+                    }
+
+                    //ScrollS CheckBox
+                    bool? isScrollSChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollSChecked = ScrollS.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollSChecked)
+                    {
+                        bots[ind].Preference.Add(Grade.S);
+                    }
+
+                    //ScrollA Checkbox
+                    bool? isScrollAChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollAChecked = ScrollA.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollAChecked)
+                    {
+                        bots[ind].Preference.Add(Grade.A);
+                    }
+
+                    //ScrollB CheckBox
+                    bool? isScrollBChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollBChecked = ScrollB.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollBChecked)
+                    {
+                        bots[ind].Preference.Add(Grade.B);
+                    }
+
+                    //ScrollC CheckBox
+                    bool? isScrollCChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollCChecked = ScrollC.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollCChecked)
+                    {
+                        bots[ind].Preference.Add(Grade.C);
+                    }
+                    #endregion
+
+                    if (bots[ind].Complete == false)
+                    {
+                        bots[ind].Start();
+                    }
+                }
+            }
+        }
+
+        public void DailyBot()
+        {
+            DailyDungeon[] bots = new DailyDungeon[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new DailyDungeon(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+            foreach (DailyDungeon bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+            }
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].Start();
+                }
+            }
+        }
+
+        public void TOIBot()
+        {
+            TowerOfInsolence[] bots = new TowerOfInsolence[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new TowerOfInsolence(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+            foreach (TowerOfInsolence bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+            }
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].Start();
+                }
+            }
+        }
+
+        public void ExpBot()
+        {
+            ExpDungeon[] bots = new ExpDungeon[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new ExpDungeon(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+            foreach (ExpDungeon bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+            }
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].Start();
+                }
+            }
+        }
+
+        public void AoMBot()
+        {
+            AltarOfMadness[] bots = new AltarOfMadness[EmulatorCount];
+            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            {
+                bots[ind] = new AltarOfMadness(Emulators[ind]);
+                Rectangle screen = Screen.GetRect(Emulators[ind]);
+                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+            }
+
+            foreach (AltarOfMadness bot in bots)
+            {
+                foreach (ListBoxItem item in listProcessList.Items)
+                {
+                    bool isSelected = false;
+
+                    string itemContent = "";
+
+                    item.Dispatcher.Invoke(new Action(() => isSelected = item.IsSelected));
+
+                    item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
+
+                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    {
+                        bot.Complete = true;
+
+                    }
+                }
+                //Respawn Settings
+                bool respawnIsSelected = false;
+
+                int deathCount = 0;
+
+                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+                bot.Respawn = respawnIsSelected;
+
+                bot.Deathcount = (uint) Math.Abs(deathCount);
+            }
+
+            while (true)//replace with start stop button states
+            {
+                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                {
+                    if (Emulators[ind].HasExited == true)
+                    {
+                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                        return;
+                    }
+                    bots[ind].Start();
+                }
+            }
+        }
+        #endregion
     }
 }

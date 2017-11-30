@@ -16,7 +16,7 @@ namespace L2RBot.Common
 
         #region Hamburger_SubNav
         //hamburger button.
-        
+
 
         //hamburger button's child buttons
         //top row.
@@ -134,10 +134,41 @@ namespace L2RBot.Common
         public static Point BtnSubClanHall = _btnSubBottom3;
         #endregion Hamburger_button
 
+        public static Point BtnBag = new Point(983, 34);
+
+        #region Bag_SubNav
+
+        public static Point BagClose = new Point(1239, 38);
+
+        public static Point WeaponBag = new Point(687, 123);
+
+        public static Point ArmorBag = new Point(759, 123);
+
+        public static Point JewelBag = new Point(858, 123);
+
+        public static Point SoulCryBag = new Point(946, 123);
+
+        public static Point PetBag = new Point(1037, 123);
+
+        public static Point PotionBag = new Point(1123, 123);
+
+        public static Point ScrollBag = new Point(1213, 123);
+
+        #endregion
+
+
+        public static Point QuestMenu = new Point(920, 88);
+
+        #region QuestMenu_SubNav
+
+        public static Point BtnWeekly = new Point(109, 285);
+
+        #endregion      
+
         public static Point Map = new Point(1180, 100);
 
         public static Point MapClose = new Point(1243, 68);
 
-
+        public static Point AutoCombat = new Point(935, 614);
     }
 }

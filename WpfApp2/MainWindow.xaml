@@ -6,21 +6,21 @@
         xmlns:local="clr-namespace:L2RBot"
         mc:Ignorable="d"
         Title="L2R Bot" Height="500" Width="500" Left="1300" Top="0" Name="priWindow"
-        Closing="priWindow_Closing">
+        Closing="PriWindow_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="401*"/>
             <ColumnDefinition Width="91*"/>
         </Grid.ColumnDefinitions>
         <TabControl HorizontalAlignment="Left" Height="Auto" Width="Auto" VerticalAlignment="Top" >
-            <TabItem Header="General">
+            <TabItem Header="Bot Actions">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical" Height="Auto" Width="250">
                         <ScrollViewer Name="scroll" VerticalScrollBarVisibility="Visible" CanContentScroll="True">
                             <TextBlock Name="txtLog" TextAlignment="Left" Height="350"  TextWrapping="Wrap" TextBlock.FontSize="10" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Name="contextMenuClearLog" Header="Clear Log" MenuItem.Click="ClearLog"/>
+                                        <MenuItem Name="contextMenuClearLog" Header="Clear Log" MenuItem.Click="ClearLog_Clicked"/>
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             Open Nox player then press "Find Nox" and chose choose your quest.
@@ -35,18 +35,40 @@
                     <StackPanel Orientation="Vertical" Height="Auto" >
                         <Button Name="btnMain" Click="BtnMain_Click" IsEnabled="False">Main Quest</Button>
                         <Button Name="btnWeekly" Click="BtnWeekly_Click" IsEnabled="False">Weekly Quest</Button>
-                        <Button Name="btnScroll" IsEnabled="False" Click="btnScroll_Click">Scroll Quest</Button>
-                        <Button Name="btnDaily" IsEnabled="False" Click="btnDaily_Click">Daily Dungeon</Button>
-                        <Button Name="btnTower" IsEnabled="False" Click="btnTOI_Click">Tower of Insolence</Button>
-                        <Button Name="btnExp" IsEnabled="False" Click="btnExp_Click">Exp Dungeon</Button>
-                        <Button Name="btnAoM" IsEnabled="False" Click="btnAoM_Click">Alter of Madness</Button>
+                        <Button Name="btnScroll" IsEnabled="False" Click="BtnScroll_Click">Scroll Quest</Button>
+                        <Button Name="btnDaily" IsEnabled="False" Click="BtnDaily_Click">Daily Dungeon</Button>
+                        <Button Name="btnTower" IsEnabled="False" Click="BtnTOI_Click">Tower of Insolence</Button>
+                        <Button Name="btnExp" IsEnabled="False" Click="BtnExp_Click">Exp Dungeon</Button>
+                        <Button Name="btnAoM" IsEnabled="False" Click="BtnAoM_Click">Alter of Madness</Button>
                         <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox</Button>
                         <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Settings">
-                <Grid Background="#FFE5E5E5"/>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="General" FontSize="16"/>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Respawn" Name="Respawn" Checked="DeathCountShow" Unchecked="DeathCountHide" IsThreeState="False"/>
+                        </StackPanel>
+                        <Label Content="Respawn Count:" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Name="DeathCount" Width="20" IsEnabled="false" PreviewTextInput="NumberValidationTextBox" GotFocus="DeathCount_GotFocus" LostFocus="DeathCount_LostFocus" Text="3"/>
+                        </StackPanel>
+                        <Label Content="Scroll Quest" FontSize="16"/>
+                        <Label Content="Scroll Grade" ToolTipService.ShowDuration="20000" Name ="ScrollGradeLabel" ToolTip="Check all that apply. The bot will Select them in order of highest grade but it has no regard for level. Be sure to delete any lower level scrolls before using this feature. The bot looks through your first 10 items in your 'Potion Bag.'" />
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="S" Name="ScrollS" IsChecked="True"/>
+                            <CheckBox Content="A" Name="ScrollA" IsChecked="True"/>
+                            <CheckBox Content="B" Name="ScrollB"/>
+                            <CheckBox Content="C" Name="ScrollC"/>
+                        </StackPanel>
+                        <Label Content="Reset Scroll" ToolTipService.ShowDuration="20000" Name="ScrollResetLabel" ToolTip="Warning: Uses 500 Pink Gems, ensure proper gem count before checking this box." />
+                        <CheckBox Content="(Uses Pink Gems)" Name="ScrollReset"/>
+                            
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
         </TabControl>
 

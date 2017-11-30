@@ -12,8 +12,6 @@ namespace L2RBot
         //globals
         private Pixel[] _weeklyQuest;
 
-        private QuestHelper _helper;
-
         private Difficulty _difficulty;
 
         private bool _finished;//using this because Complete is used to track and drive the bot
@@ -54,19 +52,6 @@ namespace L2RBot
                 }
 
                 return _weeklyQuest;
-            }
-        }
-
-        public QuestHelper Helper
-        {
-            get
-            {
-                if (_helper == null)
-                {
-                    _helper = new QuestHelper(App) { Quest = QuestType.AltarOfMadness };
-                }
-
-                return _helper;
             }
         }
 
@@ -258,12 +243,20 @@ namespace L2RBot
             }
         }
 
-
         //constructors
         public AltarOfMadness(Process APP) : base(APP)
         {
+            Helper = new QuestHelper(App)
+            {
+                Quest = QuestType.AltarOfMadness,
+                Deathcount = this.Deathcount,
+                Respawn = this.Respawn
+            };
+
             _difficulty = Difficulty.Easy;
+
             _finished = true;
+
             BuildPixels();
         }
 

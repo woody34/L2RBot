@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using L2RBot.Common.Enum;
 using System.Threading;
+using log4net;
 
 namespace L2RBot
 {
@@ -11,19 +12,19 @@ namespace L2RBot
     /// </summary>
     class Main : Quest
     {
-
-        
-
         //Pixel objects
         private Pixel mainQuest; //used for mainQuest clicking
 
         private Pixel movePixel;//used in conjunction with timer to detect non-movement.
 
-        private Pixel[] blueArrow = new Pixel[2]; //the pixels the blue arrow graphic detection
+        private Pixel[] blueArrow = new Pixel[2];
 
-        private Pixel[] questDone = new Pixel[2]; //the pixel value for the quest done graphic detection
+        private Pixel[] questDone = new Pixel[2];
 
-        private Pixel[] questBubble = new Pixel[2]; //the pixel value for the quest chat bubble
+        private Pixel[] questBubble = new Pixel[2];
+
+        //Log object
+        private static readonly ILog log = LogManager.GetLogger(typeof(Main));
 
         /// <summary>
         /// Constructs MainQuest data objects.
@@ -40,8 +41,11 @@ namespace L2RBot
                 Respawn = this.Respawn
             };
 
-            //Pixel objects
-            //used to click main quest
+            BuildPixels();
+        }
+
+        private void BuildPixels()
+        {
             mainQuest = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
@@ -92,41 +96,87 @@ namespace L2RBot
                 Point = new Point(679, 262)
             };
         }
-
-
         /// <summary>
         /// Starts quest.
         /// </summary>
         public void Start()
         {
+            log.Info(App.MainWindowTitle + " calls Main.Start()");
+
             UpdateScreen();
 
-            User32.SetForegroundWindow(App.MainWindowHandle);
+            BringWindowToFront();
 
             Sleep();//Sleep before to prevent actions from occuring to early.
 
-            //InitClick();
+            InitClick();
 
             QuestDone();
 
             QuestBubble();
 
-            //IdleCheck();
+            IdleCheck();
 
             Helper.Start();
 
             IsHelperComplete();
 
             Sleep();//Sleep after to prevent actions from occuring on the next active window.
+
+            log.Info(App.MainWindowTitle + " Main.Start() End");
         }
 
         /// <summary>
-        /// Detects the Blue Arrow animation that overlays the MainQuest at lower levels.
+        /// Performs the initial Click() upon starting the quest using the initialClick bool, setting true upon completion.
+        /// </summary>
+        private void InitClick()
+        {
+            if (InitialClick == false && Bot.IsCombatScreenUp(App))
+            {
+                log.Info(App.MainWindowTitle + " performing initial click");
+
+                ToggleCombat();
+
+                Click(mainQuest.Point);
+
+                InitialClick = true;
+            }
+        }
+
+        /// <summary>
+        /// Detects the Blue Arrow animation that overlays the MainQuest at lower toon levels.
         /// </summary>
         private void BlueArrowPresent()
         {
             if (blueArrow[0].IsPresent(Screen, 5) & blueArrow[1].IsPresent(Screen, 5))
             {
+                log.Info(App.MainWindowTitle + " Blue Arrow detected");
+                Click(mainQuest.Point);
+            }
+        }
+
+        /// <summary>
+        /// detects the QuestBubble containing an elipsis(...), calls Click() upon detection
+        /// </summary>
+        private void QuestBubble()
+        {
+            if (questBubble[0].IsPresent(Screen, 2) & questBubble[1].IsPresent(Screen, 2) && Timer.ElapsedMilliseconds > IdleTimeInMs)
+            {
+                log.Info(App.MainWindowTitle + " Quest Bubble detected.");
+                Click(mainQuest.Point);
+            }
+            //Bot.PopUpKiller(App);
+        }
+
+        /// <summary>
+        /// Detected the Quest Done graphic that overlays the main quest upon completion, calls Click() of mainQuest.Point
+        /// </summary>
+        private void QuestDone()
+        {
+            if (questDone[0].IsPresent(Screen, 2) && !questDone[1].IsPresent(Screen, 2))
+            {
+                log.Info(App.MainWindowTitle + " QuestDone detected.");
+
                 Click(mainQuest.Point);
             }
         }
@@ -138,50 +188,21 @@ namespace L2RBot
         {
             if (Timer.ElapsedMilliseconds > IdleTimeInMs)//Checks both click timers.
             {
-                if (movePixel.IsPresent(Screen, 2))//Looks to see if your map has moved.
+                log.Info(App.MainWindowTitle + " IdleCheck() Timer condition has been met.");
+
+                ResetTimer();
+
+                StartTimer();
+
+                if (Bot.IsCombatScreenUp(App) && movePixel.IsPresent(Screen, 2))//Looks to see if your map has moved.
                 {
-                    movePixel.UpdateColor(Screen);
+                    log.Info(App.MainWindowTitle + " IdleCheck()-->None movement detected.");
+
+                    ToggleCombat();
+
                     Click(mainQuest.Point);
                 }
                 movePixel.UpdateColor(Screen);
-                Timer.Stop();
-                Timer.Reset();
-                Timer.Start();
-            }
-        }
-
-        /// <summary>
-        /// detects the QuestBubble containing an elipsis(...), calls Click() upon detection
-        /// </summary>
-        private void QuestBubble()
-        {
-            if (questBubble[0].IsPresent(Screen, 2) & questBubble[1].IsPresent(Screen, 2) && Timer.ElapsedMilliseconds > IdleTimeInMs)
-            {
-                Click(mainQuest.Point);
-            }
-            //Bot.PopUpKiller(App);
-        }
-
-        /// <summary>
-        /// Performs the initial Click() upon starting the quest using the initialClick bool, setting true upon initial click
-        /// </summary>
-        private void InitClick()
-        {
-            if (InitialClick.Equals(false))
-            {
-                Click(mainQuest.Point);
-                InitialClick = true;
-            }
-        }
-
-        /// <summary>
-        /// Detected the Quest Done graphic that overlays the main quest upon completion, calls Click() of mainQuest.Point
-        /// </summary>
-        private void QuestDone()
-        {
-            if (questDone[0].IsPresent(Screen, 2) && !questDone[1].IsPresent(Screen, 2))
-            {
-                Click(mainQuest.Point);
             }
         }
     }

@@ -8,13 +8,13 @@ using L2RBot.Common.Enum;
 using System.Windows.Threading;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
+using log4net;
+using NHotkey.Wpf;
+using NHotkey;
 
 namespace L2RBot
 {
 
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         //Globals
@@ -23,8 +23,6 @@ namespace L2RBot
         private int EmulatorCount = 0;
 
         private Thread t;
-
-
 
         internal static MainWindow main;
 
@@ -36,24 +34,33 @@ namespace L2RBot
             //MainWindow.main.UpdateLog = "string data here";
         }
 
-        public IntPtr MainWindowHandle { get; private set; }
-
         public delegate void UpdateLogCallback(string text);
 
-        //Methods
+        //Properties
+        public IntPtr MainWindowHandle { get; private set; }
+
+        //Constructors
         public MainWindow()
         {
             main = this;
 
             InitializeComponent();
+
+            BuildToolTips();
+
+            HKeyBinding();
         }
 
-        #region MainWindow
-        private void ClearLog_Clicked(Object sender, RoutedEventArgs e)
+        private void HKeyBinding()
         {
-            Dispatcher.Invoke(new Action(() => { txtLog.Text = ""; }));
+            HotkeyManager.Current.AddOrReplace("Stop", Key.S, ModifierKeys.Alt | ModifierKeys.Control, BtnStop_Click);
+
+            HotkeyManager.Current.AddOrReplace("Exit", Key.E, ModifierKeys.Alt | ModifierKeys.Control, BtnExit_Click);
+
+            HotkeyManager.Current.AddOrReplace("Find", Key.F, ModifierKeys.Alt | ModifierKeys.Control, BtnProcessGrab_Click);
         }
 
+        //Methods
         private void PriWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
@@ -61,97 +68,26 @@ namespace L2RBot
             //    t.Join();
             //}
         }
-        #endregion
 
         #region Bot_Actions_Tab
-        private void BtnProcessGrab_Click(object sender, RoutedEventArgs e)
-        {
-            btnProcessGrab.IsEnabled = false;
-            listProcessList.Items.Clear();
-            listProcessList.SelectionMode = SelectionMode.Multiple;
-            Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
-            if (NoxPlayers == null)//value check
-            {
-
-                MainWindow.main.UpdateLog = "null process value ProcessGrabber_Click";
-                return;
-            }
-            if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
-            {
-                EnableButtons();
-                listProcessList.IsEnabled = true;
-                listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
-            }
-            foreach (Process pro in NoxPlayers)
-            {
-                if (pro == null)
-                {
-                    MainWindow.main.UpdateLog = "null process value ProcessGrabber_Click";
-                    return;
-                }
-
-                ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
-                listProcessList.Items.Add(itm);
-                EmulatorCount++;
-            }
-
-            Emulators = NoxPlayers;
-            MainWindow.main.UpdateLog = "Select any process that you would like the bot to ignore.";
-        }
-
-        private void BtnStop_Click(object sender, RoutedEventArgs e)
-        {
-            if (t.IsAlive == true)
-            {
-                //t.Interrupt();
-
-                t.Abort();
-            }
-            btnStopBot.IsEnabled = false;
-
-            btnProcessGrab.IsEnabled = true;
-
-            //initialize variables
-            t = null;
-
-            EmulatorCount = 0;
-
-            listProcessList.Items.Clear();
-
-            listProcessList.Background = System.Windows.Media.Brushes.Red;
-
-
-
-        }
-
-        private void DisableButtons()
-        {
-            //disable buttons after clicking to prevent multithread issues
-            btnMain.IsEnabled = false;
-            btnWeekly.IsEnabled = false;
-            btnScroll.IsEnabled = false;
-            btnDaily.IsEnabled = false;
-            btnTower.IsEnabled = false;
-            btnExp.IsEnabled = false;
-            btnAoM.IsEnabled = false;
-
-            btnProcessGrab.IsEnabled = false;
-
-
-            //enables stop button
-            btnStopBot.IsEnabled = true;
-        }
-
         private void EnableButtons()
         {
             //disable buttons after clicking to prevent multithread issues
             btnMain.IsEnabled = true;
+
             btnWeekly.IsEnabled = true;
+
             btnScroll.IsEnabled = true;
-            btnDaily.IsEnabled = true;
-            btnTower.IsEnabled = true;
-            btnExp.IsEnabled = true;
-            btnAoM.IsEnabled = true;
+
+            //turned them off until i fix them
+            //btnDaily.IsEnabled = true;
+
+            //btnTower.IsEnabled = true;
+
+            //btnExp.IsEnabled = true;
+
+            //btnAoM.IsEnabled = true;
+
 
             btnProcessGrab.IsEnabled = false;
 
@@ -161,9 +97,214 @@ namespace L2RBot
 
             //Clears Log
             txtLog.Text = "";
+
+            btnExitBot.IsEnabled = false;
+
+            btnStopBot.IsEnabled = true;
         }
 
-        //Bot Script Buttons
+        private void DisableButtons()
+        {
+            //disable buttons after clicking to prevent multithread issues
+            btnMain.IsEnabled = false;
+
+            btnWeekly.IsEnabled = false;
+
+            btnScroll.IsEnabled = false;
+
+            btnDaily.IsEnabled = false;
+
+            btnTower.IsEnabled = false;
+
+            btnExp.IsEnabled = false;
+
+            btnAoM.IsEnabled = false;
+
+            btnProcessGrab.IsEnabled = false;
+
+
+            //enables stop button
+            btnStopBot.IsEnabled = true;
+        }
+
+        //Button Events
+        private void ClearLog_Clicked(Object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() => { txtLog.Text = ""; }));
+        }
+
+        private void BtnProcessGrab_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnProcessGrab.IsEnabled)
+            {
+                btnProcessGrab.IsEnabled = false;
+
+                listProcessList.Items.Clear();
+
+                listProcessList.SelectionMode = SelectionMode.Multiple;
+
+                Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
+
+                if (NoxPlayers == null)//value check
+                {
+
+                    UpdateLog = "null process value ProcessGrabber_Click";
+                    return;
+                }
+
+                if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
+                {
+                    EnableButtons();
+                    listProcessList.IsEnabled = true;
+                    listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                }
+
+                foreach (Process pro in NoxPlayers)
+                {
+                    if (pro == null)
+                    {
+                        UpdateLog = "Null Process";
+
+                        return;
+                    }
+
+                    ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                    listProcessList.Items.Add(itm);
+
+                    EmulatorCount++;
+                }
+
+                Emulators = NoxPlayers;
+
+                UpdateLog = "Select any process that you would like the bot to ignore.";
+            }
+        }
+
+        //HotKey Overload
+        private void BtnProcessGrab_Click(object sender, HotkeyEventArgs e)
+        {
+            if (btnProcessGrab.IsEnabled)
+            {
+                btnProcessGrab.IsEnabled = false;
+
+                listProcessList.Items.Clear();
+
+                listProcessList.SelectionMode = SelectionMode.Multiple;
+
+                Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
+
+                if (NoxPlayers == null)//value check
+                {
+
+                    UpdateLog = "null process value ProcessGrabber_Click";
+                    return;
+                }
+
+                if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
+                {
+                    EnableButtons();
+                    listProcessList.IsEnabled = true;
+                    listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                }
+
+                foreach (Process pro in NoxPlayers)
+                {
+                    if (pro == null)
+                    {
+                        UpdateLog = "Null Process";
+
+                        return;
+                    }
+
+                    ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                    listProcessList.Items.Add(itm);
+
+                    EmulatorCount++;
+                }
+
+                Emulators = NoxPlayers;
+
+                UpdateLog = "Select any process that you would like the bot to ignore.";
+            }
+        }
+
+        private void BtnStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnStopBot.IsEnabled)
+            {
+                if (t != null)
+                {
+                    t.Abort();
+                }
+
+                DisableButtons();
+
+                btnExitBot.IsEnabled = true;
+
+                btnStopBot.IsEnabled = false;
+
+                btnProcessGrab.IsEnabled = true;
+
+                //initialize variables
+                t = null;
+
+                EmulatorCount = 0;
+
+                listProcessList.Items.Clear();
+
+                listProcessList.Background = System.Windows.Media.Brushes.Red;
+            }
+        }
+
+        //HotKey Overload
+        private void BtnStop_Click(object sender, HotkeyEventArgs e)
+        {
+            if (btnStopBot.IsEnabled)
+            {
+                if (t != null)
+                {
+                    t.Abort();
+                }
+
+                DisableButtons();
+
+                btnExitBot.IsEnabled = true;
+
+                btnStopBot.IsEnabled = false;
+
+                btnProcessGrab.IsEnabled = true;
+
+                //initialize variables
+                t = null;
+
+                EmulatorCount = 0;
+
+                listProcessList.Items.Clear();
+
+                listProcessList.Background = System.Windows.Media.Brushes.Red;
+            }
+        }
+
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnExitBot.IsEnabled)
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
+        }
+
+        //HotKey Overload
+        private void BtnExit_Click(object sender, HotkeyEventArgs e)
+        {
+            if (btnExitBot.IsEnabled)
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
+            
+        }
+
         private void BtnMain_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
@@ -281,18 +422,7 @@ namespace L2RBot
 
                     }
                 }
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
+                BotBuilder(bot);
             }
 
 
@@ -321,10 +451,6 @@ namespace L2RBot
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new Main(Emulators[ind]);
-
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
             }
 
             foreach (Main bot in bots)
@@ -346,18 +472,7 @@ namespace L2RBot
                     }
                 }
 
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
+                BotBuilder(bot);
             }
 
 
@@ -413,19 +528,7 @@ namespace L2RBot
                     }
                 }
 
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
-
+                BotBuilder(bot);
             }
 
             while (true)//replace with start stop button states
@@ -542,18 +645,7 @@ namespace L2RBot
 
                     }
                 }
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
+                BotBuilder(bot);
             }
 
             while (true)//replace with start stop button states
@@ -599,18 +691,7 @@ namespace L2RBot
                     }
                 }
 
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
+                BotBuilder(bot);
             }
 
             while (true)//replace with start stop button states
@@ -655,18 +736,7 @@ namespace L2RBot
 
                     }
                 }
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
+                BotBuilder(bot);
             }
 
             while (true)//replace with start stop button states
@@ -711,18 +781,7 @@ namespace L2RBot
 
                     }
                 }
-                //Respawn Settings
-                bool respawnIsSelected = false;
-
-                int deathCount = 0;
-
-                Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
-
-                Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
-
-                bot.Respawn = respawnIsSelected;
-
-                bot.Deathcount = (uint) Math.Abs(deathCount);
+                BotBuilder(bot);
             }
 
             while (true)//replace with start stop button states
@@ -737,6 +796,57 @@ namespace L2RBot
                     bots[ind].Start();
                 }
             }
+        }
+
+        public void BotBuilder(Quest bot)
+        {
+            //Settings
+            bool respawnIsSelected = false;
+
+            bool bringToFront = false;
+
+            bool home = false;
+
+            int deathCount = 0;
+
+            Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+
+            Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+
+            Respawn.Dispatcher.Invoke(new Action(() => bringToFront = (bool) BringWindowToFront.IsChecked));
+
+            Respawn.Dispatcher.Invoke(new Action(() => home = (bool) HomeWindows.IsChecked));
+
+            bot.HomePosition = home;
+
+            if (bot.HomePosition == true)
+            {
+                Rectangle screen = Screen.GetRect(bot.App);
+
+                User32.SetWindowPos(bot.App.MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
+            }
+
+            bot.Respawn = respawnIsSelected;
+
+            bot.Deathcount = (uint) Math.Abs(deathCount);
+
+            bot.BringToFront = bringToFront;
+        }
+        #endregion
+
+        #region ToolTip_Settings
+        private void BuildToolTips()
+        {
+            ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(UIElement),
+            new FrameworkPropertyMetadata(20000));//Some magic I found on StackOverflow.
+
+            ScrollGradeLabel.ToolTip = "Check all that apply. The bot will Select them in order of highest grade but it has no regard for level. Be sure to delete any lower level scrolls before using this feature. The bot looks through your first 10 items in your 'Potion Bag.'";
+
+            ScrollResetLabel.ToolTip = "Warning: Uses 300 Pink Gems, ensure proper gem count before checking this box.";
+
+            btnMain.ToolTip = "";
+
+            btnWeekly.ToolTip = "";
         }
         #endregion
     }

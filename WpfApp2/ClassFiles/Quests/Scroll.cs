@@ -6,12 +6,14 @@ using L2RBot.Common.Enum;
 using L2RBot.Common;
 using System.Collections.Generic;
 using static L2RBot.Screen;
+using log4net;
 
 namespace L2RBot
 {
     class Scroll : Quest
     {
         //Globals
+
         private Pixel _scrollSearch;
 
         private Pixel[] _items;
@@ -31,6 +33,9 @@ namespace L2RBot
         private bool _iniClick;
 
         private bool _reset = false;
+
+        //Log object
+        private static readonly ILog log = LogManager.GetLogger(typeof(Scroll));
 
         //Properties
         public Pixel ScrollSearch
@@ -305,9 +310,11 @@ namespace L2RBot
         //Logic    
         public void Start()
         {
+            log.Info(App.MainWindowTitle + " calls Scroll.Start()");
+
             UpdateScreen();
 
-            User32.SetForegroundWindow(App.MainWindowHandle);
+            BringWindowToFront();
 
             Sleep();//Sleep before to prevent actions from occuring to early.
 
@@ -325,17 +332,19 @@ namespace L2RBot
                 }
                 if (!Bot.IsCombatScreenUp(App))
                 {
-                    Helper.Start();
+                    Helper.ClosePopUps();
                 }
             }
 
-            _IdleCheck();
+            IdleCheck();
 
             Helper.Start();
 
             IsHelperComplete();
 
             Sleep();//Sleep after to prevent actions from occuring on the next active window.
+
+            log.Info(App.MainWindowTitle + " Scroll.Start() ends.");
         }
 
         /// <summary>
@@ -344,11 +353,14 @@ namespace L2RBot
         /// <returns></returns>
         private bool GrabScrollPoint()
         {
-            //MainWindow.main.UpdateLog = App.MainWindowTitle + "GrabScroll()";
+            log.Info(App.MainWindowTitle + " Looking for Scroll Quest point on game screen.");
+
             Pixel _temp = L2RBot.Screen.SearchPixelVerticalStride(Screen, new Point(13, 210), 211, Colors.ScrollQuest, out bool Found, 2);
 
             if (Found)
             {
+                log.Info(App.MainWindowTitle + " Found Scroll Quest point, " + _temp.Point.ToString());
+
                 _scrollSearch = _temp;
             }
 
@@ -360,7 +372,7 @@ namespace L2RBot
         /// </summary>
         private void OpenBag()
         {
-            //MainWindow.main.UpdateLog = App.MainWindowTitle + "OpenBag()";
+            log.Info(App.MainWindowTitle + " Opening bag.");
             if (Bot.IsCombatScreenUp(App))
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -373,9 +385,8 @@ namespace L2RBot
 
                 Thread.Sleep(TimeSpan.FromSeconds(1.5));
 
-                //Click(Nav.BagClose);
+                log.Info(App.MainWindowTitle + " Bag opened to Poition bag.");
 
-                //Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }
 
@@ -384,24 +395,29 @@ namespace L2RBot
         /// </summary>
         private void FindScroll()
         {
-            //MainWindow.main.UpdateLog = App.MainWindowTitle + "FindScroll()";
+            log.Info(App.MainWindowTitle + " searching for Quest Scroll.");
             foreach (Pixel Px in _items)//get screen colors
             {
+                log.Info(App.MainWindowTitle + " updating bag item pixel values.");
+
                 Px.UpdateColor(Screen);
             }
 
             ComparePref();
 
-            if(_scroll  == null)
+            if (_scroll == null)
             {
                 Click(Nav.MapClose);
 
                 Complete = true;
 
-                MainWindow.main.UpdateLog = App.MainWindowTitle + " has none of the Scrolls of the grade requested. Check 'Settings' tab under 'Scroll Quest.'";
+                log.Info(App.MainWindowTitle + " item pixel values did not match known Quest Scroll pixel values.");
+
+                MainLog(App.MainWindowTitle + " has none of the Scrolls of the grade requested. Check 'Settings' tab under 'Scroll Quest.'");
 
                 return;
             }
+
             Click(_scroll.Point);
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -413,66 +429,15 @@ namespace L2RBot
         /// </summary>
         private void ComparePref()
         {
-            //MainWindow.main.UpdateLog = App.MainWindowTitle + "ComparePref()";
-            //bool Found = false;
-            //while (!Found)
-            //{
-            //    if (_preference.Contains(Grade.C))
-            //    {
-            //        foreach (Pixel item in _items)
-            //        {
-            //            if (CompareColor(item.Color, Colors.ScrollC, 2))
-            //            {
-            //                _scroll = item;
-            //                Found = true;
-            //            }
-            //        }
-            //    }
-
-            //    if (_preference.Contains(Grade.B))
-            //    {
-            //        foreach (Pixel item in _items)
-            //        {
-            //            if (CompareColor(item.Color, Colors.ScrollB, 2))
-            //            {
-            //                _scroll = item;
-            //                Found = true;
-            //            }
-            //        }
-            //    }
-
-            //    if (_preference.Contains(Grade.A))
-            //    {
-            //        foreach (Pixel item in _items)
-            //        {
-            //            if (CompareColor(item.Color, Colors.ScrollA, 2))
-            //            {
-            //                _scroll = item;
-            //                Found = true;
-            //            }
-            //        }
-            //    }
-
-            //    if (_preference.Contains(Grade.S))
-            //    {
-            //        foreach (Pixel item in _items)
-            //        {
-            //            if (CompareColor(item.Color, Colors.ScrollS, 2))
-            //            {
-            //                _scroll = item;
-            //                Found = true;
-            //            }
-            //        }
-            //    }
-            //    Found = true;
-            //}
-
+            log.Info(App.MainWindowTitle + " Comparing item pixel values to user set preferences.");
             if (_preference.Contains(Grade.C))
             {
                 foreach (Pixel item in _items)
                 {
                     if (CompareColor(item.Color, Colors.ScrollC, 2))
                     {
+                        log.Info(App.MainWindowTitle + " C grade Quest Scroll detected at " + item.Point.ToString());
+
                         _scroll = item;
                     }
                 }
@@ -484,6 +449,8 @@ namespace L2RBot
                 {
                     if (CompareColor(item.Color, Colors.ScrollB, 2))
                     {
+                        log.Info(App.MainWindowTitle + " B grade Quest Scroll detected at " + item.Point.ToString());
+
                         _scroll = item;
                     }
                 }
@@ -495,6 +462,8 @@ namespace L2RBot
                 {
                     if (CompareColor(item.Color, Colors.ScrollA, 2))
                     {
+                        log.Info(App.MainWindowTitle + " A grade Quest Scroll detected at " + item.Point.ToString());
+
                         _scroll = item;
                     }
                 }
@@ -506,6 +475,8 @@ namespace L2RBot
                 {
                     if (CompareColor(item.Color, Colors.ScrollS, 2))
                     {
+                        log.Info(App.MainWindowTitle + " S grade Quest Scroll detected at " + item.Point.ToString());
+
                         _scroll = item;
                     }
                 }
@@ -522,7 +493,10 @@ namespace L2RBot
             {
                 if (CheckComplete.IsPresent(Screen, 2))
                 {
+                    log.Info(App.MainWindowTitle + " Scroll Quest has '0' remaining for the day.");
+
                     Thread.Sleep(TimeSpan.FromSeconds(1));
+
                     ResetScrollQuest();
                 }
             }
@@ -531,14 +505,21 @@ namespace L2RBot
                 if (CheckComplete.IsPresent(Screen, 2))
                 {
                     Click(Nav.MapClose);
+
+                    log.Info(App.MainWindowTitle + " Scroll Quest has 0 remaining for the day, closing item menu and ending Scroll Quest.");
+
                     MainWindow.main.UpdateLog = App.MainWindowTitle + " has completed 'Scroll Quest'";
+
                     Complete = true;
+
                     return;
                 }
             }
 
             if (_fulfill[0].IsPresent(Screen, 2) && _fulfill[1].IsPresent(Screen, 2))
             {
+                log.Info(App.MainWindowTitle + " Starting Quest Scroll.");
+
                 Click(_fulfill[0].Point);
             }
 
@@ -546,6 +527,8 @@ namespace L2RBot
 
             if (_fulfillOk[0].IsPresent(Screen, 2) && _fulfillOk[1].IsPresent(Screen, 2))
             {
+                log.Info(App.MainWindowTitle + " Really Starting Quest Scroll...");
+
                 Click(_fulfillOk[0].Point);
             }
         }
@@ -556,32 +539,42 @@ namespace L2RBot
         /// </summary>
         private void ResetScrollQuest()
         {
-            //MainWindow.main.UpdateLog = App.MainWindowTitle + "ResetScrollQuest()";
+            log.Info(App.MainWindowTitle + " Reseting Quest Scroll as is user set preference.");
 
             Click(new Point(727, 409));
+
             Thread.Sleep(TimeSpan.FromSeconds(1));
+
             Click(new Point(763, 495));
+
             Thread.Sleep(TimeSpan.FromSeconds(1));
+
             Click(_scroll.Point);
+
             Thread.Sleep(TimeSpan.FromSeconds(1));
+
+            log.Info(App.MainWindowTitle + " Reset Complete.");
         }
 
 
-        private void _IdleCheck()
+        private void IdleCheck()
         {
-            MainWindow.main.UpdateLog = App.MainWindowTitle + "IdleCheck()";
-
             if (Timer.ElapsedMilliseconds > IdleTimeInMs && Bot.IsCombatScreenUp(App))
             {
+                log.Info(App.MainWindowTitle + " calls IdleCheck()");
+
                 ResetTimer();
 
                 StartTimer();
+
                 while (!Bot.IsCombatScreenUp(App))
                 {
-                    Helper.Start();
-                    if(Timer.ElapsedMilliseconds > 300000)//5 minutes
+                    Helper.ClosePopUps();
+                    if (Timer.ElapsedMilliseconds > 300000)//5 minutes
                     {
-                        MainWindow.main.UpdateLog = App.MainWindowTitle + " has ended 'Scrol Quest' due to an unknown pop-up being detected.";
+                        log.Info(App.MainWindowTitle + " is ending 'Scroll Quest' during IdleCheck() due to not being able to see the combat screen.");
+
+                        MainLog(App.MainWindowTitle + " has ended 'Scrol Quest' due to an unknown pop-up being detected.");
 
                         Complete = true;
 
@@ -590,13 +583,9 @@ namespace L2RBot
                 }
                 if (Bot.IsCombatScreenUp(App) && GrabScrollPoint())//Looks to see if [Sub] is still in the quest options
                 {
-                    Click(Nav.AutoCombat);
+                    log.Info(App.MainWindowTitle + "has detected Scroll Quest in Quest options");
 
-                    Thread.Sleep(TimeSpan.FromSeconds(1));//If you click fast it will just see a single click.
-
-                    Click(Nav.AutoCombat);
-
-                    Thread.Sleep(50);
+                    ToggleCombat();
 
                     Click(_scrollSearch.Point);
 
@@ -604,21 +593,20 @@ namespace L2RBot
                 }
                 if (Bot.IsCombatScreenUp(App) && !GrabScrollPoint())
                 {
+                    log.Info(App.MainWindowTitle + "Unable to loctate 'Scroll Quest,' iniClick set to false to open quest screen and check for completion.");
                     _iniClick = false;
                 }
                 QuestMenuCheck();
-                //look for scroll side menu and close it and call OpenBag()
-
             }
 
         }
 
         private void QuestMenuCheck()
         {
-            MainWindow.main.UpdateLog = App.MainWindowTitle + "QuestMenuCheck()";
-
             if (_scrollQuestMenu[0].IsPresent(Screen, 2) && _scrollQuestMenu[1].IsPresent(Screen, 2))
             {
+                log.Info(App.MainWindowTitle + " Quest Menu detected, closing menu to look at bag.");
+
                 Click(_scrollQuestMenu[0].Point);
 
                 Thread.Sleep(TimeSpan.FromSeconds(1));

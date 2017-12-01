@@ -27,8 +27,9 @@
                             </TextBlock>
                         </ScrollViewer>
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="BtnStop_Click" Content="Stop" IsEnabled="False"/>
-                            <Button x:Name="btnExitBot" Width="100" Height="50" HorizontalAlignment="Center" Click="BtnStop_Click" Content="Exit" IsEnabled="False"/>
+                            <Button x:Name="btnStopBot" Width="100" Height="50" HorizontalAlignment="Left" Click="BtnStop_Click" Content="Stop(Ctl+Alt+S)" IsEnabled="False"/>
+
+                            <Button x:Name="btnExitBot" Width="100" Height="50" HorizontalAlignment="Center" Click="BtnExit_Click" Content="Exit(Ctl+Alt+E)" IsEnabled="True"/>
                         </StackPanel>
                         
                     </StackPanel>
@@ -40,7 +41,7 @@
                         <Button Name="btnTower" IsEnabled="False" Click="BtnTOI_Click">Tower of Insolence</Button>
                         <Button Name="btnExp" IsEnabled="False" Click="BtnExp_Click">Exp Dungeon</Button>
                         <Button Name="btnAoM" IsEnabled="False" Click="BtnAoM_Click">Alter of Madness</Button>
-                        <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox</Button>
+                        <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox(Ctl+Alt+F)</Button>
                         <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>
                     </StackPanel>
                 </StackPanel>
@@ -56,16 +57,22 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBox Name="DeathCount" Width="20" IsEnabled="false" PreviewTextInput="NumberValidationTextBox" GotFocus="DeathCount_GotFocus" LostFocus="DeathCount_LostFocus" Text="3"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Cycle Windows" Name="BringWindowToFront" IsThreeState="False" IsChecked="True"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Home Windows(0,0)" Name="HomeWindows" IsThreeState="False" IsChecked="True"/>
+                        </StackPanel>
                         <Label Content="Scroll Quest" FontSize="16"/>
-                        <Label Content="Scroll Grade" ToolTipService.ShowDuration="20000" Name ="ScrollGradeLabel" ToolTip="Check all that apply. The bot will Select them in order of highest grade but it has no regard for level. Be sure to delete any lower level scrolls before using this feature. The bot looks through your first 10 items in your 'Potion Bag.'" />
+                        <Label Content="Scroll Grade" Name ="ScrollGradeLabel" />
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="S" Name="ScrollS" IsChecked="True"/>
                             <CheckBox Content="A" Name="ScrollA" IsChecked="True"/>
                             <CheckBox Content="B" Name="ScrollB"/>
                             <CheckBox Content="C" Name="ScrollC"/>
                         </StackPanel>
-                        <Label Content="Reset Scroll" ToolTipService.ShowDuration="20000" Name="ScrollResetLabel" ToolTip="Warning: Uses 500 Pink Gems, ensure proper gem count before checking this box." />
-                        <CheckBox Content="(Uses Pink Gems)" Name="ScrollReset"/>
+                        <Label Content="Reset Scroll" Name="ScrollResetLabel" />
+                        <CheckBox Content="(300 Red Diamonds)" Name="ScrollReset"/>
                             
                     </StackPanel>
                 </StackPanel>

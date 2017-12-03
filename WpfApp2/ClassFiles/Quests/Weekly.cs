@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace L2RBot
 {
-    public class Weekly : Quest
+public class Weekly : Quest
     {
         //globals
         private Pixel _weeklySearch;

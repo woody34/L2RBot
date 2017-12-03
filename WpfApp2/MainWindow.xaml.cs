@@ -11,6 +11,9 @@ using System.Windows.Input;
 using log4net;
 using NHotkey.Wpf;
 using NHotkey;
+using System.Reflection;
+using System.IO;
+using static L2RBot.User32;
 
 namespace L2RBot
 {
@@ -42,6 +45,7 @@ namespace L2RBot
         //Constructors
         public MainWindow()
         {
+
             main = this;
 
             InitializeComponent();
@@ -63,10 +67,26 @@ namespace L2RBot
         //Methods
         private void PriWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //if (t.ThreadState.Equals(System.Threading.ThreadState.Running))
-            //{
-            //    t.Join();
-            //}
+
+        }
+
+        private void Update_BtnProcessGrab(Object sender, RoutedEventArgs e)
+        {
+            if (CbItemNox != null)
+            {
+                if (CbItemNox.IsSelected)
+                {
+                    btnProcessGrab.Content = "Find Nox(Ctl+Alt+F) ";
+                }
+            }
+            if (CbItemBS != null)
+            {
+                if (CbItemBS.IsSelected)
+                {
+                    btnProcessGrab.Content = "Find BS(Ctl+Alt+F) ";
+                }
+            }
+
         }
 
         #region Bot_Actions_Tab
@@ -135,47 +155,96 @@ namespace L2RBot
 
         private void BtnProcessGrab_Click(object sender, RoutedEventArgs e)
         {
+            //Do NOT forget to also change overload method below
             if (btnProcessGrab.IsEnabled)
             {
-                btnProcessGrab.IsEnabled = false;
-
                 listProcessList.Items.Clear();
 
                 listProcessList.SelectionMode = SelectionMode.Multiple;
 
-                Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
+                Process[] EmulatorProcess;
 
-                if (NoxPlayers == null)//value check
+                if (CbItemNox.IsSelected)
                 {
+                    EmulatorProcess = Bot.GetOpenProcess("Nox");
 
-                    UpdateLog = "null process value ProcessGrabber_Click";
-                    return;
-                }
-
-                if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
-                {
-                    EnableButtons();
-                    listProcessList.IsEnabled = true;
-                    listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
-                }
-
-                foreach (Process pro in NoxPlayers)
-                {
-                    if (pro == null)
+                    if (EmulatorProcess == null)//value check
                     {
-                        UpdateLog = "Null Process";
 
+                        UpdateLog = "null process value ProcessGrabber_Click";
                         return;
                     }
 
-                    ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+                    if (EmulatorProcess != null)//enbale buttons for quest if we bind to the Nox player process
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
 
-                    listProcessList.Items.Add(itm);
+                    foreach (Process pro in EmulatorProcess)
+                    {
+                        if (pro == null)
+                        {
+                            UpdateLog = "Null Process";
 
-                    EmulatorCount++;
+                            return;
+                        }
+
+                        ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                        listProcessList.Items.Add(itm);
+
+                        EmulatorCount++;
+                    }
+
+                    Emulators = EmulatorProcess;
                 }
 
-                Emulators = NoxPlayers;
+                if (CbItemBS.IsSelected)
+                {
+                    EmulatorProcess = Bot.GetOpenProcess("Bluestacks");
+
+                    if (EmulatorProcess == null)//value check
+                    {
+
+                        UpdateLog = "Null process value ProcessGrabber_Click";
+                        return;
+                    }
+
+                    if (EmulatorProcess != null)//enbale buttons for quest if we bind to the Nox player process
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
+
+                    foreach (Process pro in EmulatorProcess)
+                    {
+                        if (pro == null)
+                        {
+                            UpdateLog = "Null Process";
+
+                            return;
+                        }
+
+                        if(pro.MainWindowTitle != "")
+                        {
+                            ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                            listProcessList.Items.Add(itm);
+
+                            EmulatorCount++;
+                        }
+                    }
+
+                    Emulators = EmulatorProcess;
+                }
+
+                if (listProcessList.HasItems)
+                {
+                    btnProcessGrab.IsEnabled = false;
+                }
 
                 UpdateLog = "Select any process that you would like the bot to ignore.";
             }
@@ -186,45 +255,93 @@ namespace L2RBot
         {
             if (btnProcessGrab.IsEnabled)
             {
-                btnProcessGrab.IsEnabled = false;
-
                 listProcessList.Items.Clear();
 
                 listProcessList.SelectionMode = SelectionMode.Multiple;
 
-                Process[] NoxPlayers = Bot.GetOpenProcess("Nox");
+                Process[] EmulatorProcess;
 
-                if (NoxPlayers == null)//value check
+                if (CbItemNox.IsSelected)
                 {
+                    EmulatorProcess = Bot.GetOpenProcess("Nox");
 
-                    UpdateLog = "null process value ProcessGrabber_Click";
-                    return;
-                }
-
-                if (NoxPlayers != null)//enbale buttons for quest if we bind to the Nox player process
-                {
-                    EnableButtons();
-                    listProcessList.IsEnabled = true;
-                    listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
-                }
-
-                foreach (Process pro in NoxPlayers)
-                {
-                    if (pro == null)
+                    if (EmulatorProcess == null)//value check
                     {
-                        UpdateLog = "Null Process";
 
+                        UpdateLog = "null process value ProcessGrabber_Click";
                         return;
                     }
 
-                    ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+                    if (EmulatorProcess != null)//enbale buttons for quest if we bind to the Nox player process
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
 
-                    listProcessList.Items.Add(itm);
+                    foreach (Process pro in EmulatorProcess)
+                    {
+                        if (pro == null)
+                        {
+                            UpdateLog = "Null Process";
 
-                    EmulatorCount++;
+                            return;
+                        }
+
+                        ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                        listProcessList.Items.Add(itm);
+
+                        EmulatorCount++;
+                    }
+
+                    Emulators = EmulatorProcess;
                 }
 
-                Emulators = NoxPlayers;
+                if (CbItemBS.IsSelected)
+                {
+                    EmulatorProcess = Bot.GetOpenProcess("Bluestacks");
+
+                    if (EmulatorProcess == null)//value check
+                    {
+
+                        UpdateLog = "Null process value ProcessGrabber_Click";
+                        return;
+                    }
+
+                    if (EmulatorProcess != null)//enbale buttons for quest if we bind to the Nox player process
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
+
+                    foreach (Process pro in EmulatorProcess)
+                    {
+                        if (pro == null)
+                        {
+                            UpdateLog = "Null Process";
+
+                            return;
+                        }
+
+                        if (pro.MainWindowTitle != "")
+                        {
+                            ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                            listProcessList.Items.Add(itm);
+
+                            EmulatorCount++;
+                        }
+                    }
+
+                    Emulators = EmulatorProcess;
+                }
+
+                if (listProcessList.HasItems)
+                {
+                    btnProcessGrab.IsEnabled = false;
+                }
 
                 UpdateLog = "Select any process that you would like the bot to ignore.";
             }
@@ -232,6 +349,7 @@ namespace L2RBot
 
         private void BtnStop_Click(object sender, RoutedEventArgs e)
         {
+            //Do NOT forget to also change overload method below
             if (btnStopBot.IsEnabled)
             {
                 if (t != null)
@@ -256,6 +374,7 @@ namespace L2RBot
 
                 listProcessList.Background = System.Windows.Media.Brushes.Red;
             }
+
         }
 
         //HotKey Overload
@@ -289,6 +408,7 @@ namespace L2RBot
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
+            //Do NOT forget to also change overload method below
             if (btnExitBot.IsEnabled)
             {
                 System.Windows.Application.Current.Shutdown();
@@ -302,13 +422,13 @@ namespace L2RBot
             {
                 System.Windows.Application.Current.Shutdown();
             }
-            
+
         }
 
         private void BtnMain_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(MainBot);
             t.Start();
 
@@ -317,7 +437,7 @@ namespace L2RBot
         private void BtnWeekly_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1350, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(WeeklyBot);
             t.Start();
         }
@@ -325,7 +445,7 @@ namespace L2RBot
         private void BtnScroll_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1400, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(ScrollBot);
             t.Start();
         }
@@ -333,7 +453,7 @@ namespace L2RBot
         private void BtnDaily_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(DailyBot);
             t.Start();
         }
@@ -341,7 +461,7 @@ namespace L2RBot
         private void BtnTOI_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(TOIBot);
             t.Start();
         }
@@ -349,7 +469,7 @@ namespace L2RBot
         private void BtnExp_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(ExpBot);
             t.Start();
         }
@@ -357,7 +477,7 @@ namespace L2RBot
         private void BtnAoM_Click(object sender, RoutedEventArgs e)
         {
             DisableButtons();
-            User32.SetWindowPos(this.MainWindowHandle, 0, 1300, 0, (int) this.Height, (int) this.Width, 1);
+            User32.SetWindowPos(this.MainWindowHandle, 0, 1330, 0, (int) this.Height, (int) this.Width, 1);
             t = new Thread(AoMBot);
             t.Start();
         }
@@ -397,11 +517,10 @@ namespace L2RBot
         public void WeeklyBot()
         {
             Weekly[] bots = new Weekly[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new Weekly(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
             }
 
             foreach (Weekly bot in bots)
@@ -422,6 +541,7 @@ namespace L2RBot
 
                     }
                 }
+
                 BotBuilder(bot);
             }
 
@@ -448,6 +568,7 @@ namespace L2RBot
         {
 
             Main[] bots = new Main[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new Main(Emulators[ind]);
@@ -500,13 +621,12 @@ namespace L2RBot
         public void ScrollBot()
         {
             Scroll[] bots = new Scroll[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new Scroll(Emulators[ind]);
 
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
             }
 
             foreach (Scroll bot in bots)
@@ -620,11 +740,12 @@ namespace L2RBot
         public void DailyBot()
         {
             DailyDungeon[] bots = new DailyDungeon[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new DailyDungeon(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+
+                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
             }
 
             foreach (DailyDungeon bot in bots)
@@ -645,6 +766,7 @@ namespace L2RBot
 
                     }
                 }
+
                 BotBuilder(bot);
             }
 
@@ -665,11 +787,12 @@ namespace L2RBot
         public void TOIBot()
         {
             TowerOfInsolence[] bots = new TowerOfInsolence[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new TowerOfInsolence(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+
+                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
             }
 
             foreach (TowerOfInsolence bot in bots)
@@ -701,6 +824,7 @@ namespace L2RBot
                     if (Emulators[ind].HasExited == true)
                     {
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+
                         return;
                     }
                     bots[ind].Start();
@@ -711,11 +835,12 @@ namespace L2RBot
         public void ExpBot()
         {
             ExpDungeon[] bots = new ExpDungeon[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new ExpDungeon(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+
+                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
             }
 
             foreach (ExpDungeon bot in bots)
@@ -736,6 +861,7 @@ namespace L2RBot
 
                     }
                 }
+
                 BotBuilder(bot);
             }
 
@@ -756,11 +882,12 @@ namespace L2RBot
         public void AoMBot()
         {
             AltarOfMadness[] bots = new AltarOfMadness[EmulatorCount];
+
             for (int ind = EmulatorCount - 1; ind >= 0; ind--)
             {
                 bots[ind] = new AltarOfMadness(Emulators[ind]);
-                Rectangle screen = Screen.GetRect(Emulators[ind]);
-                User32.SetWindowPos(Emulators[ind].MainWindowHandle, 0, 0, 0, screen.Width, screen.Width, 1);
+
+                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
             }
 
             foreach (AltarOfMadness bot in bots)
@@ -778,9 +905,9 @@ namespace L2RBot
                     if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
                     {
                         bot.Complete = true;
-
                     }
                 }
+
                 BotBuilder(bot);
             }
 
@@ -793,6 +920,7 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
+
                     bots[ind].Start();
                 }
             }
@@ -801,36 +929,41 @@ namespace L2RBot
         public void BotBuilder(Quest bot)
         {
             //Settings
-            bool respawnIsSelected = false;
+            bool BlueStacks = false;
 
-            bool bringToFront = false;
+            bool Nox = false;
 
-            bool home = false;
+            MainWindow.main.Dispatcher.Invoke(new Action(() => BlueStacks = CbItemBS.IsSelected));
 
-            int deathCount = 0;
+            MainWindow.main.Dispatcher.Invoke(new Action(() => Nox = CbItemNox.IsSelected));
 
-            Respawn.Dispatcher.Invoke(new Action(() => respawnIsSelected = (bool) Respawn.IsChecked));
+            Respawn.Dispatcher.Invoke(new Action(() => bot.Respawn = (bool) Respawn.IsChecked));
 
-            Respawn.Dispatcher.Invoke(new Action(() => deathCount = int.Parse(DeathCount.Text)));
+            Respawn.Dispatcher.Invoke(new Action(() => bot.Deathcount = uint.Parse(DeathCount.Text)));
 
-            Respawn.Dispatcher.Invoke(new Action(() => bringToFront = (bool) BringWindowToFront.IsChecked));
+            Respawn.Dispatcher.Invoke(new Action(() => bot.BringToFront = (bool) BringWindowToFront.IsChecked));
 
-            Respawn.Dispatcher.Invoke(new Action(() => home = (bool) HomeWindows.IsChecked));
-
-            bot.HomePosition = home;
+            Respawn.Dispatcher.Invoke(new Action(() => bot.HomePosition = (bool) HomeWindows.IsChecked));
 
             if (bot.HomePosition == true)
             {
-                Rectangle screen = Screen.GetRect(bot.App);
+                bot.UpdateScreen();
 
-                User32.SetWindowPos(bot.App.MainWindowHandle, 0, 0, 0, screen.Height, screen.Width, 1);//moves each screen to 0,0 point
+                User32.SetWindowPos(bot.App.MainWindowHandle, 0, 0, 0, bot.Screen.Height, bot.Screen.Width, 1);//Moves each screen to 0,0 point.
             }
 
-            bot.Respawn = respawnIsSelected;
+            if (BlueStacks)
+            {
+                WindowPlacement Placement = new WindowPlacement
+                {
+                    ShowCmd = Input.ShowWindowEnum.ShowNormal
+                };
 
-            bot.Deathcount = (uint) Math.Abs(deathCount);
+                GetWindowPlacement(bot.App.MainWindowHandle, out Placement);
 
-            bot.BringToFront = bringToFront;
+                User32.MoveWindow(bot.App.MainWindowHandle, Placement.NormalPosition.Top, Placement.NormalPosition.Left, 1331, 814, true);//Resizes window to 1280x720 + all borders.
+            }
+
         }
         #endregion
 

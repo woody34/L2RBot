@@ -32,7 +32,7 @@ namespace L2RBot
         /// </summary>
         /// <param name="Down">x,y locations of left mouse press</param>
         /// <param name="Up">x,y locations of left mouse release</param>
-        public static void LeftMouseClickDrag(Point Down, Point Up)
+        public static void LeftMouseClickDrag(System.Drawing.Point Down, System.Drawing.Point Up)
         {
             SetCursorPos(Down.X, Down.Y);
             mouse_event((int) MouseEventFlags.LEFTDOWN, Down.X, Down.X, 0, 0);

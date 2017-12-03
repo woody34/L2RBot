@@ -4,9 +4,12 @@ namespace L2RBot
 {
     public class Pixel
     {
+        private Screen _screenObj;
+
         public Color Color { get; set; }
 
         public Point Point { get; set; }
+
 
         /// <summary>
         /// Looks for the Color at the Point on the game screen.
@@ -17,7 +20,8 @@ namespace L2RBot
         /// <returns>False: Color NOT detected</returns>
         public bool IsPresent(Rectangle Screen, int Tolerance)
         {
-            return L2RBot.Screen.CompareColor(Color, L2RBot.Screen.GetColor(Screen, Point.X, Point.Y), Tolerance);
+            _screenObj = new Screen();
+            return L2RBot.Screen.CompareColor(Color, _screenObj.GetColor(Screen, Point.X, Point.Y), Tolerance);
         }
 
         /// <summary>
@@ -27,7 +31,8 @@ namespace L2RBot
         /// <returns></returns>
         public Color CurrentValue(Rectangle _Screen)
         {
-            return Screen.GetColor(_Screen, Point.X, Point.Y);
+            _screenObj = new Screen();
+            return _screenObj.GetColor(_Screen, Point.X, Point.Y);
         }
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace L2RBot
         /// <returns></returns>
         override public string ToString()
         {
-            return "(" + Point.X + ", " + Point.Y + ")TargetL[" + Color.A + "," + Color.R + "," + Color.G + "," + Color.B + "]";
+            return "(" + Point.X + ", " + Point.Y + ")Target[" + Color.A + "," + Color.R + "," + Color.G + "," + Color.B + "]";
         }
     }
 }

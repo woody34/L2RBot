@@ -20,6 +20,47 @@ namespace L2RBot
             public int Bottom;
         }
 
+        internal struct WindowPlacement
+        {
+            public int Length;
+            public int Flags;
+            public Common.Enum.Input.ShowWindowEnum ShowCmd;
+            public Point MinPosition;
+            public Point MaxPosition;
+            public Rect NormalPosition;
+            public static WindowPlacement Default
+            {
+                get
+                {
+                    WindowPlacement result = new WindowPlacement();
+                    result.Length = Marshal.SizeOf(result);
+                    return result;
+                }
+            }
+        }
+
+        public struct Point
+        {
+            public int X;
+            public int Y;
+
+            public Point(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+
+            public static implicit operator System.Drawing.Point(Point p)
+            {
+                return new System.Drawing.Point(p.X, p.Y);
+            }
+
+            public static implicit operator Point(System.Drawing.Point p)
+            {
+                return new Point(p.X, p.Y);
+            }
+        }
+
         [DllImport("user32.dll")]
         public static extern bool SetCursorPos(int x, int y);
 
@@ -50,5 +91,11 @@ namespace L2RBot
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr SetFocus(IntPtr hWnd);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetWindowPlacement(IntPtr hWnd, out WindowPlacement lpwndpl);
     }
 }

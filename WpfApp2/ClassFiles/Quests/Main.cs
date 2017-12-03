@@ -55,7 +55,7 @@ namespace L2RBot
             //used in conjunction with timer to click main quest if no movement has been detected
             movePixel = new Pixel
             {
-                Color = L2RBot.Screen.GetColor(Screen, 230, 490),
+                Color = ScreenObj.GetColor(Screen, 230, 490),
                 Point = new Point(230, 490)
             };
 

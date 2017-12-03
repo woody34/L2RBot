@@ -178,8 +178,6 @@ namespace L2RBot
         //Constructors
         public Scroll(Process APP) : base(APP)
         {
-            DebugLogging = true;
-
             Timer.Start();
 
             App = APP;

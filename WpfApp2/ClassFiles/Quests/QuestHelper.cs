@@ -306,7 +306,7 @@ namespace L2RBot
         {
             app = Process.GetProcessById(App.Id);
 
-            Screen = L2RBot.Screen.GetRect(App);
+            UpdateScreen();
 
             BuildPixels();
         }

@@ -4,12 +4,15 @@ using System.Drawing;
 using System.Threading;
 using log4net;
 using L2RBot.Common;
+using L2RBot.Common.Enum;
 
 namespace L2RBot
 {
     public class Quest
     {
         //globals
+        private Screen _screenObj = new L2RBot.Screen();
+
         private Stopwatch _timer;
 
         private int? _sleepTime;
@@ -56,8 +59,6 @@ namespace L2RBot
 
         public Rectangle Screen { get; set; }//game screen rectangle
 
-        public bool DebugLogging { get; set; }
-
         public bool InitialClick { get; set; }//for tracking the very first click to start the quest
 
         public bool Complete { get; set; }// for tracking quest completion
@@ -72,6 +73,18 @@ namespace L2RBot
 
         public bool HomePosition { get; set; }
 
+        public Screen ScreenObj
+        {
+            get
+            {
+                return _screenObj;
+            }
+            set
+            {
+                _screenObj = value;
+            }
+        }
+
         //constructor
         public Quest(Process App)
         {
@@ -84,6 +97,8 @@ namespace L2RBot
             Complete = false;
 
             IdleTimeInMs = 30000;
+
+            UpdateScreen();
         }
 
         //logic
@@ -95,7 +110,8 @@ namespace L2RBot
         {
             log.Info("Updated Screen object for " + App.MainWindowTitle.ToString());
 
-            Screen = L2RBot.Screen.GetRect(App); //game window screen object(nox players screen location and demensions)
+            Screen = ScreenObj.GetRect(App);
+
         }
 
         /// <summary>
@@ -106,7 +122,7 @@ namespace L2RBot
         {
             log.Info("Updated Screen object for " + App.MainWindowTitle.ToString());
 
-            Screen = L2RBot.Screen.GetRect(App);
+            Screen = ScreenObj.GetRect(App);
         }
 
         /// <summary>
@@ -117,7 +133,7 @@ namespace L2RBot
         {
             log.Info("Clicking Point " + GamePoint.ToString());
 
-            Point screenPoint = L2RBot.Screen.PointToScreenPoint(Screen, GamePoint.X, GamePoint.Y); //Convert game point to screen point
+            Point screenPoint = ScreenObj.PointToScreenPoint(Screen, GamePoint.X, GamePoint.Y); //Convert game point to screen point
 
             Mouse.LeftMouseClick(screenPoint.X, screenPoint.Y);//click screen point
 

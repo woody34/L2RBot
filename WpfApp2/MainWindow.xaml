@@ -12,8 +12,8 @@
             <ColumnDefinition Width="401*"/>
             <ColumnDefinition Width="91*"/>
         </Grid.ColumnDefinitions>
-        <TabControl HorizontalAlignment="Left" Height="Auto" Width="Auto" VerticalAlignment="Top" >
-            <TabItem Header="Bot Actions">
+        <TabControl Name="MainTabs" HorizontalAlignment="Left" Height="Auto" Width="Auto" VerticalAlignment="Top" >
+            <TabItem Header="Bot Actions" >
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Vertical" Height="Auto" Width="250">
                         <ScrollViewer Name="scroll" VerticalScrollBarVisibility="Visible" CanContentScroll="True">
@@ -41,7 +41,7 @@
                         <Button Name="btnTower" IsEnabled="False" Click="BtnTOI_Click">Tower of Insolence</Button>
                         <Button Name="btnExp" IsEnabled="False" Click="BtnExp_Click">Exp Dungeon</Button>
                         <Button Name="btnAoM" IsEnabled="False" Click="BtnAoM_Click">Alter of Madness</Button>
-                        <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click">Find Nox(Ctl+Alt+F)</Button>
+                        <Button Name="btnProcessGrab" Click="BtnProcessGrab_Click" Content="Find Nox(Ctl+Alt+F)"></Button>
                         <ListBox Name="listProcessList" SelectedIndex="0" IsEnabled="False" >No Process Bound</ListBox>
                     </StackPanel>
                 </StackPanel>
@@ -51,11 +51,22 @@
                     <StackPanel Orientation="Vertical">
                         <Label Content="General" FontSize="16"/>
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="Respawn" Name="Respawn" Checked="DeathCountShow" Unchecked="DeathCountHide" IsThreeState="False"/>
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Chose Emulator" />
+                                <ComboBox Name="CbEmulators" SelectedItem="CbItemNox">
+                                    <ComboBoxItem Name="CbItemNox" Content="NoxPlayer" IsSelected="True" Selected="Update_BtnProcessGrab"/>
+                                    <ComboBoxItem Name="CbItemBS" Content="BlueStacks" Selected="Update_BtnProcessGrab" />
+                                </ComboBox>
+                            </StackPanel>
                         </StackPanel>
-                        <Label Content="Respawn Count:" VerticalAlignment="Center"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox Name="DeathCount" Width="20" IsEnabled="false" PreviewTextInput="NumberValidationTextBox" GotFocus="DeathCount_GotFocus" LostFocus="DeathCount_LostFocus" Text="3"/>
+                            <CheckBox Content="Auto Respawn" Name="Respawn" Checked="DeathCountShow" Unchecked="DeathCountHide" IsThreeState="False"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Respawn Count:" VerticalAlignment="Center"/>
+                                <TextBox Name="DeathCount" Width="20" IsEnabled="false" PreviewTextInput="NumberValidationTextBox" GotFocus="DeathCount_GotFocus" LostFocus="DeathCount_LostFocus" Text="3"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Cycle Windows" Name="BringWindowToFront" IsThreeState="False" IsChecked="True"/>

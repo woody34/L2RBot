@@ -11,6 +11,7 @@ namespace L2RBot
 {
     class Bot
     {
+        private static Screen _screenObj;
 
         static Pixel WifiLogo = new Pixel
         {
@@ -18,58 +19,30 @@ namespace L2RBot
 
             Point = new Point(8, 708)
         };
+
         /// <summary>
         /// Checks to see if the green wifi logo is visible indicating that the combat Screen is displayed.
         /// </summary>
-        /// <param name="proc"></param>
+        /// <param name="App"></param>
         /// <returns>true: once wifi logo is detected</returns>
-        public static Boolean IsCombatScreenUp(Process proc)
+        public static Boolean IsCombatScreenUp(Process App)
         {
-            Rectangle _screen = Screen.GetRect(proc);
+            _screenObj = new Screen();
+
+            Rectangle _screen = _screenObj.GetRect(App);
 
             return (WifiLogo.IsPresent(_screen, 4)) ? true : false;
         }
 
-        //Refactored
-
-        ///// <summary>
-        ///// returns array of open proccesses with matching
-        ///// </summary>
-        ///// <param name="ProcName"></param>
-        ///// <returns></returns>
-        //public static Process[] GetOpenProcess(string ProcName)
-        //{
-        //    Process[] noxPlayers;
-        //    Process[] AllWindowsProcesses = Process.GetProcesses();
-        //    int i = 0;
-
-        //    foreach (Process pro in AllWindowsProcesses)
-        //    {
-        //        if (ProcName.Equals(pro.ProcessName))
-        //        {
-        //            i++;
-        //        }
-        //    }
-        //    noxPlayers = new Process[i];
-        //    i = 0;
-        //    foreach (Process pro in AllWindowsProcesses)
-        //    {
-        //        if (ProcName.Equals(pro.ProcessName))
-        //        {
-        //            noxPlayers[i] = Process.GetProcessById(pro.Id);
-        //            MainWindow.main.UpdateLog = pro.MainWindowTitle + " detected!";
-        //            i++;
-        //        }
-        //    }
-        //    return noxPlayers;
-        //}
         /// <summary>
-        /// returns array of open proccesses with matching
+        /// Returns array of open proccesses with matching ProcessName
         /// </summary>
-        /// <param name="ProcName"></param>
+        /// <param name="ProcName">Main ProcessName</param>
+        /// <param name="PName">Secondary ProcessName</param>
         /// <returns></returns>
-        public static Process[] GetOpenProcess(string ProcName, string t = "")
+        public static Process[] GetOpenProcess(string ProcName, string PName = "")
         {
+
             Process[] AllWindowsProcesses = Process.GetProcesses();
 
             List<Process> noxPlayerList = new List<Process>();
@@ -78,7 +51,11 @@ namespace L2RBot
             {
                 if (ProcName.Equals(pro.ProcessName))
                 {
-                    noxPlayerList.Add(pro);
+                    if(pro.MainWindowTitle != "")
+                    {
+                        noxPlayerList.Add(pro);
+                    }
+                    
                 }
             }
 

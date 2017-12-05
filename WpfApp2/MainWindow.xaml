@@ -74,6 +74,9 @@
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Content="Home Windows(0,0)" Name="HomeWindows" IsThreeState="False" IsChecked="True"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="TeamViewer Auto Ok" Name="TVOk" IsThreeState="False" IsChecked="True"/>
+                        </StackPanel>
                         <Label Content="Scroll Quest" FontSize="16"/>
                         <Label Content="Scroll Grade" Name ="ScrollGradeLabel" />
                         <StackPanel Orientation="Horizontal">

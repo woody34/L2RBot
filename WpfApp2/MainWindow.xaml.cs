@@ -228,7 +228,7 @@ namespace L2RBot
                             return;
                         }
 
-                        if(pro.MainWindowTitle != "")
+                        if (pro.MainWindowTitle != "")
                         {
                             ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
 
@@ -933,17 +933,39 @@ namespace L2RBot
 
             bool Nox = false;
 
+            bool Respwn = false;
+
+            uint DeathCnt = 0;
+
+            bool Cycle = false;
+
+            bool Home = false;
+
+            bool CloseTV = false;
+
             MainWindow.main.Dispatcher.Invoke(new Action(() => BlueStacks = CbItemBS.IsSelected));
 
             MainWindow.main.Dispatcher.Invoke(new Action(() => Nox = CbItemNox.IsSelected));
 
-            Respawn.Dispatcher.Invoke(new Action(() => bot.Respawn = (bool) Respawn.IsChecked));
+            MainWindow.main.Dispatcher.Invoke(new Action(() => Respwn = (bool) Respawn.IsChecked));
 
-            Respawn.Dispatcher.Invoke(new Action(() => bot.Deathcount = uint.Parse(DeathCount.Text)));
+            MainWindow.main.Dispatcher.Invoke(new Action(() => DeathCnt = uint.Parse(DeathCount.Text)));
 
-            Respawn.Dispatcher.Invoke(new Action(() => bot.BringToFront = (bool) BringWindowToFront.IsChecked));
+            MainWindow.main.Dispatcher.Invoke(new Action(() => Cycle = (bool) BringWindowToFront.IsChecked));
 
-            Respawn.Dispatcher.Invoke(new Action(() => bot.HomePosition = (bool) HomeWindows.IsChecked));
+            MainWindow.main.Dispatcher.Invoke(new Action(() => Home = (bool) HomeWindows.IsChecked));
+
+            MainWindow.main.Dispatcher.Invoke(new Action(() => CloseTV = (bool) TVOk.IsChecked));
+
+            bot.Respawn = Respwn;
+
+            bot.Deathcount = DeathCnt;
+
+            bot.BringToFront = Cycle;
+
+            bot.HomePosition = Home;
+
+            bot.CloseTVPopup = CloseTV;
 
             if (bot.HomePosition == true)
             {

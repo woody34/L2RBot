@@ -97,5 +97,11 @@ namespace L2RBot
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetWindowPlacement(IntPtr hWnd, out WindowPlacement lpwndpl);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern string SendMessage(int hWnd, int msg, IntPtr wParam, IntPtr lParam);
     }
 }

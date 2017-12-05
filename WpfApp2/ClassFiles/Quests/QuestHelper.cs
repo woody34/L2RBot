@@ -3,6 +3,7 @@ using System.Drawing;
 using L2RBot.Common.Enum;
 using L2RBot.Common;
 using System.Threading;
+using System;
 
 namespace L2RBot
 {
@@ -876,7 +877,7 @@ namespace L2RBot
         /// </summary>
         public void ClosePopUps()
         {
-            if(_loginPopUp[0].IsPresent(Screen, 2) && !_loginPopUp[1].IsPresent(Screen, 2))
+            if (_loginPopUp[0].IsPresent(Screen, 2) && !_loginPopUp[1].IsPresent(Screen, 2))
             {
                 Click(_loginPopUp[0].Point);
             }
@@ -894,6 +895,32 @@ namespace L2RBot
             if (_okPopUp[0].IsPresent(Screen, 10) && _okPopUp[1].IsPresent(Screen, 2))
             {
                 Click(_okPopUp[0].Point);
+            }
+
+            CloseTeamViewerPopUp();
+        }
+
+        /// <summary>
+        /// Closes the pop-up window created upon closing your remote session of TeamViewer.
+        /// TeamViewer is awesome and I would reccomend paying for it to make this go away. 
+        /// The only reason I need to close it is that it gets in the way of viewing the game screen.
+        /// </summary>
+        public void CloseTeamViewerPopUp()
+        {
+            {
+                Process[] OpenProcesses = Bot.GetOpenProcess("TeamViewer");
+
+                foreach (Process Proc in OpenProcesses)
+                {
+                    if (Proc.MainWindowTitle == "Sponsored session")//.Equals() for null check.
+                    {
+                        int BM_CLICK = 0x00f5; //Testing purposes. I will create an enum for wParam once I get it working in the future.
+
+                        IntPtr ChildHandle = User32.FindWindowEx((IntPtr) Proc.MainWindowHandle, IntPtr.Zero, "Button", "Ok");
+
+                        User32.SendMessage((int) ChildHandle, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+                    }
+                }
             }
         }
     }

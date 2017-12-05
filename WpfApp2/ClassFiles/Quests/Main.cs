@@ -37,8 +37,12 @@ namespace L2RBot
             Helper = new QuestHelper(App)
             {
                 Quest = QuestType.Main,
+
                 Deathcount = this.Deathcount,
-                Respawn = this.Respawn
+
+                Respawn = this.Respawn,
+
+                CloseTVPopup = this.CloseTVPopup
             };
 
             BuildPixels();

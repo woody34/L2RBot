@@ -53,8 +53,12 @@ public class Weekly : Quest
             Helper = new QuestHelper(App)
             {
                 Quest = QuestType.Weekly,
+
                 Deathcount = this.Deathcount,
-                Respawn = this.Respawn
+
+                Respawn = this.Respawn,
+
+                CloseTVPopup = this.CloseTVPopup
             };
 
             Timer.Start();

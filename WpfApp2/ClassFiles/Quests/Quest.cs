@@ -73,6 +73,8 @@ namespace L2RBot
 
         public bool HomePosition { get; set; }
 
+        public bool CloseTVPopup { get; set; }
+
         public Screen ScreenObj
         {
             get

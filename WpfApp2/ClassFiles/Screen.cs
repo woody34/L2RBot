@@ -40,9 +40,13 @@ namespace L2RBot
 
                         bool Nox = false;
 
+                        bool MEmu = false;
+
                         MainWindow.main.Dispatcher.Invoke(new Action(() => BS = MainWindow.main.CbItemBS.IsSelected));
 
                         MainWindow.main.Dispatcher.Invoke(new Action(() => Nox = MainWindow.main.CbItemNox.IsSelected));
+
+                        MainWindow.main.Dispatcher.Invoke(new Action(() => MEmu = MainWindow.main.CbItemMEmu.IsSelected));
 
                         if (BS)
                         {
@@ -52,6 +56,11 @@ namespace L2RBot
                         if (Nox)
                         {
                             _emu = Emulator.NoxPlayer;
+                        }
+
+                        if (MEmu)
+                        {
+                            _emu = Emulator.MEmu;
                         }
                     }
                 }
@@ -164,6 +173,17 @@ namespace L2RBot
                 LeftBorder = 7;
 
                 RightBorder = 7;
+            }
+
+            if (Emu == Emulator.MEmu)
+            {
+                TopBorder = 31;
+
+                BottomBorder = 1;
+
+                LeftBorder = 1;
+
+                RightBorder = 37;
             }
 
             BorderWidth = LeftBorder + RightBorder;

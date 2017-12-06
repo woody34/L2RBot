@@ -375,13 +375,14 @@ namespace L2RBot
         private void OpenBag()
         {
             log.Info(App.MainWindowTitle + " Opening bag.");
+
             if (Bot.IsCombatScreenUp(App))
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
 
                 Click(Nav.BtnBag);
 
-                Thread.Sleep(TimeSpan.FromSeconds(4));
+                Thread.Sleep(TimeSpan.FromSeconds(6));
 
                 Click(Nav.PotionBag);
 

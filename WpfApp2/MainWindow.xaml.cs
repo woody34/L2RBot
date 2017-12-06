@@ -86,6 +86,13 @@ namespace L2RBot
                     btnProcessGrab.Content = "Find BS(Ctl+Alt+F) ";
                 }
             }
+            if (CbItemMEmu != null)
+            {
+                if (CbItemMEmu.IsSelected)
+                {
+                    btnProcessGrab.Content = "Find MEmu(Ctl+Alt+F) ";
+                }
+            }
 
         }
 
@@ -241,6 +248,46 @@ namespace L2RBot
                     Emulators = EmulatorProcess;
                 }
 
+                if (CbItemMEmu.IsSelected)
+                {
+                    EmulatorProcess = Bot.GetOpenProcess("MEmu");
+
+                    if (EmulatorProcess == null)//value check
+                    {
+
+                        UpdateLog = "Null process value ProcessGrabber_Click";
+                        return;
+                    }
+
+                    if (EmulatorProcess != null)//enbale buttons for quest if we bind to the Nox player process
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
+
+                    foreach (Process pro in EmulatorProcess)
+                    {
+                        if (pro == null)
+                        {
+                            UpdateLog = "Null Process";
+
+                            return;
+                        }
+
+                        if (pro.MainWindowTitle != "")
+                        {
+                            ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                            listProcessList.Items.Add(itm);
+
+                            EmulatorCount++;
+                        }
+                    }
+
+                    Emulators = EmulatorProcess;
+                }
+
                 if (listProcessList.HasItems)
                 {
                     btnProcessGrab.IsEnabled = false;
@@ -253,6 +300,7 @@ namespace L2RBot
         //HotKey Overload
         private void BtnProcessGrab_Click(object sender, HotkeyEventArgs e)
         {
+            //Do NOT forget to also change overload method below
             if (btnProcessGrab.IsEnabled)
             {
                 listProcessList.Items.Clear();
@@ -301,6 +349,46 @@ namespace L2RBot
                 if (CbItemBS.IsSelected)
                 {
                     EmulatorProcess = Bot.GetOpenProcess("Bluestacks");
+
+                    if (EmulatorProcess == null)//value check
+                    {
+
+                        UpdateLog = "Null process value ProcessGrabber_Click";
+                        return;
+                    }
+
+                    if (EmulatorProcess != null)//enbale buttons for quest if we bind to the Nox player process
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
+
+                    foreach (Process pro in EmulatorProcess)
+                    {
+                        if (pro == null)
+                        {
+                            UpdateLog = "Null Process";
+
+                            return;
+                        }
+
+                        if (pro.MainWindowTitle != "")
+                        {
+                            ListBoxItem itm = new ListBoxItem() { Content = pro.MainWindowTitle.ToString() };
+
+                            listProcessList.Items.Add(itm);
+
+                            EmulatorCount++;
+                        }
+                    }
+
+                    Emulators = EmulatorProcess;
+                }
+
+                if (CbItemMEmu.IsSelected)
+                {
+                    EmulatorProcess = Bot.GetOpenProcess("MEmu");
 
                     if (EmulatorProcess == null)//value check
                     {
@@ -550,11 +638,11 @@ namespace L2RBot
             {
                 for (int ind = EmulatorCount - 1; ind >= 0; ind--)
                 {
-                    if (Emulators[ind].HasExited == true)
-                    {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
+                    //if (Emulators[ind].HasExited == true)
+                    //{
+                    //    MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
+                    //    return;
+                    //}
 
                     if (bots[ind].Complete == false)
                     {
@@ -933,6 +1021,8 @@ namespace L2RBot
 
             bool Nox = false;
 
+            bool MEmu = false;
+
             bool Respwn = false;
 
             uint DeathCnt = 0;
@@ -946,6 +1036,8 @@ namespace L2RBot
             MainWindow.main.Dispatcher.Invoke(new Action(() => BlueStacks = CbItemBS.IsSelected));
 
             MainWindow.main.Dispatcher.Invoke(new Action(() => Nox = CbItemNox.IsSelected));
+
+            MainWindow.main.Dispatcher.Invoke(new Action(() => MEmu = CbItemMEmu.IsSelected));
 
             MainWindow.main.Dispatcher.Invoke(new Action(() => Respwn = (bool) Respawn.IsChecked));
 

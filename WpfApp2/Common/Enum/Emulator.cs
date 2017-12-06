@@ -10,6 +10,7 @@ namespace L2RBot.Common.Enum
     {
         None,
         NoxPlayer,
-        BlueStacks
+        BlueStacks,
+        MEmu
     }
 }

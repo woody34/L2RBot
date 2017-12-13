@@ -64,7 +64,7 @@ namespace L2RBot
         public bool Complete { get; set; }// for tracking quest completion
 
         public int IdleTimeInMs { get; set; }//the duration of time in ms that has to pass between clicks before idle
-
+       
         public bool Respawn { get; set; }
 
         public uint Deathcount { get; set; }

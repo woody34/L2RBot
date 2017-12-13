@@ -53,25 +53,29 @@ namespace L2RBot
             mainQuest = new Pixel
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
+
                 Point = new Point(125, 250)
             };
 
-            //used in conjunction with timer to click main quest if no movement has been detected
+            //used in conjunctizon with timer to click main quest if no movement has been detected
             movePixel = new Pixel
             {
                 Color = ScreenObj.GetColor(Screen, 230, 490),
+
                 Point = new Point(230, 490)
             };
 
             //the blue arrow that is present during early game main quests, lots of bugs in early quests
             blueArrow[0] = new Pixel
-            {
-                Color = Color.FromArgb(255, 54, 103, 123),
+            {           /*Condition*/                       /*MEmu Color*/                       /*Original Color*/
+                Color = (ScreenObj.Emu == Emulator.MEmu ) ? Color.FromArgb(255, 123, 123, 123) : Color.FromArgb(255, 54, 103, 123),
+
                 Point = new Point(282, 243)
             };
             blueArrow[1] = new Pixel
-            {
-                Color = Color.FromArgb(255, 46, 91, 108),
+            {           /*Condition*/                       /*MEmu Color*/                       /*Original Color*/
+                Color = (ScreenObj.Emu == Emulator.MEmu) ? Color.FromArgb(255, 123, 123, 123) : Color.FromArgb(255, 46, 91, 108),
+
                 Point = new Point(282, 249)
             };
 
@@ -79,12 +83,14 @@ namespace L2RBot
             questDone[0] = new Pixel
             {
                 Color = Color.White,
+
                 Point = new Point(218, 260)//White D in 'Done' graphic.
             };
 
             questDone[1] = new Pixel
             {
                 Color = Color.White,
+
                 Point = new Point(220, 260)//Center of white D in 'Done' graphic.
             };
 
@@ -92,11 +98,13 @@ namespace L2RBot
             questBubble[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 226, 226, 226),
+
                 Point = new Point(692, 249)
             };
             questBubble[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 63, 63, 63),
+
                 Point = new Point(679, 262)
             };
         }

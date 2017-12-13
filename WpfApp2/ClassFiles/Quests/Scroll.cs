@@ -433,6 +433,9 @@ namespace L2RBot
         private void ComparePref()
         {
             log.Info(App.MainWindowTitle + " Comparing item pixel values to user set preferences.");
+
+            _scroll = null;
+
             if (_preference.Contains(Grade.C))
             {
                 foreach (Pixel item in _items)
@@ -492,7 +495,7 @@ namespace L2RBot
         private void FulfillRequest()
         {
             //MainWindow.main.UpdateLog = App.MainWindowTitle + "FulfillRequest()";
-            if (_reset)
+            if (_reset) //If Scroll Quest Reset preference is check and the pixel is detected, reset the quest.
             {
                 if (CheckComplete.IsPresent(Screen, 2))
                 {
@@ -503,7 +506,7 @@ namespace L2RBot
                     ResetScrollQuest();
                 }
             }
-            if (!_reset)
+            if (!_reset)//If Scroll Quest Reset preference is NOT check and the pixel is detected, close the window
             {
                 if (CheckComplete.IsPresent(Screen, 2))
                 {
@@ -521,7 +524,7 @@ namespace L2RBot
 
             if (_fulfill[0].IsPresent(Screen, 2) && _fulfill[1].IsPresent(Screen, 2))
             {
-                log.Info(App.MainWindowTitle + " Starting Quest Scroll.");
+                log.Info(App.MainWindowTitle + " Clicking Fulfill Quest ");
 
                 Click(_fulfill[0].Point);
             }
@@ -530,7 +533,7 @@ namespace L2RBot
 
             if (_fulfillOk[0].IsPresent(Screen, 2) && _fulfillOk[1].IsPresent(Screen, 2))
             {
-                log.Info(App.MainWindowTitle + " Really Starting Quest Scroll...");
+                log.Info(App.MainWindowTitle + " Clicking Fulfill Quest> Ok ");
 
                 Click(_fulfillOk[0].Point);
             }

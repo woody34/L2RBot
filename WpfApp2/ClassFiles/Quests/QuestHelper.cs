@@ -446,14 +446,14 @@ namespace L2RBot
             _questStart[0] = new Pixel
             {
                 Color = Colors.White,
-                Point = new Point(864, 491)//The White S on the 'Start Quest' button.
+                Point = new Point(867, 487)//The White S on the 'Start Quest' button.
             };
 
             _questStart[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 49, 63, 83),
 
-                Point = new Point(887, 479)//The blue BG on the 'Start Quest' button.
+                Point = new Point(866, 479)//The blue BG on the 'Start Quest' button.
             };
 
             _questGoNow = new Pixel[2];
@@ -462,14 +462,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(888, 494)//The G on the "Go Now' button.
+                Point = new Point(898, 491)//The G on the "Go Now' button.
             };
 
             _questGoNow[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 45, 59, 78),
 
-                Point = new Point(897, 490)//The blue between the head and tale of the g on the 'Go Now' button.
+                Point = new Point(892, 491)//The blue between the head and tale of the g on the 'Go Now' button.
             };
 
             _questComplete = new Pixel[2];
@@ -478,14 +478,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(838, 493)//Front of the Q on the ' Quest Complete' button.
+                Point = new Point(843, 490)//Front of the Q on the ' Quest Complete' button.
             };
 
             _questComplete[1] = new Pixel
             {
                 Color = Colors.White,
 
-                Point = new Point(843, 492)//Center of Q on 'Quest Complete' button.
+                Point = new Point(848, 489)//Center of Q on 'Quest Complete' button.
             };
 
             //Walk button, Weekly Quest.
@@ -495,14 +495,14 @@ namespace L2RBot
             {
                 Color = Color.FromArgb(255, 120, 130, 140),
 
-                Point = new Point(468, 518)//W on the 'Walk" button.
+                Point = new Point(470, 521)//W on the 'Walk" button.
             };
 
             _questWalk[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 54, 90, 131),
 
-                Point = new Point(666, 508)//The blue BG of the 'Teleport' button(none opaque.)
+                Point = new Point(676, 508)//The blue BG of the 'Teleport' button(none opaque.)
             };
 
             _subQuestStart = new Pixel[2];

@@ -366,14 +366,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(702, 617)//White A on 'Accept Quest' button.
+                Point = new Point(707, 612)//White A on 'Accept Quest' button.
             };
 
             _acceptQuest[1] = new Pixel
             {
                 Color = Colors.CompleteOk,
 
-                Point = new Point(732, 592)//Blue 'Accept Quest' button's background.
+                Point = new Point(717, 592)//Blue 'Accept Quest' button's background.
             };
 
             _claimReward = new Pixel[2];

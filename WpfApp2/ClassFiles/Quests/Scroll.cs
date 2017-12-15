@@ -272,25 +272,25 @@ namespace L2RBot
             Fulfill[0] = new Pixel
             {
                 Color = Colors.White,
-                Point = new Point(1057, 667)
+                Point = new Point(1062, 667)//The white F in the 'Fulfill Request' button.
             };
 
             Fulfill[1] = new Pixel
             {
                 Color = Colors.CompleteOk,
-                Point = new Point(1081, 648)
+                Point = new Point(1120, 648)//The blue BG of the 'Fulfill Request button.
             };
 
             FulfillOk[0] = new Pixel
             {
                 Color = Colors.White,
-                Point = new Point(749, 490)
+                Point = new Point(750, 486)//The white O on the 'OK' button.
             };
 
             FulfillOk[1] = new Pixel
             {
                 Color = Colors.CompleteOk,
-                Point = new Point(730, 472)
+                Point = new Point(754, 472)//The blue BG of the 'OK' button.
             };
         }
 
@@ -299,13 +299,15 @@ namespace L2RBot
             ScrollQuestMenu[0] = new Pixel
             {
                 Color = Colors.ScrollQuestMenuX,
-                Point = new Point(904, 116)
+
+                Point = new Point(906, 117)//The grey X that you press to Exit the scroll quest menu.
             };
 
             ScrollQuestMenu[1] = new Pixel
             {
                 Color = Colors.White,
-                Point = new Point(725, 607)
+
+                Point = new Point(730, 599)//The white F on the 'Fulfill Request' button.
             };
         }
 

@@ -327,14 +327,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(1178, 509)//White S on 'Skip' button.
+                Point = new Point(1166, 504)//White S on 'Skip' button.
             };
 
             _skipDialog[1] = new Pixel
             {
                 Color = Colors.White,//!White
 
-                Point = new Point(1249, 600)//Black BG of the '>' (skip arrow).
+                Point = new Point(1249, 651)//Black BG of the '>' (skip arrow).
             };
 
             _skipCutScene = new Pixel[3];
@@ -382,14 +382,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(563, 611)//White C on 'Claim Reward' button.
+                Point = new Point(569, 608)//White C on 'Claim Reward' button.
             };
 
             _claimReward[1] = new Pixel
             {
                 Color = Colors.CompleteOk,
 
-                Point = new Point(626, 592)//Blue BG of 'Claim Reward' button.
+                Point = new Point(627, 591)//Blue BG of 'Claim Reward' button.
             };
 
             _continue = new Pixel[2];
@@ -511,14 +511,14 @@ namespace L2RBot
             {
                 Color = Color.FromArgb(255, 255, 255, 255),
 
-                Point = new Point(712, 603)//White S on the 'Start' button.
+                Point = new Point(714, 604)//White S on the 'Start' button.
             };
 
             _subQuestStart[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 49, 85, 127),
 
-                Point = new Point(701, 607)//BG of button.
+                Point = new Point(727, 607)//BG of button.
             };
 
             _stuckLoading = new Pixel[4];
@@ -604,14 +604,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(960, 55)//S of the 'Skip' button.
+                Point = new Point(961, 52)//S of the 'Skip' button.
             };
 
             _skipDialogTop[1] = new Pixel()
             {
                 Color = Color.White,
 
-                Point = new Point(953, 56)//!BG of the 'Skip' button.
+                Point = new Point(1020, 60)//!BG of the 'Skip' button.
             };
 
             _equipPopUp = new Pixel[2];

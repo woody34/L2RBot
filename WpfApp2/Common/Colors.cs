@@ -13,6 +13,10 @@ namespace L2RBot.Common
         //Wifi Logo
         public static Color WifiLogo = Color.FromArgb(255, 79, 136, 42);
 
+        //Navigation buttons
+        public static Color Navi = Color.FromArgb(255, 223, 226, 224);
+
+
         //Quests colors identified at x value 16, y value 210-421(at the quest pane)
         public static Color MainQuest = Color.FromArgb(255, 255, 175, 0);
 

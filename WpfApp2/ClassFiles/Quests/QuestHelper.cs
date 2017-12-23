@@ -414,14 +414,14 @@ namespace L2RBot
             {
                 Color = Colors.White,
 
-                Point = new Point(1169, 50)//White S on the 'Skip' button.
+                Point = new Point(1130, 46)//White S on the 'Skip' button.
             };
 
             _skipTutorial[1] = new Pixel
             {
                 Color = Colors.White,
 
-                Point = new Point(1154, 54)//Point that is not white.
+                Point = new Point(1191, 34)//Point that is not white.
             };
 
             _skipTutorialOk = new Pixel[2];

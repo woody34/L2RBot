@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace L2RBot
 {
-public class Weekly : Quest
+    public class Weekly : Quest
     {
         //globals
         private Pixel _weeklySearch;
@@ -70,6 +70,24 @@ public class Weekly : Quest
             _iniClick = false;
         }
 
+        /// <summary>
+        /// Builds the collection of quest complete pixels.
+        /// </summary>
+        private void _BuildComplete()
+        {
+            //All Weekly Quests complete
+            WeeklyComplete[0] = new Pixel
+            {
+                Color = Color.FromArgb(255, 71, 71, 71),
+                Point = new Point(844, 490)//Left side of the Q on 'Quest Complete' button.
+            };
+            WeeklyComplete[1] = new Pixel
+            {
+                Color = Color.FromArgb(255, 21, 26, 37),
+                Point = new Point(848, 490)//Center blue of the Q on 'Quest Complete' button.
+            };
+        }
+
         //logic
         public void Start()
         {
@@ -95,24 +113,6 @@ public class Weekly : Quest
             Sleep();//Sleep after to prevent actions from occuring on the next active window.
         }
 
-        /// <summary>
-        /// Builds the collection of quest complete pixels.
-        /// </summary>
-        private void _BuildComplete()
-        {
-            //All Weekly Quests complete
-            WeeklyComplete[0] = new Pixel
-            {
-                Color = Color.FromArgb(255, 71, 71, 71),
-                Point = new Point(844, 490)//Left side of the Q on 'Quest Complete' button.
-            };
-            WeeklyComplete[1] = new Pixel
-            {
-                Color = Color.FromArgb(255, 21, 26, 37),
-                Point = new Point(848, 490)//Center blue of the Q on 'Quest Complete' button.
-            };
-        }
-
         private void _OpenWeeklyQuest()
         {
             if (Bot.IsCombatScreenUp(App))
@@ -129,7 +129,7 @@ public class Weekly : Quest
 
                 _iniClick = true;
             }
-            
+
         }
 
         private void _IdleCheck()

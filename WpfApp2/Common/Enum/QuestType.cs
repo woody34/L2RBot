@@ -12,9 +12,15 @@ namespace L2RBot.Common.Enum
     public enum QuestType
     {
         Main,
+
         Weekly,
+
         Scroll,
+
         Dungeon,
+
+        TOI,
+
         AltarOfMadness
     }
 }

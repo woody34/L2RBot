@@ -106,12 +106,16 @@ namespace L2RBot
 
             btnScroll.IsEnabled = true;
 
-            //turned them off until i fix them
-            //btnDaily.IsEnabled = true;
 
-            //btnTower.IsEnabled = true;
 
+            //Turned them off until I fix them.
             //btnExp.IsEnabled = true;
+
+            btnDaily.IsEnabled = true;
+
+            btnTower.IsEnabled = true;
+
+
 
             //btnAoM.IsEnabled = true;
 
@@ -626,7 +630,6 @@ namespace L2RBot
                     if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
                     {
                         bot.Complete = true;
-
                     }
                 }
 
@@ -867,7 +870,11 @@ namespace L2RBot
                         MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
                         return;
                     }
-                    bots[ind].Start();
+                    if (!bots[ind].Complete)
+                    {
+                        bots[ind].Start();
+                    }
+
                 }
             }
         }
@@ -915,7 +922,11 @@ namespace L2RBot
 
                         return;
                     }
-                    bots[ind].Start();
+                    if (!bots[ind].Complete)
+                    {
+                        bots[ind].Start();
+                    }
+
                 }
             }
         }

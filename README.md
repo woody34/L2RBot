@@ -1,5 +1,7 @@
 # L2RBot
 
+Original project at https://github.com/woody34/L2RBot
+
 Lineage 2 Revolution Pixel Bot
 
 I am currently refactoring the bot to work with the US release of the game, specifically v1.x.

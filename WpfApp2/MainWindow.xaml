@@ -57,6 +57,7 @@
                                     <ComboBoxItem Name="CbItemNox" Content="NoxPlayer" IsSelected="True" Selected="Update_BtnProcessGrab"/>
                                     <ComboBoxItem Name="CbItemBS" Content="BlueStacks" Selected="Update_BtnProcessGrab" />
                                     <ComboBoxItem Name="CbItemMEmu" Content="MEmu" Selected="Update_BtnProcessGrab" />
+                                    <ComboBoxItem Name="CbItemADB" Content="ADB" Selected="Update_BtnProcessGrab" />
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>

@@ -153,7 +153,7 @@ namespace L2RBot
         public Point[] DungeonOptions = new Point[4];
 
         //constructors
-        public DailyDungeon(Process App) : base(App)
+        public DailyDungeon(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
             BuildHelper();
 
@@ -172,7 +172,7 @@ namespace L2RBot
 
         private void BuildHelper()
         {
-            Helper = new QuestHelper(App)
+            Helper = new QuestHelper(App, AdbApp)
             {
                 Quest = QuestType.Dungeon,
 
@@ -289,16 +289,19 @@ namespace L2RBot
 
             DungeonOptions[3] = new Point(203, 522);//Very Hard
         }
-
+        
         //logic
         public void Start()
         {
             UpdateScreen();
 
             //need to look into halting code until this User32 method has returned.
-            User32.SetForegroundWindow(App.MainWindowHandle);//This is slow and causes timing issues.
+            if (BringToFront == true)
+            {
+                BringWindowToFront();
+            }
 
-            Sleep(500);//A short sleep before actions prevents timing issues.
+            Sleep(SleepTime);//A short sleep before actions prevents timing issues.
 
             if (_dungeonInProgress == false)
             {
@@ -320,13 +323,13 @@ namespace L2RBot
 
             IsRecharge();
 
-            Sleep(500);//A short sleep after actions prevents timing issues.
+            Sleep(SleepTime);//A short sleep after actions prevents timing issues.
         }
 
         private void OpenHamburger()
         {
-            log.Info(App.MainWindowTitle + " is looking for the Hamburger button.");
-            if (Bot.IsCombatScreenUp(App) && Hamburger[0].IsPresent(Screen, 15) && !Hamburger[1].IsPresent(Screen, 3))
+            log.Info(BotName + " is looking for the Hamburger button.");
+            if (IsCombatScreenUp() && Hamburger[0].IsPresent(Screen, 15) && !Hamburger[1].IsPresent(Screen, 3))
             {
                 Click(Hamburger[0].Point);
             }
@@ -334,7 +337,7 @@ namespace L2RBot
 
         private void OpenDungeon()
         {
-            log.Info(App.MainWindowTitle + " is looking for the Dungeon button.");
+            log.Info(BotName + " is looking for the Dungeon button.");
             if (Dungeon[0].IsPresent(Screen, 15) && !Dungeon[1].IsPresent(Screen, 2))
             {
                 Click(Dungeon[0].Point);
@@ -351,7 +354,7 @@ namespace L2RBot
 
         private void ChoseDifficulty()
         {
-            log.Info(App.MainWindowTitle + " Checking Difficulty");
+            log.Info(BotName + " Checking Difficulty");
 
             Click(DungeonOptions[3]);//Very Hard.
 
@@ -363,7 +366,7 @@ namespace L2RBot
             {
                 Click(Enter[0].Point);
 
-                log.Info(App.MainWindowTitle + " has selected 'Very Hard.'");
+                log.Info(BotName + " has selected 'Very Hard.'");
             }
 
             Click(DungeonOptions[2]);//Hard.
@@ -376,7 +379,7 @@ namespace L2RBot
             {
                 Click(Enter[0].Point);
 
-                log.Info(App.MainWindowTitle + " has selected 'Hard.'");
+                log.Info(BotName + " has selected 'Hard.'");
             }
 
             Click(DungeonOptions[1]);//Normal
@@ -389,7 +392,7 @@ namespace L2RBot
             {
                 Click(Enter[0].Point);
 
-                log.Info(App.MainWindowTitle + " has selected 'Normal.'");
+                log.Info(BotName + " has selected 'Normal.'");
             }
 
             Click(DungeonOptions[0]);//Easy
@@ -402,7 +405,7 @@ namespace L2RBot
             {
                 Click(Enter[0].Point);
 
-                log.Info(App.MainWindowTitle + " has selected 'Easy.'");
+                log.Info(BotName + " has selected 'Easy.'");
             }
 
             
@@ -416,7 +419,7 @@ namespace L2RBot
 
                 _dungeonInProgress = false;
 
-                log.Info(App.MainWindowTitle + " has finished the quest.");
+                log.Info(BotName + " has finished the quest.");
             }
 
             
@@ -430,11 +433,11 @@ namespace L2RBot
 
                 Complete = true;
 
-                MainLog(App.MainWindowTitle + " has Completed Daily Quest");
+                MainLog(BotName + " has Completed Daily Quest");
 
                 //at some point I can add options to auto recharge according to preferences.
 
-                log.Info(App.MainWindowTitle + " Has Completed all Daily dungeons.");
+                log.Info(BotName + " Has Completed all Daily dungeons.");
             }
 
         }

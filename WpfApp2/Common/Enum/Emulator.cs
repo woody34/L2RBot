@@ -9,8 +9,15 @@ namespace L2RBot.Common.Enum
     public enum Emulator
     {
         None,
+
         NoxPlayer,
+
         BlueStacks,
-        MEmu
+
+        MEmu,
+
+        ADB,
+
+        ADBNox,
     }
 }

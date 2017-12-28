@@ -131,7 +131,7 @@ namespace L2RBot
         public Point[] DungeonOptions = new Point[4];
 
         //constructors
-        public ExpDungeon(Process App) : base(App)
+        public ExpDungeon(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
             BuildHelper();
 
@@ -150,7 +150,7 @@ namespace L2RBot
 
         private void BuildHelper()
         {
-            Helper = new QuestHelper(App)
+            Helper = new QuestHelper(App, AdbApp)
             {
                 Quest = QuestType.Dungeon,
 
@@ -260,7 +260,10 @@ namespace L2RBot
             UpdateScreen();
 
             //need to look into halting code until this User32 method has returned.
-            User32.SetForegroundWindow(App.MainWindowHandle);//This is slow and causes timing issues.
+            if (BringToFront == true)
+            {
+                BringWindowToFront();
+            }
 
             Sleep();//A short sleep before actions prevents timing issues.
 
@@ -285,7 +288,7 @@ namespace L2RBot
 
         private void OpenHamburger()
         {
-            if (Bot.IsCombatScreenUp(App) && Hamburger[0].IsPresent(Screen, 2) && !Hamburger[1].IsPresent(Screen, 2))
+            if (IsCombatScreenUp() && Hamburger[0].IsPresent(Screen, 2) && !Hamburger[1].IsPresent(Screen, 2))
             {
                 Click(Hamburger[0].Point);
             }

@@ -1,10 +1,11 @@
-﻿using System.Drawing;
+﻿using Managed.Adb;
+using System.Drawing;
 
 namespace L2RBot
 {
     public class Pixel
     {
-        private Screen _screenObj;
+        private Screen ScreenObj;
 
         public Color Color { get; set; }
 
@@ -20,19 +21,35 @@ namespace L2RBot
         /// <returns>False: Color NOT detected</returns>
         public bool IsPresent(Rectangle Screen, int Tolerance)
         {
-            _screenObj = new Screen();
-            return L2RBot.Screen.CompareColor(Color, _screenObj.GetColor(Screen, Point.X, Point.Y), Tolerance);
+            ScreenObj = new Screen();
+
+            return L2RBot.Screen.CompareColor(Color, ScreenObj.GetColor(Screen, Point.X, Point.Y), Tolerance);
+        }
+
+        public bool IsPresent(Image Image, int Tolerance)
+        {
+            Bitmap ScreenCap = new Bitmap(Image);
+
+            return L2RBot.Screen.CompareColor(Color, ScreenCap.GetPixel(Point.X, Point.Y), Tolerance);
         }
 
         /// <summary>
         /// Grabs game screen's current Color value at Point.
         /// </summary>
-        /// <param name="_Screen"></param>
+        /// <param name="Screen"></param>
         /// <returns></returns>
-        public Color CurrentValue(Rectangle _Screen)
+        public Color CurrentValue(Rectangle Screen)
         {
-            _screenObj = new Screen();
-            return _screenObj.GetColor(_Screen, Point.X, Point.Y);
+            ScreenObj = new Screen();
+
+            return ScreenObj.GetColor(Screen, Point.X, Point.Y);
+        }
+
+        public Color CurrentValue(Image Image)
+        {
+            Bitmap ScreenCap = new Bitmap(Image);
+
+            return ScreenCap.GetPixel(Point.X, Point.Y);
         }
 
         /// <summary>
@@ -42,6 +59,13 @@ namespace L2RBot
         public void UpdateColor(Rectangle Screen)
         {
             Color = CurrentValue(Screen);
+        }
+
+        public void UpdateColor(Image Image)
+        {
+            Bitmap ScreenCap = new Bitmap(Image);
+
+            Color = ScreenCap.GetPixel(Point.X, Point.Y);
         }
 
         /// <summary>

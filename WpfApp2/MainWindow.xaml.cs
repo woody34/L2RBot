@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Controls;
 using System.Drawing;
@@ -11,9 +12,8 @@ using System.Windows.Input;
 using log4net;
 using NHotkey.Wpf;
 using NHotkey;
-using System.Reflection;
-using System.IO;
 using static L2RBot.User32;
+using Managed.Adb;
 
 namespace L2RBot
 {
@@ -21,7 +21,13 @@ namespace L2RBot
     public partial class MainWindow : Window
     {
         //Globals
-        private Process[] Emulators;
+        private Process[] Emulators = null;
+
+        private L2RDevice[] L2RDevices = null;
+
+        private Process NullEmulator = null;
+
+        private L2RDevice NullL2RDev = null;
 
         private int EmulatorCount = 0;
 
@@ -64,6 +70,22 @@ namespace L2RBot
             HotkeyManager.Current.AddOrReplace("Find", Key.F, ModifierKeys.Alt | ModifierKeys.Control, BtnProcessGrab_Click);
         }
 
+        #region ToolTip_Settings
+        private void BuildToolTips()
+        {
+            ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(UIElement),
+            new FrameworkPropertyMetadata(20000));//Some magic I found on StackOverflow.
+
+            ScrollGradeLabel.ToolTip = "Check all that apply. The bot will Select them in order of highest grade but it has no regard for level. Be sure to delete any lower level scrolls before using this feature. The bot looks through your first 10 items in your 'Potion Bag.'";
+
+            ScrollResetLabel.ToolTip = "Warning: Uses 300 Pink Gems, ensure proper gem count before checking this box.";
+
+            btnMain.ToolTip = "";
+
+            btnWeekly.ToolTip = "";
+        }
+        #endregion
+
         //Methods
         private void PriWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -79,6 +101,7 @@ namespace L2RBot
                     btnProcessGrab.Content = "Find Nox(Ctl+Alt+F) ";
                 }
             }
+
             if (CbItemBS != null)
             {
                 if (CbItemBS.IsSelected)
@@ -86,11 +109,20 @@ namespace L2RBot
                     btnProcessGrab.Content = "Find BS(Ctl+Alt+F) ";
                 }
             }
+
             if (CbItemMEmu != null)
             {
                 if (CbItemMEmu.IsSelected)
                 {
                     btnProcessGrab.Content = "Find MEmu(Ctl+Alt+F) ";
+                }
+            }
+
+            if (CbItemADB != null)
+            {
+                if (CbItemADB.IsSelected)
+                {
+                    btnProcessGrab.Content = "Find ADB(Ctl+Alt+F) ";
                 }
             }
 
@@ -292,10 +324,50 @@ namespace L2RBot
                     Emulators = EmulatorProcess;
                 }
 
+                if (CbItemADB.IsSelected)
+                {
+                    AndroidDebugBridge.Initialize(true);
+
+                    //ADB devices.
+                    List<Device> Devices = AdbHelper.Instance.GetDevices(AndroidDebugBridge.SocketAddress);
+
+                    L2RDevices = new L2RDevice[Devices.Count];
+
+                    //Initializes the L2RDevice array.
+                    for (int i = 0; i < Devices.Count; i++)
+                    {
+                        L2RDevices[i] = new L2RDevice(Devices[i]);
+
+                        EmulatorCount++;
+                    }
+
+                    //Enbale buttons for quest if we find ADB devices.
+                    if (Devices != null)
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
+
+                    foreach (L2RDevice Device in L2RDevices)
+                    {
+                        if (Device.CharacterName == null)
+                        {
+                            UpdateLog = "Unable to find Character name";
+                        }
+
+                        ListBoxItem itm = new ListBoxItem() { Content = Device.CharacterName };
+
+                        listProcessList.Items.Add(itm);
+                    }
+                }
+
                 if (listProcessList.HasItems)
                 {
                     btnProcessGrab.IsEnabled = false;
                 }
+
+
 
                 UpdateLog = "Select any process that you would like the bot to ignore.";
             }
@@ -430,10 +502,50 @@ namespace L2RBot
                     Emulators = EmulatorProcess;
                 }
 
+                if (CbItemADB.IsSelected)
+                {
+                    AndroidDebugBridge.Initialize(true);
+
+                    //ADB devices.
+                    List<Device> Devices = AdbHelper.Instance.GetDevices(AndroidDebugBridge.SocketAddress);
+
+                    L2RDevices = new L2RDevice[Devices.Count];
+
+                    //Initializes the L2RDevice array.
+                    for (int i = 0; i < Devices.Count; i++)
+                    {
+                        L2RDevices[i] = new L2RDevice(Devices[i]);
+
+                        EmulatorCount++;
+                    }
+
+                    //Enbale buttons for quest if we find ADB devices.
+                    if (Devices != null)
+                    {
+                        EnableButtons();
+                        listProcessList.IsEnabled = true;
+                        listProcessList.Background = System.Windows.Media.Brushes.LightGreen;
+                    }
+
+                    foreach (L2RDevice Device in L2RDevices)
+                    {
+                        if (Device.CharacterName == null)
+                        {
+                            UpdateLog = "Unable to find Character name";
+                        }
+
+                        ListBoxItem itm = new ListBoxItem() { Content = Device.CharacterName };
+
+                        listProcessList.Items.Add(itm);
+                    }
+                }
+
                 if (listProcessList.HasItems)
                 {
                     btnProcessGrab.IsEnabled = false;
                 }
+
+
 
                 UpdateLog = "Select any process that you would like the bot to ignore.";
             }
@@ -459,6 +571,10 @@ namespace L2RBot
 
                 //initialize variables
                 t = null;
+
+                Emulators = null;
+
+                L2RDevices = null;
 
                 EmulatorCount = 0;
 
@@ -608,15 +724,34 @@ namespace L2RBot
         #region Bot_Scripts
         public void WeeklyBot()
         {
-            Weekly[] bots = new Weekly[EmulatorCount];
+            //Build Bot[]
+            Weekly[] bots = new Weekly[0];
 
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new Weekly(Emulators[ind]);
+                bots = new Weekly[L2RDevices.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new Weekly(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new Weekly[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new Weekly(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (Weekly bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -627,7 +762,7 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
                     }
@@ -639,17 +774,11 @@ namespace L2RBot
 
             while (true)//replace with start stop button states
             {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-                    //if (Emulators[ind].HasExited == true)
-                    //{
-                    //    MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                    //    return;
-                    //}
-
-                    if (bots[ind].Complete == false)
+                    if (bots[i].Complete == false)
                     {
-                        bots[ind].Start();
+                        bots[i].Start();
                     }
                 }
             }
@@ -657,16 +786,34 @@ namespace L2RBot
 
         public void MainBot()
         {
+            //Build Bot[]
+            Main[] bots = new Main[0];
 
-            Main[] bots = new Main[EmulatorCount];
-
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new Main(Emulators[ind]);
+                bots = new Main[L2RDevices.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new Main(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new Main[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new Main(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (Main bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -677,10 +824,9 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
-
                     }
                 }
 
@@ -688,22 +834,13 @@ namespace L2RBot
             }
 
 
-
             while (true)//replace with start stop button states
             {
-
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-                    if (Emulators[ind].HasExited == true)
+                    if (bots[i].Complete == false)
                     {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-
-                        return;
-                    }
-
-                    if (bots[ind].Complete == false)
-                    {
-                        bots[ind].Start();
+                        bots[i].Start();
                     }
                 }
             }
@@ -711,17 +848,34 @@ namespace L2RBot
 
         public void ScrollBot()
         {
-            Scroll[] bots = new Scroll[EmulatorCount];
+            //Build Bot[]
+            Scroll[] bots = new Scroll[0];
 
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new Scroll(Emulators[ind]);
+                bots = new Scroll[L2RDevices.Length];
 
-                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new Scroll(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new Scroll[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new Scroll(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (Scroll bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -732,97 +886,23 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
-
                     }
                 }
 
                 BotBuilder(bot);
             }
 
+
             while (true)//replace with start stop button states
             {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-
-                    if (Emulators[ind].HasExited == true)
+                    if (bots[i].Complete == false)
                     {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
-                    }
-
-                    #region Scroll_CheckBox_Logic
-                    //Reset CheckBox
-                    bool? isResetChecked = null;
-
-                    ScrollReset.Dispatcher.Invoke(new Action(() =>
-                    {
-                        isResetChecked = ScrollReset.IsChecked;
-                    }), DispatcherPriority.Normal);
-
-                    if ((bool) isResetChecked)
-                    {
-                        bots[ind].Reset = true;
-                    }
-
-                    //ScrollS CheckBox
-                    bool? isScrollSChecked = null;
-
-                    ScrollReset.Dispatcher.Invoke(new Action(() =>
-                    {
-                        isScrollSChecked = ScrollS.IsChecked;
-                    }), DispatcherPriority.Normal);
-
-                    if ((bool) isScrollSChecked)
-                    {
-                        bots[ind].Preference.Add(Grade.S);
-                    }
-
-                    //ScrollA Checkbox
-                    bool? isScrollAChecked = null;
-
-                    ScrollReset.Dispatcher.Invoke(new Action(() =>
-                    {
-                        isScrollAChecked = ScrollA.IsChecked;
-                    }), DispatcherPriority.Normal);
-
-                    if ((bool) isScrollAChecked)
-                    {
-                        bots[ind].Preference.Add(Grade.A);
-                    }
-
-                    //ScrollB CheckBox
-                    bool? isScrollBChecked = null;
-
-                    ScrollReset.Dispatcher.Invoke(new Action(() =>
-                    {
-                        isScrollBChecked = ScrollB.IsChecked;
-                    }), DispatcherPriority.Normal);
-
-                    if ((bool) isScrollBChecked)
-                    {
-                        bots[ind].Preference.Add(Grade.B);
-                    }
-
-                    //ScrollC CheckBox
-                    bool? isScrollCChecked = null;
-
-                    ScrollReset.Dispatcher.Invoke(new Action(() =>
-                    {
-                        isScrollCChecked = ScrollC.IsChecked;
-                    }), DispatcherPriority.Normal);
-
-                    if ((bool) isScrollCChecked)
-                    {
-                        bots[ind].Preference.Add(Grade.C);
-                    }
-                    #endregion
-
-                    if (bots[ind].Complete == false)
-                    {
-                        bots[ind].Start();
+                        bots[i].Start();
                     }
                 }
             }
@@ -830,17 +910,34 @@ namespace L2RBot
 
         public void DailyBot()
         {
-            DailyDungeon[] bots = new DailyDungeon[EmulatorCount];
+            //Build Bot[]
+            DailyDungeon[] bots = new DailyDungeon[0];
 
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new DailyDungeon(Emulators[ind]);
+                bots = new DailyDungeon[L2RDevices.Length];
 
-                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new DailyDungeon(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new DailyDungeon[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new DailyDungeon(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (DailyDungeon bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -851,47 +948,58 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
-
                     }
                 }
 
                 BotBuilder(bot);
             }
 
+
             while (true)//replace with start stop button states
             {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-                    if (Emulators[ind].HasExited == true)
+                    if (bots[i].Complete == false)
                     {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
+                        bots[i].Start();
                     }
-                    if (!bots[ind].Complete)
-                    {
-                        bots[ind].Start();
-                    }
-
                 }
             }
         }
 
         public void TOIBot()
         {
-            TowerOfInsolence[] bots = new TowerOfInsolence[EmulatorCount];
+            //Build Bot[]
+            TowerOfInsolence[] bots = new TowerOfInsolence[0];
 
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new TowerOfInsolence(Emulators[ind]);
+                bots = new TowerOfInsolence[L2RDevices.Length];
 
-                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new TowerOfInsolence(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new TowerOfInsolence[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new TowerOfInsolence(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (TowerOfInsolence bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -902,48 +1010,58 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
-
                     }
                 }
 
                 BotBuilder(bot);
             }
 
+
             while (true)//replace with start stop button states
             {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-                    if (Emulators[ind].HasExited == true)
+                    if (bots[i].Complete == false)
                     {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-
-                        return;
+                        bots[i].Start();
                     }
-                    if (!bots[ind].Complete)
-                    {
-                        bots[ind].Start();
-                    }
-
                 }
             }
         }
 
         public void ExpBot()
         {
-            ExpDungeon[] bots = new ExpDungeon[EmulatorCount];
+            //Build Bot[]
+            ExpDungeon[] bots = new ExpDungeon[0];
 
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new ExpDungeon(Emulators[ind]);
+                bots = new ExpDungeon[L2RDevices.Length];
 
-                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new ExpDungeon(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new ExpDungeon[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new ExpDungeon(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (ExpDungeon bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -954,43 +1072,58 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
-
                     }
                 }
 
                 BotBuilder(bot);
             }
 
+
             while (true)//replace with start stop button states
             {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-                    if (Emulators[ind].HasExited == true)
+                    if (bots[i].Complete == false)
                     {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
+                        bots[i].Start();
                     }
-                    bots[ind].Start();
                 }
             }
         }
 
         public void AoMBot()
         {
-            AltarOfMadness[] bots = new AltarOfMadness[EmulatorCount];
+            //Build Bot[]
+            AltarOfMadness[] bots = new AltarOfMadness[0];
 
-            for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+            //Builds Bot[] to for ADB clients
+            if (L2RDevices != null)
             {
-                bots[ind] = new AltarOfMadness(Emulators[ind]);
+                bots = new AltarOfMadness[L2RDevices.Length];
 
-                Rectangle screen = bots[ind].ScreenObj.GetRect(Emulators[ind]);
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new AltarOfMadness(NullEmulator, L2RDevices[i]);
+                }
+            }
+
+            //Builds Bot[] to for ADB clients
+            if (Emulators != null)
+            {
+                bots = new AltarOfMadness[Emulators.Length];
+
+                for (int i = 0; i < bots.Length; i++)
+                {
+                    bots[i] = new AltarOfMadness(Emulators[i], NullL2RDev);
+                }
             }
 
             foreach (AltarOfMadness bot in bots)
             {
+                //Checks if user deselected process to exclude from automation.
                 foreach (ListBoxItem item in listProcessList.Items)
                 {
                     bool isSelected = false;
@@ -1001,7 +1134,7 @@ namespace L2RBot
 
                     item.Dispatcher.Invoke(new Action(() => itemContent = item.Content.ToString()));
 
-                    if (isSelected && itemContent == bot.App.MainWindowTitle.ToString())
+                    if (isSelected && itemContent == bot.BotName)
                     {
                         bot.Complete = true;
                     }
@@ -1010,17 +1143,15 @@ namespace L2RBot
                 BotBuilder(bot);
             }
 
+
             while (true)//replace with start stop button states
             {
-                for (int ind = EmulatorCount - 1; ind >= 0; ind--)
+                for (int i = 0; i < bots.Length; i++)
                 {
-                    if (Emulators[ind].HasExited == true)
+                    if (bots[i].Complete == false)
                     {
-                        MainWindow.main.UpdateLog = Emulators[ind].MainWindowTitle + " has terminated. Please stop bot.";
-                        return;
+                        bots[i].Start();
                     }
-
-                    bots[ind].Start();
                 }
             }
         }
@@ -1044,6 +1175,8 @@ namespace L2RBot
 
             bool CloseTV = false;
 
+            bool ADB = false;
+
             MainWindow.main.Dispatcher.Invoke(new Action(() => BlueStacks = CbItemBS.IsSelected));
 
             MainWindow.main.Dispatcher.Invoke(new Action(() => Nox = CbItemNox.IsSelected));
@@ -1060,11 +1193,21 @@ namespace L2RBot
 
             MainWindow.main.Dispatcher.Invoke(new Action(() => CloseTV = (bool) TVOk.IsChecked));
 
+            MainWindow.main.Dispatcher.Invoke(new Action(() => ADB = CbItemADB.IsSelected));
+
             bot.Respawn = Respwn;
 
             bot.Deathcount = DeathCnt;
 
-            bot.BringToFront = Cycle;
+            if (ADB == true)
+            {
+                bot.BringToFront = false;
+                bot.SleepTime = 0;
+            }
+            else
+            {
+                bot.BringToFront = Cycle;
+            }
 
             bot.HomePosition = Home;
 
@@ -1074,7 +1217,7 @@ namespace L2RBot
             {
                 bot.UpdateScreen();
 
-                User32.SetWindowPos(bot.App.MainWindowHandle, 0, 0, 0, bot.Screen.Height, bot.Screen.Width, 1);//Moves each screen to 0,0 point.
+                User32.SetWindowPos(bot.BotWindowHandle, 0, 0, 0, bot.Screen.Height, bot.Screen.Width, 1);//Moves each screen to 0,0 point.
             }
 
             if (BlueStacks)
@@ -1084,27 +1227,11 @@ namespace L2RBot
                     ShowCmd = Input.ShowWindowEnum.ShowNormal
                 };
 
-                GetWindowPlacement(bot.App.MainWindowHandle, out Placement);
+                GetWindowPlacement(bot.BotWindowHandle, out Placement);
 
-                User32.MoveWindow(bot.App.MainWindowHandle, Placement.NormalPosition.Top, Placement.NormalPosition.Left, 1331, 814, true);//Resizes window to 1280x720 + all borders.
+                User32.MoveWindow(bot.BotWindowHandle, Placement.NormalPosition.Top, Placement.NormalPosition.Left, 1331, 814, true);//Resizes window to 1280x720 + all borders.
             }
 
-        }
-        #endregion
-
-        #region ToolTip_Settings
-        private void BuildToolTips()
-        {
-            ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(UIElement),
-            new FrameworkPropertyMetadata(20000));//Some magic I found on StackOverflow.
-
-            ScrollGradeLabel.ToolTip = "Check all that apply. The bot will Select them in order of highest grade but it has no regard for level. Be sure to delete any lower level scrolls before using this feature. The bot looks through your first 10 items in your 'Potion Bag.'";
-
-            ScrollResetLabel.ToolTip = "Warning: Uses 300 Pink Gems, ensure proper gem count before checking this box.";
-
-            btnMain.ToolTip = "";
-
-            btnWeekly.ToolTip = "";
         }
         #endregion
     }

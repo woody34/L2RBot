@@ -48,9 +48,9 @@ namespace L2RBot
         }
 
         //constructors
-        public Weekly(Process APP) : base(APP)
+        public Weekly(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
-            Helper = new QuestHelper(App)
+            Helper = new QuestHelper(App, AdbApp)
             {
                 Quest = QuestType.Weekly,
 
@@ -79,11 +79,13 @@ namespace L2RBot
             WeeklyComplete[0] = new Pixel
             {
                 Color = Color.FromArgb(255, 71, 71, 71),
+
                 Point = new Point(844, 490)//Left side of the Q on 'Quest Complete' button.
             };
             WeeklyComplete[1] = new Pixel
             {
                 Color = Color.FromArgb(255, 21, 26, 37),
+
                 Point = new Point(848, 490)//Center blue of the Q on 'Quest Complete' button.
             };
         }
@@ -93,7 +95,10 @@ namespace L2RBot
         {
             UpdateScreen();
 
-            User32.SetForegroundWindow(App.MainWindowHandle);
+            if (BringToFront == true)
+            {
+                BringWindowToFront();
+            }
 
             Sleep();//Sleep before to prevent actions from occuring to early.
 
@@ -115,7 +120,7 @@ namespace L2RBot
 
         private void _OpenWeeklyQuest()
         {
-            if (Bot.IsCombatScreenUp(App))
+            if (IsCombatScreenUp())
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
 
@@ -134,25 +139,25 @@ namespace L2RBot
 
         private void _IdleCheck()
         {
-            if (Timer.ElapsedMilliseconds > IdleTimeInMs && Bot.IsCombatScreenUp(App))
+            if (Timer.ElapsedMilliseconds > IdleTimeInMs && IsCombatScreenUp())
             {
                 ResetTimer();
 
                 StartTimer();
 
-                while (!Bot.IsCombatScreenUp(App))
+                while (!IsCombatScreenUp())
                 {
                     Helper.Start();
                     if (Timer.ElapsedMilliseconds > 300000)//5 minutes
                     {
-                        MainWindow.main.UpdateLog = App.MainWindowTitle + " has ended 'Weekly Quest' due to an unknown pop-up being detected.";
+                        MainWindow.main.UpdateLog = BotName + " has ended 'Weekly Quest' due to an unknown pop-up being detected.";
 
                         Complete = true;
 
                         break;
                     }
                 }
-                if (Bot.IsCombatScreenUp(App) && _GrabWeeklyPoint())//Looks to see if [Weekly] is still in the quest options
+                if (IsCombatScreenUp() && _GrabWeeklyPoint())//Looks to see if [Weekly] is still in the quest options and clicks if it is. 
                 {
                     Click(Nav.AutoCombat);
 
@@ -164,7 +169,7 @@ namespace L2RBot
 
                     Click(_weeklySearch.Point);
                 }
-                if (Bot.IsCombatScreenUp(App) && !_GrabWeeklyPoint())//Looks to see if [Weekly] is still in the quest options
+                if (IsCombatScreenUp() && !_GrabWeeklyPoint())//Looks to see if [Weekly] is still in the quest options
                 {
                     _iniClick = false;
                 }
@@ -200,7 +205,7 @@ namespace L2RBot
             {
                 Complete = true;
 
-                MainWindow.main.UpdateLog = App.MainWindowTitle + " has completed the 'Weekly Quests'";
+                MainWindow.main.UpdateLog = BotName + " has completed the 'Weekly Quests'";
             }
         }
     }

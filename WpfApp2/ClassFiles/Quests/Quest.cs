@@ -39,6 +39,8 @@ namespace L2RBot
 
         public Process App { get; set; }
 
+        public L2RDevice AdbApp { get; set; }
+
         public QuestHelper Helper { get; set; }
 
         public Stopwatch Timer
@@ -57,14 +59,14 @@ namespace L2RBot
             }
         }//timer for tracking objects
 
-        public Rectangle Screen { get; set; }//game screen rectangle
+        public dynamic Screen { get; set; }//game screen rectangle
 
         public bool InitialClick { get; set; }//for tracking the very first click to start the quest
 
         public bool Complete { get; set; }// for tracking quest completion
 
         public int IdleTimeInMs { get; set; }//the duration of time in ms that has to pass between clicks before idle
-       
+
         public bool Respawn { get; set; }
 
         public uint Deathcount { get; set; }
@@ -74,6 +76,14 @@ namespace L2RBot
         public bool HomePosition { get; set; }
 
         public bool CloseTVPopup { get; set; }
+
+        public string BotName { get; set; }
+
+        public bool IsAdbBot { get; set; }
+
+        public IntPtr BotWindowHandle { get; set; }
+
+        public Pixel WifiLogo;
 
         public Screen ScreenObj
         {
@@ -88,9 +98,29 @@ namespace L2RBot
         }
 
         //constructor
-        public Quest(Process App)
+        public Quest(Process App, L2RDevice AdbApp)
         {
             this.App = App;
+
+            this.AdbApp = AdbApp;
+
+            if (App != null)
+            {
+                IsAdbBot = false;
+
+                BotName = App.MainWindowTitle;
+
+                BotWindowHandle = App.MainWindowHandle;
+
+                UpdateScreen();
+            }
+
+            if (AdbApp != null)
+            {
+                IsAdbBot = true;
+
+                BotName = AdbApp.CharacterName;
+            }
 
             Timer = new Stopwatch();
 
@@ -99,6 +129,13 @@ namespace L2RBot
             Complete = false;
 
             IdleTimeInMs = 30000;
+
+            WifiLogo = new Pixel
+            {
+                Color = Colors.WifiLogo,
+
+                Point = new Point(8, 708)
+            };
 
             UpdateScreen();
         }
@@ -110,10 +147,17 @@ namespace L2RBot
         /// </summary>
         public void UpdateScreen()
         {
-            log.Info("Updated Screen object for " + App.MainWindowTitle.ToString());
+            if (IsAdbBot)
+            {
+                Image test = AdbApp.ScreenCap();
+                Screen = new Bitmap(AdbApp.ScreenCap());
+
+                return;
+            }
+
+            log.Info("Updated Screen object for " + BotName);
 
             Screen = ScreenObj.GetRect(App);
-
         }
 
         /// <summary>
@@ -122,7 +166,13 @@ namespace L2RBot
         /// <param name="App"></param>
         public void UpdateScreen(Process App)
         {
-            log.Info("Updated Screen object for " + App.MainWindowTitle.ToString());
+            if (IsAdbBot)
+            {
+                Screen = new Bitmap(AdbApp.ScreenCap());
+
+                return;
+            }
+            log.Info("Updated Screen object for " + BotName);
 
             Screen = ScreenObj.GetRect(App);
         }
@@ -135,15 +185,27 @@ namespace L2RBot
         {
             log.Info("Clicking Point " + GamePoint.ToString());
 
-            Point screenPoint = ScreenObj.PointToScreenPoint(Screen, GamePoint.X, GamePoint.Y); //Convert game point to screen point
-
-            Mouse.LeftMouseClick(screenPoint.X, screenPoint.Y);//click screen point
-
             if (Timer.IsRunning)
             {
                 ResetTimer();
             }
+
             StartTimer();
+
+            //ADB bot click
+            if (IsAdbBot)
+            {
+                AdbApp.Click(GamePoint);
+
+                return;
+            }
+
+            if(Screen.GetType() == typeof(Rectangle))
+            {
+                Point screenPoint = ScreenObj.PointToScreenPoint(Screen, GamePoint.X, GamePoint.Y); //Convert game point to screen point
+
+                Mouse.LeftMouseClick(screenPoint.X, screenPoint.Y);//click screen point
+            }
         }
 
         /// <summary>
@@ -151,7 +213,7 @@ namespace L2RBot
         /// </summary>
         public void StartTimer()
         {
-            log.Info("Starting Timer for " + App.MainWindowTitle.ToString());
+            log.Info("Starting Timer for " + BotName);
 
             Timer.Start();
         }
@@ -161,7 +223,7 @@ namespace L2RBot
         /// </summary>
         public void ResetTimer()
         {
-            log.Info("Reseting Timer for " + App.MainWindowTitle.ToString());
+            log.Info("Reseting Timer for " + BotName);
 
             Timer.Stop();
 
@@ -175,9 +237,9 @@ namespace L2RBot
         {
             if (Helper.Complete == true)
             {
-                log.Info("Helper Condition has Completed " + App.MainWindowTitle.ToString());
+                log.Info("Helper Condition has Completed " + BotName);
 
-                MainLog(App.MainWindowTitle + " has stopped because it needs help from a Human.");
+                MainLog(BotName + " has stopped because it needs help from a Human.");
 
                 Complete = true;
             }
@@ -188,7 +250,7 @@ namespace L2RBot
         /// </summary>
         public void Sleep()
         {
-            log.Info("Sleeping thread " + App.MainWindowTitle.ToString() +
+            log.Info("Sleeping thread " + BotName +
                     " for " + SleepTime + " Milliseconds.");
 
             Thread.Sleep(SleepTime);
@@ -200,8 +262,8 @@ namespace L2RBot
         /// <param name="SleepMS">The ammount of time, in milliseconds, to sleep the thread.</param>
         public void Sleep(int SleepMS)
         {
-            log.Info("Sleeping thread " + App.MainWindowTitle.ToString() +
-        " for " + SleepMS + " Milliseconds.");
+            log.Info("Sleeping thread " + BotName +
+            " for " + SleepMS + " Milliseconds.");
 
             Thread.Sleep(SleepMS);
         }
@@ -214,8 +276,8 @@ namespace L2RBot
         {
             if (Debug == true)
             {
-                log.Info(App.MainWindowTitle.ToString() + " has written " +
-                        Text + " to MainWindow's Log.");
+                log.Info(BotName + " has written " +
+                Text + " to MainWindow's Log.");
 
                 MainWindow.main.UpdateLog = Text;
             }
@@ -227,11 +289,11 @@ namespace L2RBot
         /// </summary>
         public void BringWindowToFront()
         {
-            if (BringToFront)
+            if (BringToFront && !IsAdbBot)
             {
-                log.Info(App.MainWindowTitle + " window brought to the front.");
+                log.Info(BotName + " window brought to the front.");
 
-                User32.SetForegroundWindow(App.MainWindowHandle);
+                User32.SetForegroundWindow(BotWindowHandle);
             }
         }
 
@@ -240,7 +302,8 @@ namespace L2RBot
         /// </summary>
         public void ToggleCombat()
         {
-            log.Info(App.MainWindowTitle + " is toggling combat");
+            log.Info(BotName + " is toggling combat");
+
             Click(Nav.AutoCombat);
 
             Thread.Sleep(TimeSpan.FromSeconds(1));//If you click fast it will just see a single click.
@@ -248,6 +311,11 @@ namespace L2RBot
             Click(Nav.AutoCombat);
 
             Thread.Sleep(50);
+        }
+
+        public Boolean IsCombatScreenUp()
+        {
+            return (WifiLogo.IsPresent(Screen, 4)) ? true : false;
         }
     }
 }

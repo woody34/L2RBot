@@ -6,12 +6,13 @@ using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
 using L2RBot.Common;
+using Managed.Adb;
 
 namespace L2RBot
 {
     class Bot
     {
-        private static Screen _screenObj;
+        private static Device SudoDevice = new Device("", DeviceState.Offline, "", "", "");
 
         static Pixel WifiLogo = new Pixel
         {
@@ -25,14 +26,24 @@ namespace L2RBot
         /// </summary>
         /// <param name="App"></param>
         /// <returns>true: once wifi logo is detected</returns>
-        public static Boolean IsCombatScreenUp(Process App)
-        {
-            _screenObj = new Screen();
+        //public static Boolean IsCombatScreenUp(Process App)
+        //{
+        //    _screenObj = new Screen();
 
-            Rectangle _screen = _screenObj.GetRect(App);
+        //    dynamic _screen = new object();
 
-            return (WifiLogo.IsPresent(_screen, 4)) ? true : false;
-        }
+        //    if (App != null)
+        //    {
+        //        _screen = _screenObj.GetRect(App);
+        //    }
+
+        //    if(AdbApp != null)
+        //    {
+        //        _screen = App;
+        //    }
+
+        //    return (WifiLogo.IsPresent(_screen, 4)) ? true : false;
+        //}
 
         /// <summary>
         /// Returns array of open proccesses with matching ProcessName

@@ -32,7 +32,7 @@ namespace L2RBot
         {
             get
             {
-                if(MainWindow.main != null)
+                if (MainWindow.main != null)
                 {
                     if (_emu == Emulator.None)
                     {
@@ -64,7 +64,7 @@ namespace L2RBot
                         }
                     }
                 }
-                
+
                 return _emu;
             }
             set
@@ -199,7 +199,7 @@ namespace L2RBot
         /// <returns></returns>
         public Rectangle GetRect(Process App)
         {
-            if(Emu == Emulator.None)
+            if (Emu == Emulator.None)
             {
                 BuildBorders();
             }
@@ -290,6 +290,20 @@ namespace L2RBot
         }
 
         /// <summary>
+        /// returns a color at a games screen x and y location
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <returns></returns>
+        public Color GetColor(Image Image, int X, int Y)
+        {
+            Bitmap ScreenCap = new Bitmap(Image);
+
+            return ScreenCap.GetPixel(X, Y);
+        }
+
+        /// <summary>
         /// Compares two colors with a tolerance values
         /// </summary>
         /// <param name="Pixel"></param>
@@ -353,6 +367,35 @@ namespace L2RBot
         /// <param name="Start">The point at which we begin searching.</param>
         /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
         /// <param name="Color">The color we are searching for.</param>
+        /// <param name="Tolerance">A threashold for pixel variation.</param>
+        /// <returns></returns>
+        public static Pixel SearchPixelVerticalStride(Image Image, Point Start, uint StrideLength, Color Color, int Tolerance = 0)
+        {
+            for (int i = 0; i <= StrideLength; i++)
+            {
+                Pixel p = new Pixel
+                {
+                    Color = Color,
+
+                    Point = new Point(Start.X, Start.Y + i)
+                };
+
+                if (p.IsPresent(Image, Tolerance))
+                {
+                    return p;
+                }
+            }
+
+            return new Pixel();
+        }
+
+        /// <summary>
+        /// looks through a single column of pixels for a specific pixel.
+        /// </summary>
+        /// <param name="Screen">The game screen location.</param>
+        /// <param name="Start">The point at which we begin searching.</param>
+        /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
+        /// <param name="Color">The color we are searching for.</param>
         /// <param name="IsFound">Returns true if the pixel is found in the stride.</param>
         /// <param name="Tolerance">A threashold for pixel variation.</param>
         /// <returns></returns>
@@ -368,6 +411,40 @@ namespace L2RBot
                 };
 
                 if (p.IsPresent(Screen, Tolerance))
+                {
+                    IsFound = true;
+
+                    return p;
+                }
+            }
+
+            IsFound = false;
+
+            return new Pixel();
+        }
+
+        /// <summary>
+        /// looks through a single column of pixels for a specific pixel.
+        /// </summary>
+        /// <param name="Screen">The game screen location.</param>
+        /// <param name="Start">The point at which we begin searching.</param>
+        /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
+        /// <param name="Color">The color we are searching for.</param>
+        /// <param name="IsFound">Returns true if the pixel is found in the stride.</param>
+        /// <param name="Tolerance">A threashold for pixel variation.</param>
+        /// <returns></returns>
+        public static Pixel SearchPixelVerticalStride(Image Image, Point Start, uint StrideLength, Color Color, out bool IsFound, int Tolerance = 0)
+        {
+            for (int i = 0; i <= StrideLength; i++)
+            {
+                Pixel p = new Pixel
+                {
+                    Color = Color,
+
+                    Point = new Point(Start.X, Start.Y + i)
+                };
+
+                if (p.IsPresent(Image, Tolerance))
                 {
                     IsFound = true;
 
@@ -409,6 +486,34 @@ namespace L2RBot
         }
 
         /// <summary>
+        /// looks through a single column of pixels for a specific pixel.
+        /// </summary>
+        /// <param name="Screen">The game screen location.</param>
+        /// <param name="Start">The point at which we begin searching.</param>
+        /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
+        /// <param name="Color">The color we are searching for.</param>
+        /// <param name="Tolerance">A threashold for pixel variation.</param>
+        /// <returns></returns>
+        public static Pixel SearchPixelHorizontalStride(Image Image, Point Start, uint StrideLength, Color Color, int Tolerance = 0)
+        {
+            for (int i = 0; i <= StrideLength; i++)
+            {
+                Pixel p = new Pixel
+                {
+                    Color = Color,
+
+                    Point = new Point(Start.X + i, Start.Y)
+                };
+
+                if (p.IsPresent(Image, Tolerance))
+                {
+                    return p;
+                }
+            }
+            return new Pixel();
+        }
+
+        /// <summary>
         /// looks through a single row of pixels for a specific pixel.
         /// </summary>
         /// <param name="Screen">The game screen location.</param>
@@ -430,6 +535,40 @@ namespace L2RBot
                 };
 
                 if (p.IsPresent(Screen, Tolerance))
+                {
+                    IsFound = true;
+
+                    return p;
+                }
+            }
+
+            IsFound = false;
+
+            return new Pixel();
+        }
+
+        /// <summary>
+        /// looks through a single row of pixels for a specific pixel.
+        /// </summary>
+        /// <param name="Screen">The game screen location.</param>
+        /// <param name="Start">The point at which we begin searching.</param>
+        /// <param name="StrideLength">A possitive integer value the represents the distance of pixels to be searched through in the stride.</param>
+        /// <param name="Color">The color we are searching for.</param>
+        /// <param name="IsFound">Returns true if the pixel is found in the stride.</param>
+        /// <param name="Tolerance">A threashold for pixel variation.</param>
+        /// <returns></returns>
+        public static Pixel SearchPixelHorizontalStride(Image Image, Point Start, uint StrideLength, Color Color, out bool IsFound, int Tolerance = 0)
+        {
+            for (int i = 0; i <= StrideLength; i++)
+            {
+                Pixel p = new Pixel
+                {
+                    Color = Color,
+
+                    Point = new Point(Start.X + i, Start.Y)
+                };
+
+                if (p.IsPresent(Image, Tolerance))
                 {
                     IsFound = true;
 

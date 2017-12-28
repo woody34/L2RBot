@@ -30,11 +30,11 @@ namespace L2RBot
         /// Constructs MainQuest data objects.
         /// </summary>
         /// <param name="APP">Android Emulator Process object</param>
-        public Main(Process APP) : base(APP)
+        public Main(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
             IdleTimeInMs = 30000;
 
-            Helper = new QuestHelper(App)
+            Helper = new QuestHelper(App, AdbApp)
             {
                 Quest = QuestType.Main,
 
@@ -113,11 +113,14 @@ namespace L2RBot
         /// </summary>
         public void Start()
         {
-            log.Info(App.MainWindowTitle + " calls Main.Start()");
-
             UpdateScreen();
 
-            BringWindowToFront();
+            log.Info(BotName + " calls Main.Start()");
+
+            if (BringToFront == true)
+            {
+                BringWindowToFront();
+            }
 
             Sleep();//Sleep before to prevent actions from occuring to early.
 
@@ -135,7 +138,7 @@ namespace L2RBot
 
             Sleep();//Sleep after to prevent actions from occuring on the next active window.
 
-            log.Info(App.MainWindowTitle + " Main.Start() End");
+            log.Info(BotName + " Main.Start() End");
         }
 
         /// <summary>
@@ -143,9 +146,9 @@ namespace L2RBot
         /// </summary>
         private void InitClick()
         {
-            if (InitialClick == false && Bot.IsCombatScreenUp(App))
+            if (InitialClick == false && IsCombatScreenUp())
             {
-                log.Info(App.MainWindowTitle + " performing initial click");
+                log.Info(BotName + " performing initial click");
 
                 ToggleCombat();
 
@@ -162,7 +165,7 @@ namespace L2RBot
         {
             if (blueArrow[0].IsPresent(Screen, 5) & blueArrow[1].IsPresent(Screen, 5))
             {
-                log.Info(App.MainWindowTitle + " Blue Arrow detected");
+                log.Info(BotName + " Blue Arrow detected");
                 Click(mainQuest.Point);
             }
         }
@@ -174,7 +177,7 @@ namespace L2RBot
         {
             if (questBubble[0].IsPresent(Screen, 2) & questBubble[1].IsPresent(Screen, 2) && Timer.ElapsedMilliseconds > IdleTimeInMs)
             {
-                log.Info(App.MainWindowTitle + " Quest Bubble detected.");
+                log.Info(BotName + " Quest Bubble detected.");
                 Click(mainQuest.Point);
             }
             //Bot.PopUpKiller(App);
@@ -187,7 +190,7 @@ namespace L2RBot
         {
             if (questDone[0].IsPresent(Screen, 2) && !questDone[1].IsPresent(Screen, 2))
             {
-                log.Info(App.MainWindowTitle + " QuestDone detected.");
+                log.Info(BotName + " QuestDone detected.");
 
                 Click(mainQuest.Point);
             }
@@ -200,15 +203,15 @@ namespace L2RBot
         {
             if (Timer.ElapsedMilliseconds > IdleTimeInMs)//Checks both click timers.
             {
-                log.Info(App.MainWindowTitle + " IdleCheck() Timer condition has been met.");
+                log.Info(BotName + " IdleCheck() Timer condition has been met.");
 
                 ResetTimer();
 
                 StartTimer();
 
-                if (Bot.IsCombatScreenUp(App) && movePixel.IsPresent(Screen, 2))//Looks to see if your map has moved.
+                if (IsCombatScreenUp() && movePixel.IsPresent(Screen, 2))//Looks to see if your map has moved.
                 {
-                    log.Info(App.MainWindowTitle + " IdleCheck()-->None movement detected.");
+                    log.Info(BotName + " IdleCheck()-->None movement detected.");
 
                     ToggleCombat();
 

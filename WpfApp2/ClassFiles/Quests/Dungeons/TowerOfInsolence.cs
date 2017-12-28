@@ -170,7 +170,7 @@ namespace L2RBot
 
 
         //constructors
-        public TowerOfInsolence(Process App) : base(App)
+        public TowerOfInsolence(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
             BuildHelper();
 
@@ -189,7 +189,7 @@ namespace L2RBot
 
         private void BuildHelper()
         {
-            Helper = new QuestHelper(App)
+            Helper = new QuestHelper(App, AdbApp)
             {
                 Quest = QuestType.TOI,
 
@@ -312,9 +312,12 @@ namespace L2RBot
             UpdateScreen();
 
             //need to look into halting code until this User32 method has returned.
-            User32.SetForegroundWindow(App.MainWindowHandle);//This is slow and causes timing issues.
+            if (BringToFront == true)
+            {
+                BringWindowToFront();
+            }
 
-            Sleep(500);//A short sleep before actions prevents timing issues.
+            Sleep(SleepTime);//A short sleep before actions prevents timing issues.
 
             if (!_dungeonInProgress)
             {
@@ -350,7 +353,7 @@ namespace L2RBot
 
             Finished();
 
-            Sleep(500);//A short sleep after actions prevents timing issues.
+            Sleep(SleepTime);//A short sleep after actions prevents timing issues.
         }
 
         private void CheckDifficulty()
@@ -381,8 +384,8 @@ namespace L2RBot
 
         private void OpenHamburger()
         {
-            log.Info(App.MainWindowTitle + " is looking for the Hamburger button.");
-            if (Bot.IsCombatScreenUp(App) && Hamburger[0].IsPresent(Screen, 15) && !Hamburger[1].IsPresent(Screen, 3))
+            log.Info(BotName + " is looking for the Hamburger button.");
+            if (IsCombatScreenUp() && Hamburger[0].IsPresent(Screen, 15) && !Hamburger[1].IsPresent(Screen, 3))
             {
                 Click(Hamburger[0].Point);
             }
@@ -390,7 +393,7 @@ namespace L2RBot
 
         private void OpenDungeon()
         {
-            log.Info(App.MainWindowTitle + " is looking for the Dungeon button.");
+            log.Info(BotName + " is looking for the Dungeon button.");
             if (Dungeon[0].IsPresent(Screen, 15) && !Dungeon[1].IsPresent(Screen, 2))
             {
                 Click(Dungeon[0].Point);
@@ -409,7 +412,7 @@ namespace L2RBot
         {
             Click(Enter[0].Point);
 
-            log.Info(App.MainWindowTitle + " is entering TOI.");
+            log.Info(BotName + " is entering TOI.");
         }
 
         private void Finished()
@@ -418,7 +421,7 @@ namespace L2RBot
             {
                 NextFloor();
 
-                log.Info(App.MainWindowTitle + " has cleared a floor.");
+                log.Info(BotName + " has cleared a floor.");
             }
         }
 
@@ -435,9 +438,9 @@ namespace L2RBot
 
             Complete = true;
 
-            MainLog(App.MainWindowTitle + " has completed TOI.");
+            MainLog(BotName + " has completed TOI.");
 
-            log.Info(App.MainWindowTitle + " has completed TOI, Closing Window.");
+            log.Info(BotName + " has completed TOI, Closing Window.");
         }
     }
 

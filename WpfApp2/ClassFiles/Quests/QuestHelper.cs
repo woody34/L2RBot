@@ -13,10 +13,6 @@ namespace L2RBot
     public class QuestHelper : Quest
     {
         //Globals.
-        private Process app; //game process object(nox player)
-
-        public QuestType Quest { get; set; }//quest type is to be set during instantiation using object initializer {Quest = QuestType.Main}
-
         private Pixel[] _skipDialog;
 
         private Pixel[] _skipCutScene;
@@ -58,6 +54,8 @@ namespace L2RBot
         private Pixel[] _okPopUp;
 
         //Properties.
+        public QuestType Quest { get; set; }//quest type is to be set during instantiation using object initializer {Quest = QuestType.Main}
+
         public Pixel[] SkipDialog
         {
             get
@@ -303,11 +301,14 @@ namespace L2RBot
         /// Constructs QuestHelper data objects.
         /// </summary>
         /// <param name="App">Android Emulator Process object</param>
-        public QuestHelper(Process App) : base(App)
+        public QuestHelper(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
-            app = Process.GetProcessById(App.Id);
+            this.App = App;
 
-            UpdateScreen();
+            if (App != null)
+            {
+                UpdateScreen();
+            }
 
             BuildPixels();
         }
@@ -652,6 +653,8 @@ namespace L2RBot
         /// </summary>
         public void Start()
         {
+            UpdateScreen();
+
             ClosePopUps();
 
             SkipDialogs();
@@ -907,19 +910,17 @@ namespace L2RBot
         /// </summary>
         public void CloseTeamViewerPopUp()
         {
+            Process[] OpenProcesses = Bot.GetOpenProcess("TeamViewer");
+
+            foreach (Process Proc in OpenProcesses)
             {
-                Process[] OpenProcesses = Bot.GetOpenProcess("TeamViewer");
-
-                foreach (Process Proc in OpenProcesses)
+                if (Proc.MainWindowTitle == "Sponsored session")//.Equals() for null check.
                 {
-                    if (Proc.MainWindowTitle == "Sponsored session")//.Equals() for null check.
-                    {
-                        int BM_CLICK = 0x00f5; //Testing purposes. I will create an enum for wParam once I get it working in the future.
+                    int BM_CLICK = 0x00f5; //should probably be in an enum, soon.
 
-                        IntPtr ChildHandle = User32.FindWindowEx((IntPtr) Proc.MainWindowHandle, IntPtr.Zero, "Button", "Ok");
+                    IntPtr ChildHandle = User32.FindWindowEx((IntPtr) Proc.MainWindowHandle, IntPtr.Zero, "Button", "Ok");
 
-                        User32.SendMessage((int) ChildHandle, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
-                    }
+                    User32.SendMessage((int) ChildHandle, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
                 }
             }
         }

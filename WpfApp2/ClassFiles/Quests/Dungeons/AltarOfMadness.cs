@@ -244,9 +244,9 @@ namespace L2RBot
         }
 
         //constructors
-        public AltarOfMadness(Process APP) : base(APP)
+        public AltarOfMadness(Process App, L2RDevice AdbApp) : base(App, AdbApp)
         {
-            Helper = new QuestHelper(App)
+            Helper = new QuestHelper(App, AdbApp)
             {
                 Quest = QuestType.AltarOfMadness,
                 Deathcount = this.Deathcount,
@@ -371,11 +371,14 @@ namespace L2RBot
         {
             UpdateScreen(); //updates Screen object in parent class with latest window size and x,y location.
 
-            User32.SetForegroundWindow(App.MainWindowHandle);//brings window to front
+            if (BringToFront == true)
+            {
+                BringWindowToFront();
+            }
 
             if (_finished == true && _riftMenuOpen == false)
             {
-                if (Bot.IsCombatScreenUp(App))
+                if (IsCombatScreenUp())
                 {
                     OpenRiftMenu();
                 }
@@ -387,7 +390,7 @@ namespace L2RBot
                 EnterDungeon();
             }
 
-            if (Bot.IsCombatScreenUp(App) && _startQuest == false && _finished == false) //look for combat screen, starts Quest once it is detected.
+            if (IsCombatScreenUp() && _startQuest == false && _finished == false) //look for combat screen, starts Quest once it is detected.
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 if (IsRechargeUp())//added it here because of timing issues
@@ -400,7 +403,7 @@ namespace L2RBot
                 _mapPoint.UpdateColor(Screen);
             }
 
-            if (Bot.IsCombatScreenUp(App) && _startQuest == true && _finished == false)
+            if (IsCombatScreenUp() && _startQuest == true && _finished == false)
             {
                 if (TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds) > TimeSpan.FromSeconds(15))
                 {
@@ -547,10 +550,10 @@ namespace L2RBot
         /// </summary>
         public void UpdateLeaderStatus()
         {
-            if (Bot.IsCombatScreenUp(App))
+            if (IsCombatScreenUp())
             {
                 _isLeader = (PartyLeader[0].IsPresent(Screen, 2) && PartyLeader[1].IsPresent(Screen, 2)) ? true : false;
-                MainWindow.main.UpdateLog = App.MainWindowTitle + " has been detected as party leader.";
+                MainWindow.main.UpdateLog = BotName + " has been detected as party leader.";
             }
         }
 
@@ -559,7 +562,7 @@ namespace L2RBot
         /// </summary>
         public void UpdatePartyFullStatus()
         {
-            if (Bot.IsCombatScreenUp(App))
+            if (IsCombatScreenUp())
             {
                 Click(PartyFull[1].Point);
                 Thread.Sleep(TimeSpan.FromSeconds(.1));

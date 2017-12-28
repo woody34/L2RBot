@@ -8,6 +8,17 @@ The bot is compatabile with Linage 2: Revolutions v1.x.
 
 As of 12/28/17 the bot supports Nox and Bluestacks. It can interact with Nox or Bluestacks via Windows API's or directly with the Android OS via ADB.
 
+
+Windows API requirements:
+1. Window must stay 1280x720 size.
+2. Window must be visible.
+
+ADB requirements:
+1. Android screen resoltion needs to be 1280x720.
+2. Android Debugging needs to be enabled in your device or emulator. https://goo.gl/hJEn78 (quick guide)
+3. Root needs to be enabled to detect your character name. If this is not enabled it will show the devices ADB name.
+
+
 The bot completes the folowing quests:
 
 Main,

@@ -4,20 +4,29 @@ Original project at https://github.com/woody34/L2RBot
 
 Lineage 2 Revolution Pixel Bot
 
-I am currently refactoring the bot to work with the US release of the game, specifically v1.x.
+The bot is compatabile with Linage 2: Revolutions v1.x.
 
-I have tested the following features and I am mostly satisfied with their consistant performance:
-Weekly Quest
+As of 12/28/17 the bot supports Nox and Bluestacks. It can interact with Nox or Bluestacks via Windows API's or directly with the Android OS via ADB.
 
-I have tested the following and they are working but not quite as desired:
-Main Quest,
-Scroll Quest
 
-The following are features that are still being refactored.
-Daily Dungeon
-Tower of Insoloence
-Alter of Darkness(I will get this to where I can have a quick feature release once Rifts are release into the game)
+Windows API requirements:
+1. Window must stay 1280x720 size.
+2. Window must be visible.
+
+ADB requirements:
+1. Android screen resoltion needs to be 1280x720.
+2. Android Debugging needs to be enabled in your device or emulator. https://goo.gl/hJEn78 (quick guide)
+3. Root needs to be enabled to detect your character name. If this is not enabled it will show the devices ADB name.
+
+
+The bot completes the folowing quests:
+
+Main,
+Weekly,
+Scroll,
+Daily Dungeon,
+Tower of Insolence
 
 This bot is configured to use NoxPlayer to emulate Android on your PC. It has been tested with Nox Player v5.0-v6.0. 
 
-I am open to feedback, if you would like a feature added or changed let me know!
+I am open to feedback and I am looking for colaborators. Feel free to create an issue ticket if you want something changed or would like to collaborate. 

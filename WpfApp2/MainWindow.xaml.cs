@@ -900,6 +900,74 @@ namespace L2RBot
             {
                 for (int i = 0; i < bots.Length; i++)
                 {
+
+                    #region Scroll_CheckBox_Logic
+                    //Reset CheckBox
+                    bool? isResetChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isResetChecked = ScrollReset.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isResetChecked)
+                    {
+                        bots[i].Reset = true;
+                    }
+
+                    //ScrollS CheckBox
+                    bool? isScrollSChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollSChecked = ScrollS.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollSChecked)
+                    {
+                        bots[i].Preference.Add(Grade.S);
+                    }
+
+                    //ScrollA Checkbox
+                    bool? isScrollAChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollAChecked = ScrollA.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollAChecked)
+                    {
+                        bots[i].Preference.Add(Grade.A);
+                    }
+
+                    //ScrollB CheckBox
+                    bool? isScrollBChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollBChecked = ScrollB.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollBChecked)
+                    {
+                        bots[i].Preference.Add(Grade.B);
+                    }
+
+                    //ScrollC CheckBox
+                    bool? isScrollCChecked = null;
+
+                    ScrollReset.Dispatcher.Invoke(new Action(() =>
+                    {
+                        isScrollCChecked = ScrollC.IsChecked;
+                    }), DispatcherPriority.Normal);
+
+                    if ((bool) isScrollCChecked)
+                    {
+                        bots[i].Preference.Add(Grade.C);
+                    }
+                    #endregion
+
                     if (bots[i].Complete == false)
                     {
                         bots[i].Start();

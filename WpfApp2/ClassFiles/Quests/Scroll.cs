@@ -260,7 +260,7 @@ namespace L2RBot
 
             CheckComplete = new Pixel
             {
-                Point = new Point(996, 226),
+                Point = new Point(986, 223),
                 Color = Color.FromArgb(255, 255, 152, 176)
             };
         }
@@ -312,9 +312,9 @@ namespace L2RBot
         //Logic    
         public void Start()
         {
-            log.Info(BotName + " calls Scroll.Start()");
-
             UpdateScreen();
+
+            log.Info(BotName + " calls Scroll.Start()");
 
             if (BringToFront == true)
             {
@@ -329,19 +329,28 @@ namespace L2RBot
                 {
                     OpenBag();
 
+                    UpdateScreen();
+
                     FindScroll();
+
+                    UpdateScreen();
 
                     FulfillRequest();
 
                     _iniClick = true;
                 }
-                if (IsCombatScreenUp())
+
+                if (!IsCombatScreenUp())
                 {
                     Helper.ClosePopUps();
                 }
             }
 
+            UpdateScreen();
+
             IdleCheck();
+
+            UpdateScreen();
 
             Helper.Start();
 
@@ -358,6 +367,8 @@ namespace L2RBot
         /// <returns></returns>
         private bool GrabScrollPoint()
         {
+            UpdateScreen();
+
             log.Info(BotName + " Looking for Scroll Quest point on game screen.");
 
             Pixel _temp = L2RBot.Screen.SearchPixelVerticalStride(Screen, new Point(13, 210), 211, Colors.ScrollQuest, out bool Found, 2);
@@ -377,6 +388,8 @@ namespace L2RBot
         /// </summary>
         private void OpenBag()
         {
+            UpdateScreen();
+
             log.Info(BotName + " Opening bag.");
 
             if (IsCombatScreenUp())
@@ -401,13 +414,18 @@ namespace L2RBot
         /// </summary>
         private void FindScroll()
         {
+            UpdateScreen();
+
             log.Info(BotName + " searching for Quest Scroll.");
+
             foreach (Pixel Px in _items)//get screen colors
             {
                 log.Info(BotName + " updating bag item pixel values.");
 
                 Px.UpdateColor(Screen);
             }
+
+            UpdateScreen();
 
             ComparePref();
 
@@ -497,6 +515,8 @@ namespace L2RBot
         /// </summary>
         private void FulfillRequest()
         {
+            UpdateScreen();
+
             if (_reset) //If Scroll Quest Reset preference is check and the pixel is detected, reset the quest.
             {
                 if (CheckComplete.IsPresent(Screen, 2))
@@ -508,6 +528,9 @@ namespace L2RBot
                     ResetScrollQuest();
                 }
             }
+
+            UpdateScreen();
+
             if (!_reset)//If Scroll Quest Reset preference is NOT check and the pixel is detected, close the window
             {
                 if (CheckComplete.IsPresent(Screen, 2))
@@ -524,6 +547,8 @@ namespace L2RBot
                 }
             }
 
+            UpdateScreen();
+
             if (_fulfill[0].IsPresent(Screen, 2) && _fulfill[1].IsPresent(Screen, 2))
             {
                 log.Info(BotName + " Clicking Fulfill Quest ");
@@ -532,6 +557,8 @@ namespace L2RBot
             }
 
             Thread.Sleep(1000);
+
+            UpdateScreen();
 
             if (_fulfillOk[0].IsPresent(Screen, 2) && _fulfillOk[1].IsPresent(Screen, 2))
             {
@@ -547,6 +574,8 @@ namespace L2RBot
         /// </summary>
         private void ResetScrollQuest()
         {
+            UpdateScreen();
+
             log.Info(BotName + " Reseting Quest Scroll as is user set preference.");
 
             Click(new Point(727, 409));
@@ -567,6 +596,8 @@ namespace L2RBot
 
         private void IdleCheck()
         {
+            UpdateScreen();
+
             if (Timer.ElapsedMilliseconds > IdleTimeInMs && IsCombatScreenUp())
             {
                 log.Info(BotName + " calls IdleCheck()");
@@ -577,7 +608,10 @@ namespace L2RBot
 
                 while (!IsCombatScreenUp())
                 {
-                    Helper.ClosePopUps();
+                    UpdateScreen();
+
+                    Helper.Start();
+
                     if (Timer.ElapsedMilliseconds > 300000)//5 minutes
                     {
                         log.Info(BotName + " is ending 'Scroll Quest' during IdleCheck() due to not being able to see the combat screen.");
@@ -589,6 +623,7 @@ namespace L2RBot
                         break;
                     }
                 }
+
                 if (IsCombatScreenUp() && GrabScrollPoint())//Looks to see if [Sub] is still in the quest options
                 {
                     log.Info(BotName + "has detected Scroll Quest in Quest options");
@@ -599,11 +634,13 @@ namespace L2RBot
 
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
+
                 if (IsCombatScreenUp() && !GrabScrollPoint())
                 {
                     log.Info(BotName + "Unable to loctate 'Scroll Quest,' iniClick set to false to open quest screen and check for completion.");
                     _iniClick = false;
                 }
+
                 QuestMenuCheck();
             }
 
@@ -611,6 +648,7 @@ namespace L2RBot
 
         private void QuestMenuCheck()
         {
+            UpdateScreen();
             if (_scrollQuestMenu[0].IsPresent(Screen, 2) && _scrollQuestMenu[1].IsPresent(Screen, 2))
             {
                 log.Info(BotName + " Quest Menu detected, closing menu to look at bag.");

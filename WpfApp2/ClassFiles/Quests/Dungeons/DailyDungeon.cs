@@ -360,6 +360,8 @@ namespace L2RBot
 
             Sleep(500);
 
+            UpdateScreen();
+
             Difficulty[0].UpdateColor(Screen);
 
             if (Object.Equals(Difficulty[0].Color, _green))
@@ -372,6 +374,8 @@ namespace L2RBot
             Click(DungeonOptions[2]);//Hard.
 
             Sleep(500);
+
+            UpdateScreen();
 
             Difficulty[0].UpdateColor(Screen);
 
@@ -386,6 +390,8 @@ namespace L2RBot
 
             Sleep(500);
 
+            UpdateScreen();
+
             Difficulty[0].UpdateColor(Screen);
 
             if (Object.Equals(Difficulty[0].Color, _green))
@@ -398,6 +404,8 @@ namespace L2RBot
             Click(DungeonOptions[0]);//Easy
 
             Sleep(500);
+
+            UpdateScreen();
 
             Difficulty[0].UpdateColor(Screen);
 

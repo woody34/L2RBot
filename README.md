@@ -29,4 +29,4 @@ Tower of Insolence
 
 This bot is configured to use NoxPlayer to emulate Android on your PC. It has been tested with Nox Player v5.0-v6.0. 
 
-I am open to feedback and I am looking for colaborators. Feel free to create an issue ticket if you want something changed or would like to collaborate. 
+I am ending support for this project as of 1/6/18. I leave it in the hands of the community! I have retired from L2R and I'm moving on to other projects. I learned alot from the project and if anyone would like tips or pointers on how my code works feel free to let me know. Thanks for all the feedback and kind words!
